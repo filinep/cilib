@@ -19,8 +19,7 @@ import net.sourceforge.cilib.type.types.container.Vector;
  *
  * @param <E> The entity type.
  */
-public class RandomBoundedInitializationStrategy<E extends Entity> implements
-        InitializationStrategy<E> {
+public class RandomBoundedInitializationStrategy<E extends Entity> implements InitializationStrategy<E> {
 
     private static final long serialVersionUID = -7926839076670354209L;
     protected ControlParameter lowerBound;
@@ -29,8 +28,8 @@ public class RandomBoundedInitializationStrategy<E extends Entity> implements
     protected ArrayList<ControlParameter[]> boundsPerDimension;
 
     public RandomBoundedInitializationStrategy() {
-        this.lowerBound = ConstantControlParameter.of(0.1);
-        this.upperBound = ConstantControlParameter.of(0.1);
+        this.lowerBound = ConstantControlParameter.of(0.0);
+        this.upperBound = ConstantControlParameter.of(1.0);
         this.random = new UniformDistribution();
         boundsPerDimension = new ArrayList<ControlParameter[]>();
     }
@@ -94,5 +93,4 @@ public class RandomBoundedInitializationStrategy<E extends Entity> implements
     public void setUpperBound(ControlParameter upperBound) {
         this.upperBound = upperBound;
     }
-    
 }
