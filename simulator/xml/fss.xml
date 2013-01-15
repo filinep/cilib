@@ -18,6 +18,7 @@
                         <upperBound class="controlparameter.ConstantControlParameter" parameter="30"/>
                     </positionInitializationStrategy>
                 </entityType>
+                <entityNumber value="30"/>
             </initialisationStrategy>
             <iterationStrategy class="fss.iterationstrategies.FSSIterationStrategy">
                 <volitiveMovement class="fss.movement.volitive.StandardVolitiveMovementProvider">
@@ -35,10 +36,11 @@
                         <individualStepSize class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.01024" finalValue="0.0001024"/>
                     </individualMovement>
                     <positionInitializationStrategy class="entity.initialization.RandomBoundedInitializationStrategy">
-                        <lowerBound class="controlparameter.ConstantControlParameter" parameter="2.56"/>
-                        <upperBound class="controlparameter.ConstantControlParameter" parameter="5.12"/>
+                        <lowerBound class="controlparameter.DomainProportionalControlParameter" proportion="0.25"/>
+                        <upperBound class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
                     </positionInitializationStrategy>
                 </entityType>
+                <entityNumber value="30"/>
             </initialisationStrategy>
             <iterationStrategy class="fss.iterationstrategies.FSSIterationStrategy">
                 <volitiveMovement class="fss.movement.volitive.StandardVolitiveMovementProvider">
@@ -56,10 +58,11 @@
                         <individualStepSize class="controlparameter.LinearlyVaryingControlParameter" initialValue="1.2" finalValue="0.012"/>
                     </individualMovement>
                     <positionInitializationStrategy class="entity.initialization.RandomBoundedInitializationStrategy">
-                        <lowerBound class="controlparameter.ConstantControlParameter" parameter="300"/>
-                        <upperBound class="controlparameter.ConstantControlParameter" parameter="600"/>
+                        <lowerBound class="controlparameter.DomainProportionalControlParameter" proportion="0.25"/>
+                        <upperBound class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
                     </positionInitializationStrategy>
                 </entityType>
+                <entityNumber value="30"/>
             </initialisationStrategy>
             <iterationStrategy class="fss.iterationstrategies.FSSIterationStrategy">
                 <volitiveMovement class="fss.movement.volitive.StandardVolitiveMovementProvider">
@@ -77,10 +80,11 @@
                         <individualStepSize class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.065536" finalValue="0.00065536"/>
                     </individualMovement>
                     <positionInitializationStrategy class="entity.initialization.RandomBoundedInitializationStrategy">
-                        <lowerBound class="controlparameter.ConstantControlParameter" parameter="16.384"/>
-                        <upperBound class="controlparameter.ConstantControlParameter" parameter="32.768"/>
+                        <lowerBound class="controlparameter.DomainProportionalControlParameter" proportion="0.25"/>
+                        <upperBound class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
                     </positionInitializationStrategy>
                 </entityType>
+                <entityNumber value="30"/>
             </initialisationStrategy>
             <iterationStrategy class="fss.iterationstrategies.FSSIterationStrategy">
                 <volitiveMovement class="fss.movement.volitive.StandardVolitiveMovementProvider">
@@ -98,10 +102,11 @@
                         <individualStepSize class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.2" finalValue="0.002"/>
                     </individualMovement>
                     <positionInitializationStrategy class="entity.initialization.RandomBoundedInitializationStrategy">
-                        <lowerBound class="controlparameter.ConstantControlParameter" parameter="50"/>
-                        <upperBound class="controlparameter.ConstantControlParameter" parameter="100"/>
+                        <lowerBound class="controlparameter.DomainProportionalControlParameter" proportion="0.25"/>
+                        <upperBound class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
                     </positionInitializationStrategy>
                 </entityType>
+                <entityNumber value="30"/>
             </initialisationStrategy>
             <iterationStrategy class="fss.iterationstrategies.FSSIterationStrategy">
                 <volitiveMovement class="fss.movement.volitive.StandardVolitiveMovementProvider">
@@ -134,9 +139,7 @@
     </problems>
     
     <measurements id="fitness" class="simulator.MeasurementSuite" resolution="10">
-        <addMeasurement class="measurement.single.Fitness"/>
         <addMeasurement class="measurement.single.fss.BarycenterFitness"/>
-        <addMeasurement class="measurement.single.Diameter"/>
         <addMeasurement class="measurement.single.FitnessEvaluations"/>
     </measurements>
     
