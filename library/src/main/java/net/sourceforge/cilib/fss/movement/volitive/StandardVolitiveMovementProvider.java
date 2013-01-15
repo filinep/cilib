@@ -46,7 +46,7 @@ public class StandardVolitiveMovementProvider implements VolitiveMovementProvide
         return x.plus(x.subtract(barycenter).divide(distance.distance(x, barycenter))
                 .multiply(volitiveStepSize.getParameter())
                 .multiply(uniform.getRandomNumber())
-                .multiply(Double.compare(0.0, sumDeltaW) >= 0 ? 1 : -1));
+                .multiply(sumDeltaW > 0 ? -1 : 1));
     }
 
     public void setVolitiveStepSize(ControlParameter volitiveStepSize) {
