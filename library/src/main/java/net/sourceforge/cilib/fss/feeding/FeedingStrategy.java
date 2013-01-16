@@ -25,5 +25,7 @@ import net.sourceforge.cilib.entity.Topology;
 import net.sourceforge.cilib.fss.fish.Fish;
 
 public interface FeedingStrategy {
+    
     void feed(Fish fish, Topology<Fish> school, double normValue);
+    
 }

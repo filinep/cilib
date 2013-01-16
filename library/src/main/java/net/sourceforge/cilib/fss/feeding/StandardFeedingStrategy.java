@@ -27,7 +27,7 @@ import net.sourceforge.cilib.fss.fish.Fish;
 public class StandardFeedingStrategy implements FeedingStrategy {
 
     @Override
-    public void feed(Fish fish, Topology<Fish> topology, double normValue) {       
+    public void feed(Fish fish, Topology<Fish> topology, double normValue) {
         if (normValue != 0) {
             double normDeltaF = fish.getDeltaF() / normValue;
             double newWeight = Math.min(Math.max(

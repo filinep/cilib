@@ -35,7 +35,9 @@ import net.sourceforge.cilib.fss.movement.individual.StandardIndividualMovementP
 import net.sourceforge.cilib.fss.weightinitialisation.StandardWeightInitialisationStrategy;
 import net.sourceforge.cilib.fss.weightinitialisation.WeightInitialisationStrategy;
 import net.sourceforge.cilib.problem.Problem;
+import net.sourceforge.cilib.problem.solution.Fitness;
 import net.sourceforge.cilib.problem.solution.InferiorFitness;
+import net.sourceforge.cilib.type.types.container.StructuredType;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 public class StandardFish extends AbstractEntity implements Fish {
@@ -57,7 +59,7 @@ public class StandardFish extends AbstractEntity implements Fish {
     public StandardFish() {
         this.deltaX = Vector.of();
         this.weightInitialisationStrategy = new StandardWeightInitialisationStrategy();
-        this.positionInitializationStrategy = new RandomInitializationStrategy<Fish>();
+        this.positionInitializationStrategy = new RandomInitializationStrategy();
         
         this.individualMovement = new StandardIndividualMovementProvider();        
         this.feedingStrategy = new StandardFeedingStrategy();
@@ -88,9 +90,19 @@ public class StandardFish extends AbstractEntity implements Fish {
     }
 
     @Override
+    public Fitness getBestFitness() {
+        return (Fitness) getProperties().get(EntityType.Particle.BEST_FITNESS);
+    }
+
+    @Override
     public void calculateFitness() {
-        getProperties().put(EntityType.PREVIOUS_FITNESS, getFitness());        
+        getProperties().put(EntityType.PREVIOUS_FITNESS, getFitness().getClone());
         getProperties().put(EntityType.FITNESS, this.getFitnessCalculator().getFitness(this));
+        
+        if (getFitness().compareTo(getBestFitness()) >= 0) {
+            getProperties().put(EntityType.Particle.BEST_FITNESS, getFitness().getClone());
+            getProperties().put(EntityType.Particle.BEST_POSITION, getCandidateSolution().getClone());
+        }
     }
 
     @Override
@@ -99,8 +111,10 @@ public class StandardFish extends AbstractEntity implements Fish {
         
         this.getProperties().put(EntityType.CANDIDATE_SOLUTION, problem.getDomain().getBuiltRepresentation().getClone());
         this.positionInitializationStrategy.initialize(EntityType.CANDIDATE_SOLUTION, this);
+        this.getProperties().put(EntityType.Particle.BEST_POSITION, getCandidateSolution().getClone());
         
         this.getProperties().put(EntityType.FITNESS, InferiorFitness.instance());
+        this.getProperties().put(EntityType.Particle.BEST_FITNESS, InferiorFitness.instance());
         
         this.deltaX = Vector.fill(0.0, getCandidateSolution().size());
     }
@@ -215,4 +229,10 @@ public class StandardFish extends AbstractEntity implements Fish {
     public WeightInitialisationStrategy getWeightInitialisationStrategy() {
         return weightInitialisationStrategy;
     }
+
+    @Override
+    public StructuredType getBestPosition() {
+        return (StructuredType) getProperties().get(EntityType.Particle.BEST_POSITION);
+    }
+
 }

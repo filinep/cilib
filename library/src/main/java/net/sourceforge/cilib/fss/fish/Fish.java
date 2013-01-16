@@ -23,11 +23,12 @@ package net.sourceforge.cilib.fss.fish;
 
 import net.sourceforge.cilib.controlparameter.ControlParameter;
 import net.sourceforge.cilib.entity.Entity;
+import net.sourceforge.cilib.entity.MemoryBasedEntity;
 import net.sourceforge.cilib.fss.feeding.FeedingStrategy;
 import net.sourceforge.cilib.fss.movement.individual.IndividualMovementProvider;
 import net.sourceforge.cilib.type.types.container.Vector;
 
-public interface Fish extends Entity {
+public interface Fish extends Entity, MemoryBasedEntity {
     
     @Override
     Fish getClone();

@@ -22,6 +22,7 @@
 package net.sourceforge.cilib.fss;
 
 import com.google.common.collect.Lists;
+import java.util.Collections;
 import java.util.List;
 import net.sourceforge.cilib.algorithm.initialisation.ClonedPopulationInitialisationStrategy;
 import net.sourceforge.cilib.algorithm.population.IterationStrategy;
@@ -29,7 +30,6 @@ import net.sourceforge.cilib.algorithm.population.SinglePopulationBasedAlgorithm
 import net.sourceforge.cilib.coevolution.cooperative.ParticipatingAlgorithm;
 import net.sourceforge.cilib.coevolution.cooperative.contributionselection.ContributionSelectionStrategy;
 import net.sourceforge.cilib.coevolution.cooperative.contributionselection.ZeroContributionSelectionStrategy;
-import net.sourceforge.cilib.entity.Topologies;
 import net.sourceforge.cilib.entity.Topology;
 import net.sourceforge.cilib.entity.topologies.GBestTopology;
 import net.sourceforge.cilib.fss.fish.Fish;
@@ -44,7 +44,7 @@ public class FSS extends SinglePopulationBasedAlgorithm implements Participating
     private ContributionSelectionStrategy contributionSelection;
 
     public FSS() {
-        topology = new GBestTopology<Fish>();
+        topology = new GBestTopology();
         iterationStrategy = new FSSIterationStrategy();
         initialisationStrategy = new ClonedPopulationInitialisationStrategy();
         initialisationStrategy.setEntityType(new StandardFish());
@@ -82,15 +82,16 @@ public class FSS extends SinglePopulationBasedAlgorithm implements Participating
 
     @Override
     public OptimisationSolution getBestSolution() {
-        Fish bestEntity = Topologies.getBestEntity(topology);
-        return new OptimisationSolution(bestEntity.getCandidateSolution(), bestEntity.getFitness());
+        List<OptimisationSolution> solutions = getSolutions();
+        Collections.sort(solutions);
+        return solutions.get(solutions.size() - 1);
     }
 
     @Override
     public List<OptimisationSolution> getSolutions() {
         List<OptimisationSolution> solutions = Lists.newLinkedList();
-        for (Fish e : Topologies.getNeighbourhoodBestEntities(topology)) {
-            solutions.add(new OptimisationSolution(e.getCandidateSolution(), e.getFitness()));
+        for (Fish e : topology) {
+            solutions.add(new OptimisationSolution(e.getBestPosition(), e.getBestFitness()));
         }
         return solutions;
     }

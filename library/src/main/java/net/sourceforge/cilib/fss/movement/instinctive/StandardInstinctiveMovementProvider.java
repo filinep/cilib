@@ -29,16 +29,22 @@ public class StandardInstinctiveMovementProvider implements InstinctiveMovementP
 
     @Override
     public Vector get(Topology<Fish> school) {
-        double sumDeltaF = school.get(0).getDeltaF();
-        Vector sumProd = school.get(0).getDeltaX().multiply(sumDeltaF);        
+        double sumDeltaF = 0;
+        Vector sumProd = Vector.fill(0.0, school.get(0).getDimension());        
         
-        for (int i = 1; i < school.size(); i++) {
-            Fish f = school.get(i);
-            sumProd = sumProd.plus(f.getDeltaX().multiply(f.getDeltaF()));
-            sumDeltaF += f.getDeltaF();
+        for (Fish f : school) {
+            // Only use fish that improved
+            if (f.getDeltaF() > 0.0) {
+                sumProd = sumProd.plus(f.getDeltaX().multiply(f.getDeltaF()));
+                sumDeltaF += f.getDeltaF();
+            }
         }
         
-        return sumProd.divide(sumDeltaF);
+        if (sumDeltaF != 0.0) {
+            sumProd = sumProd.divide(sumDeltaF);
+        }
+        
+        return sumProd;
     }
 
 }

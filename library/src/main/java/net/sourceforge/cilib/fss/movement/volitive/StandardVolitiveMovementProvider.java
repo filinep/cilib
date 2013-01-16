@@ -21,6 +21,7 @@
  */
 package net.sourceforge.cilib.fss.movement.volitive;
 
+import fj.P1;
 import net.sourceforge.cilib.controlparameter.ControlParameter;
 import net.sourceforge.cilib.controlparameter.LinearlyVaryingControlParameter;
 import net.sourceforge.cilib.entity.Topology;
@@ -39,14 +40,19 @@ public class StandardVolitiveMovementProvider implements VolitiveMovementProvide
 
     @Override
     public Vector get(Fish fish, Topology<Fish> school, Vector barycenter, double sumDeltaW) {
-        UniformDistribution uniform = new UniformDistribution();
+        final UniformDistribution uniform = new UniformDistribution();
         EuclideanDistanceMeasure distance = new EuclideanDistanceMeasure();
         
         Vector x = (Vector) fish.getCandidateSolution();
         return x.plus(x.subtract(barycenter).divide(distance.distance(x, barycenter))
                 .multiply(volitiveStepSize.getParameter())
-                .multiply(uniform.getRandomNumber())
-                .multiply(sumDeltaW > 0 ? -1 : 1));
+                .multiply(new P1<Number>() {
+                    @Override
+                    public Number _1() {
+                        return uniform.getRandomNumber();
+                    }
+                })
+                .multiply(sumDeltaW < 0 ? -1 : 1));
     }
 
     public void setVolitiveStepSize(ControlParameter volitiveStepSize) {

@@ -31,6 +31,8 @@ import net.sourceforge.cilib.fss.movement.instinctive.InstinctiveMovementProvide
 import net.sourceforge.cilib.fss.movement.instinctive.StandardInstinctiveMovementProvider;
 import net.sourceforge.cilib.fss.movement.volitive.StandardVolitiveMovementProvider;
 import net.sourceforge.cilib.fss.movement.volitive.VolitiveMovementProvider;
+import net.sourceforge.cilib.measurement.single.fss.Barycenter;
+import net.sourceforge.cilib.problem.boundaryconstraint.ClampingBoundaryConstraint;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 public class FSSIterationStrategy extends AbstractIterationStrategy<FSS> {
@@ -41,9 +43,11 @@ public class FSSIterationStrategy extends AbstractIterationStrategy<FSS> {
     public FSSIterationStrategy() {
         this.instinctiveMovement = new StandardInstinctiveMovementProvider();
         this.volitiveMovement = new StandardVolitiveMovementProvider();
+        this.boundaryConstraint = new ClampingBoundaryConstraint();
     }
     
     public FSSIterationStrategy(FSSIterationStrategy copy) {
+        super(copy);
         this.instinctiveMovement = copy.instinctiveMovement;
         this.volitiveMovement = copy.volitiveMovement;
     }
@@ -79,22 +83,17 @@ public class FSSIterationStrategy extends AbstractIterationStrategy<FSS> {
         }
         
         // barycenter calculation
-        double sumDeltaW = school.get(0).getDeltaW();
-        double sumWeight = school.get(0).getWeight();
-        Vector barycenter = school.get(0).getDeltaX().multiply(sumWeight);
+        Vector barycenter = Barycenter.calculate(school);
         
-        for (int i = 1; i < school.size(); i++) {
-            Fish f = school.get(i);
-            barycenter = barycenter.plus(f.getDeltaX().multiply(f.getWeight()));
-            sumWeight += f.getWeight();
+        double sumDeltaW = 0.0;
+        for (Fish f : school) {
             sumDeltaW += f.getDeltaW();
         }
-        
-        barycenter = barycenter.divide(sumWeight);
-        
+
         for (Fish f : school) {
             Vector x = volitiveMovement.get(f, school, barycenter, sumDeltaW);
             f.setCandidateSolution(x);
+            boundaryConstraint.enforce(f);
             f.calculateFitness();
         }
     }

@@ -55,7 +55,6 @@ public class StandardIndividualMovementProvider implements IndividualMovementPro
         
         temp.setCandidateSolution(((Vector) temp.getCandidateSolution()).plus(deltaX));
         boundaryConstraint.enforce(temp);
-        
         temp.calculateFitness();
         
         double deltaF = temp.getFitness().compareTo(fish.getFitness()) * Math.abs(temp.getFitness().getValue() - fish.getFitness().getValue());

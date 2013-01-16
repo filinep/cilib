@@ -24,5 +24,7 @@ package net.sourceforge.cilib.fss.movement.individual;
 import net.sourceforge.cilib.fss.fish.Fish;
 
 public interface IndividualMovementProvider {
+    
     Fish move(Fish fish);
+    
 }

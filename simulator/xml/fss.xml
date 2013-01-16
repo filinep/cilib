@@ -6,34 +6,15 @@
 ]>
 <simulator>
     <algorithms>
-        <algorithm id="fss_rosenbrock" class="fss.FSS">
+        <algorithm id="fss" class="fss.FSS">
             <initialisationStrategy class="algorithm.initialisation.ClonedPopulationInitialisationStrategy">
                 <entityType class="fss.fish.StandardFish">
                     <maxWeight class="controlparameter.ConstantControlParameter" parameter="5000"/>
                     <individualMovement class="fss.movement.individual.StandardIndividualMovementProvider">
-                        <individualStepSize class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.06" finalValue="0.0006"/>
-                    </individualMovement>
-                    <positionInitializationStrategy class="entity.initialization.RandomBoundedInitializationStrategy">
-                        <lowerBound class="controlparameter.ConstantControlParameter" parameter="15"/>
-                        <upperBound class="controlparameter.ConstantControlParameter" parameter="30"/>
-                    </positionInitializationStrategy>
-                </entityType>
-                <entityNumber value="30"/>
-            </initialisationStrategy>
-            <iterationStrategy class="fss.iterationstrategies.FSSIterationStrategy">
-                <volitiveMovement class="fss.movement.volitive.StandardVolitiveMovementProvider">
-                    <volitiveStepSize class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.6" finalValue="0.006"/>
-                </volitiveMovement>
-            </iterationStrategy>
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="10000"/>
-        </algorithm>
-        
-        <algorithm id="fss_rastrigin" class="fss.FSS">
-            <initialisationStrategy class="algorithm.initialisation.ClonedPopulationInitialisationStrategy">
-                <entityType class="fss.fish.StandardFish">
-                    <maxWeight class="controlparameter.ConstantControlParameter" parameter="5000"/>
-                    <individualMovement class="fss.movement.individual.StandardIndividualMovementProvider">
-                        <individualStepSize class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.01024" finalValue="0.0001024"/>
+                        <individualStepSize class="controlparameter.LinearlyVaryingControlParameter">
+                            <initialParameter class="controlparameter.DomainProportionalControlParameter" proportion="0.1"/>
+                            <finalParameter class="controlparameter.DomainProportionalControlParameter" proportion="0.000001"/>
+                        </individualStepSize>
                     </individualMovement>
                     <positionInitializationStrategy class="entity.initialization.RandomBoundedInitializationStrategy">
                         <lowerBound class="controlparameter.DomainProportionalControlParameter" proportion="0.25"/>
@@ -44,76 +25,13 @@
             </initialisationStrategy>
             <iterationStrategy class="fss.iterationstrategies.FSSIterationStrategy">
                 <volitiveMovement class="fss.movement.volitive.StandardVolitiveMovementProvider">
-                    <volitiveStepSize class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.1024" finalValue="0.001024"/>
+                    <volitiveStepSize class="controlparameter.LinearlyVaryingControlParameter">
+                        <initialParameter class="controlparameter.DomainProportionalControlParameter" proportion="0.2"/>
+                        <finalParameter class="controlparameter.DomainProportionalControlParameter" proportion="0.000002"/>
+                    </volitiveStepSize>
                 </volitiveMovement>
             </iterationStrategy>
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="10000"/>
-        </algorithm>
-        
-        <algorithm id="fss_griewank" class="fss.FSS">
-            <initialisationStrategy class="algorithm.initialisation.ClonedPopulationInitialisationStrategy">
-                <entityType class="fss.fish.StandardFish">
-                    <maxWeight class="controlparameter.ConstantControlParameter" parameter="5000"/>
-                    <individualMovement class="fss.movement.individual.StandardIndividualMovementProvider">
-                        <individualStepSize class="controlparameter.LinearlyVaryingControlParameter" initialValue="1.2" finalValue="0.012"/>
-                    </individualMovement>
-                    <positionInitializationStrategy class="entity.initialization.RandomBoundedInitializationStrategy">
-                        <lowerBound class="controlparameter.DomainProportionalControlParameter" proportion="0.25"/>
-                        <upperBound class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
-                    </positionInitializationStrategy>
-                </entityType>
-                <entityNumber value="30"/>
-            </initialisationStrategy>
-            <iterationStrategy class="fss.iterationstrategies.FSSIterationStrategy">
-                <volitiveMovement class="fss.movement.volitive.StandardVolitiveMovementProvider">
-                    <volitiveStepSize class="controlparameter.LinearlyVaryingControlParameter" initialValue="12" finalValue="0.12"/>
-                </volitiveMovement>
-            </iterationStrategy>
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="10000"/>
-        </algorithm>
-        
-        <algorithm id="fss_ackley" class="fss.FSS">
-            <initialisationStrategy class="algorithm.initialisation.ClonedPopulationInitialisationStrategy">
-                <entityType class="fss.fish.StandardFish">
-                    <maxWeight class="controlparameter.ConstantControlParameter" parameter="5000"/>
-                    <individualMovement class="fss.movement.individual.StandardIndividualMovementProvider">
-                        <individualStepSize class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.065536" finalValue="0.00065536"/>
-                    </individualMovement>
-                    <positionInitializationStrategy class="entity.initialization.RandomBoundedInitializationStrategy">
-                        <lowerBound class="controlparameter.DomainProportionalControlParameter" proportion="0.25"/>
-                        <upperBound class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
-                    </positionInitializationStrategy>
-                </entityType>
-                <entityNumber value="30"/>
-            </initialisationStrategy>
-            <iterationStrategy class="fss.iterationstrategies.FSSIterationStrategy">
-                <volitiveMovement class="fss.movement.volitive.StandardVolitiveMovementProvider">
-                    <volitiveStepSize class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.65536" finalValue="0.0065536"/>
-                </volitiveMovement>
-            </iterationStrategy>
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="10000"/>
-        </algorithm>
-        
-        <algorithm id="fss_schwefel_sphere" class="fss.FSS">
-            <initialisationStrategy class="algorithm.initialisation.ClonedPopulationInitialisationStrategy">
-                <entityType class="fss.fish.StandardFish">
-                    <maxWeight class="controlparameter.ConstantControlParameter" parameter="5000"/>
-                    <individualMovement class="fss.movement.individual.StandardIndividualMovementProvider">
-                        <individualStepSize class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.2" finalValue="0.002"/>
-                    </individualMovement>
-                    <positionInitializationStrategy class="entity.initialization.RandomBoundedInitializationStrategy">
-                        <lowerBound class="controlparameter.DomainProportionalControlParameter" proportion="0.25"/>
-                        <upperBound class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
-                    </positionInitializationStrategy>
-                </entityType>
-                <entityNumber value="30"/>
-            </initialisationStrategy>
-            <iterationStrategy class="fss.iterationstrategies.FSSIterationStrategy">
-                <volitiveMovement class="fss.movement.volitive.StandardVolitiveMovementProvider">
-                    <volitiveStepSize class="controlparameter.LinearlyVaryingControlParameter" initialValue="2" finalValue="0.02"/>
-                </volitiveMovement>
-            </iterationStrategy>
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="10000"/>
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="5000"/>
         </algorithm>
     </algorithms>
 
@@ -122,63 +40,79 @@
             <function class="functions.continuous.unconstrained.Spherical"/>
         </problem>
         <problem id="rosenbrock" class="problem.FunctionOptimisationProblem" domain="R(-30:30)^30">
-            <function class="functions.continuous.unconstrained.Rosenbrock"/>
+            <function class="functions.continuous.decorators.ShiftedFunctionDecorator">
+                <function class="functions.continuous.unconstrained.Rosenbrock"/>
+                <horizontalShift class="controlparameter.ConstantControlParameter" parameter="0"/>
+            </function>
         </problem>
         <problem id="rastrigin" class="problem.FunctionOptimisationProblem" domain="R(-5.12:5.12)^30">
-            <function class="functions.continuous.unconstrained.Rastrigin"/>
+            <function class="functions.continuous.decorators.ShiftedFunctionDecorator">
+                <function class="functions.continuous.unconstrained.Rastrigin"/>
+                <horizontalShift class="controlparameter.ConstantControlParameter" parameter="0"/>
+            </function>
         </problem>
         <problem id="griewank" class="problem.FunctionOptimisationProblem" domain="R(-600:600)^30">
-            <function class="functions.continuous.unconstrained.Griewank"/>
+            <function class="functions.continuous.decorators.ShiftedFunctionDecorator">
+                <function class="functions.continuous.unconstrained.Griewank"/>
+                <horizontalShift class="controlparameter.ConstantControlParameter" parameter="0"/>
+            </function>
         </problem>
         <problem id="ackley" class="problem.FunctionOptimisationProblem" domain="R(-32.768:32.768)^30">
-            <function class="functions.continuous.unconstrained.Ackley"/>
+            <function class="functions.continuous.decorators.ShiftedFunctionDecorator">
+                <function class="functions.continuous.unconstrained.Ackley"/>
+                <horizontalShift class="controlparameter.ConstantControlParameter" parameter="0"/>
+            </function>
         </problem>
         <problem id="schwefel" class="problem.FunctionOptimisationProblem" domain="R(-100:100)^30">
-            <function class="functions.continuous.SchwefelProblem1_2"/>
+            <function class="functions.continuous.decorators.ShiftedFunctionDecorator">
+                <function class="functions.continuous.SchwefelProblem1_2"/>
+                <horizontalShift class="controlparameter.ConstantControlParameter" parameter="0"/>
+            </function>
         </problem>
     </problems>
-    
+
     <measurements id="fitness" class="simulator.MeasurementSuite" resolution="10">
-        <addMeasurement class="measurement.single.fss.BarycenterFitness"/>
+        <addMeasurement class="measurement.single.Fitness"/>
         <addMeasurement class="measurement.single.FitnessEvaluations"/>
+        <addMeasurement class="measurement.single.diversity.Diversity"/>
     </measurements>
-    
+
     <simulations>
-        <simulation samples="30">
-            <algorithm idref="fss_schwefel_sphere"/>
+        <simulation samples="100">
+            <algorithm idref="fss"/>
             <problem idref="spherical"/>
             <measurements idref="fitness" />
     	    <output format="TXT" file="data/spherical-fss-30.txt" />
         </simulation>
-        <simulation samples="30">
-            <algorithm idref="fss_rosenbrock"/>
+        <simulation samples="100">
+            <algorithm idref="fss"/>
             <problem idref="rosenbrock"/>
             <measurements idref="fitness" />
 	        <output format="TXT" file="data/rosenbrock-fss-30.txt"/>
         </simulation>
-        <simulation samples="30">
-            <algorithm idref="fss_rastrigin"/>
+        <simulation samples="100">
+            <algorithm idref="fss"/>
             <problem idref="rastrigin"/>
             <measurements idref="fitness" />
 	        <output format="TXT" file="data/rastrigin-fss-30.txt"/>
         </simulation>
-        <simulation samples="30">
-            <algorithm idref="fss_griewank"/>
+        <simulation samples="100">
+            <algorithm idref="fss"/>
             <problem idref="griewank"/>
             <measurements idref="fitness" />
 	        <output format="TXT" file="data/griewank-fss-30.txt"/>
         </simulation>
-        <simulation samples="30">
-            <algorithm idref="fss_ackley"/>
+        <simulation samples="100">
+            <algorithm idref="fss"/>
             <problem idref="ackley"/>
             <measurements idref="fitness" />
 	        <output format="TXT" file="data/ackley-fss-30.txt"/>
         </simulation>
-        <simulation samples="30">
-            <algorithm idref="fss_schwefel_sphere"/>
+        <simulation samples="100">
+            <algorithm idref="fss"/>
             <problem idref="schwefel"/>
             <measurements idref="fitness" />
-    	    <output format="TXT" file="data/schwefelfss-30.txt"/>
+    	    <output format="TXT" file="data/schwefel-fss-30.txt"/>
         </simulation>
     </simulations>
 </simulator>

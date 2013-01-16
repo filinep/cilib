@@ -26,7 +26,6 @@ import net.sourceforge.cilib.entity.Topology;
 import net.sourceforge.cilib.fss.FSS;
 import net.sourceforge.cilib.fss.fish.Fish;
 import net.sourceforge.cilib.measurement.Measurement;
-import net.sourceforge.cilib.problem.solution.Fitness;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 public class Barycenter implements Measurement<Vector> {
@@ -39,12 +38,16 @@ public class Barycenter implements Measurement<Vector> {
     @Override
     public Vector getValue(Algorithm algorithm) {
         Topology<Fish> school = ((FSS) algorithm).getTopology();
-        double sumWeight = school.get(0).getWeight();
-        Vector barycenter = school.get(0).getDeltaX().multiply(sumWeight);
+        return calculate(school);
+    }
+    
+    public static Vector calculate(Topology<Fish> school) {
+        double sumWeight = 0.0;
+        Vector barycenter = Vector.fill(0.0, school.get(0).getDimension());
         
-        for (int i = 1; i < school.size(); i++) {
-            Fish f = school.get(i);
-            barycenter = barycenter.plus(f.getDeltaX().multiply(f.getWeight()));
+        for (Fish f : school) {
+            Vector x = (Vector) f.getCandidateSolution();
+            barycenter = barycenter.plus(x.multiply(f.getWeight()));
             sumWeight += f.getWeight();
         }
         
