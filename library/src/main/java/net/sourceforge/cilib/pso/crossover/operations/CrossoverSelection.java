@@ -118,7 +118,7 @@ public abstract class CrossoverSelection extends PSOCrossoverOperation {
         }
 
         return algorithm.getTopology();
-    }
+    }    
 
     @Override
     public abstract CrossoverSelection getClone();

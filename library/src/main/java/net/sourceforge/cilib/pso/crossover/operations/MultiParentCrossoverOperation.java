@@ -12,8 +12,7 @@ import net.sourceforge.cilib.controlparameter.ConstantControlParameter;
 import net.sourceforge.cilib.controlparameter.ControlParameter;
 import net.sourceforge.cilib.entity.Topology;
 import net.sourceforge.cilib.entity.operators.crossover.real.MultiParentCrossoverStrategy;
-import net.sourceforge.cilib.math.random.ProbabilityDistributionFunction;
-import net.sourceforge.cilib.math.random.UniformDistribution;
+import net.sourceforge.cilib.math.random.generator.Rand;
 import net.sourceforge.cilib.pso.PSO;
 import net.sourceforge.cilib.pso.crossover.ParticleCrossoverStrategy;
 import net.sourceforge.cilib.pso.crossover.parentupdate.ElitistParentReplacementStrategy;
@@ -36,7 +35,6 @@ public class MultiParentCrossoverOperation extends PSOCrossoverOperation {
     private ParentReplacementStrategy parentReplacementStrategy;
     private ParticleCrossoverStrategy crossover;
     private ControlParameter crossoverProbability;
-    private ProbabilityDistributionFunction random;
     private Selector<Particle> selector;
 
     public MultiParentCrossoverOperation() {
@@ -45,13 +43,11 @@ public class MultiParentCrossoverOperation extends PSOCrossoverOperation {
 
         this.selector = new RandomSelector();
         this.crossoverProbability = ConstantControlParameter.of(0.8);
-        this.random = new UniformDistribution();
         this.parentReplacementStrategy = new ElitistParentReplacementStrategy();
     }
 
     public MultiParentCrossoverOperation(MultiParentCrossoverOperation copy) {
         this.crossover = copy.crossover.getClone();
-        this.random = copy.random;
         this.crossoverProbability = copy.crossoverProbability.getClone();
         this.parentReplacementStrategy = copy.parentReplacementStrategy;
         this.selector = copy.selector;
@@ -64,23 +60,28 @@ public class MultiParentCrossoverOperation extends PSOCrossoverOperation {
 
     @Override
     public Topology<Particle> f(PSO pso) {
-        Topology<Particle> topology = pso.getTopology();
+        Topology<Particle> newTopology = pso.getTopology().getClone();
+        newTopology.clear();
 
-        for (int i = 0; i < topology.size(); i++) {
-            Particle p = topology.get(i);
-
-            if (random.getRandomNumber() < crossoverProbability.getParameter()) {
-                List<Particle> parents = selector.on(topology).select(Samples.first(crossover.getNumberOfParents() - 1));
-                parents.add(0, p);
-
-                Particle offspring = crossover.crossover(parents).get(0);
-                offspring.setNeighbourhoodBest(offspring);
-
-                topology.set(i, parentReplacementStrategy.f(Arrays.asList(p), Arrays.asList(offspring)).get(0));
-            }
+        for (Particle p : pso.getTopology()) {
+            newTopology.add(async(pso.getTopology(), p));
         }
 
-        return topology;
+        return newTopology;
+    }
+
+    public Particle async(Topology<Particle> topology, Particle p) {
+        if (Rand.nextDouble() < crossoverProbability.getParameter()) {
+            List<Particle> parents = selector.on(topology).select(Samples.first(crossover.getNumberOfParents() - 1));
+            parents.add(0, p);
+
+            Particle offspring = crossover.crossover(parents).get(0);
+            offspring.setNeighbourhoodBest(offspring);
+
+            return parentReplacementStrategy.f(Arrays.asList(p), Arrays.asList(offspring)).get(0);
+        }
+
+        return p;
     }
 
     public ParticleCrossoverStrategy getCrossover() {
@@ -93,10 +94,6 @@ public class MultiParentCrossoverOperation extends PSOCrossoverOperation {
 
     public ParentReplacementStrategy getParentReplacementStrategy() {
         return parentReplacementStrategy;
-    }
-
-    public ProbabilityDistributionFunction getRandom() {
-        return random;
     }
 
     public Selector<Particle> getSelector() {
@@ -113,10 +110,6 @@ public class MultiParentCrossoverOperation extends PSOCrossoverOperation {
 
     public void setParentReplacementStrategy(ParentReplacementStrategy parentReplacementStrategy) {
         this.parentReplacementStrategy = parentReplacementStrategy;
-    }
-
-    public void setRandom(ProbabilityDistributionFunction random) {
-        this.random = random;
     }
 
     public void setSelector(Selector<Particle> selector) {
