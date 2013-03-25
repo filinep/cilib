@@ -30,7 +30,7 @@ import net.sourceforge.cilib.util.selection.recipes.Selector;
  * for performing the crossover and performing other actions depending on the
  * outcome of the crossover.
  */
-public abstract class CrossoverSelection extends PSOCrossoverOperation {
+public abstract class CrossoverSelection extends PSOCrossoverOperation implements AsyncCrossoverOperation {
 
     protected ParticleCrossoverStrategy crossoverStrategy;
     protected Selector selector;
@@ -118,7 +118,24 @@ public abstract class CrossoverSelection extends PSOCrossoverOperation {
         }
 
         return algorithm.getTopology();
-    }    
+    }
+    
+    @Override
+    public Particle async(PSO algorithm, Particle p) {
+        P3<Boolean, Particle, Particle> result = doAction(algorithm, EntityType.CANDIDATE_SOLUTION, EntityType.FITNESS);
+
+        if (result._1()) {
+            int i = algorithm.getTopology().indexOf(result._2());
+            result._3().setNeighbourhoodBest(result._2().getNeighbourhoodBest());
+            algorithm.getTopology().set(i, result._3());
+            
+            if (result._2() == p) {
+                return result._3();
+            }
+        }
+        
+        return p;
+    }
 
     @Override
     public abstract CrossoverSelection getClone();

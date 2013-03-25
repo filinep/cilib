@@ -210,7 +210,6 @@
                         <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="0.8" />
                         <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy" />
                         <selector class="util.selection.recipes.RandomSelector" />
-                        <random class="math.random.UniformDistribution" />
                     </crossoverOperation>
                 </delegate>
                 <vMax class="controlparameter.ConstantControlParameter" parameter="1.0" />
@@ -233,7 +232,6 @@
                     <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="0.8" />
                     <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy" />
                     <selector class="util.selection.recipes.RandomSelector" />
-                    <random class="math.random.UniformDistribution" />
                 </crossoverOperation>
             </iterationStrategy>
             <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="2000" />

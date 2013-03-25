@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<!DOCTYPE simulator
+[
+<!ATTLIST algorithm id ID #IMPLIED>
+<!ATTLIST problem id ID #IMPLIED>
+<!ATTLIST measurements id ID #IMPLIED>
+]>
+<simulator>
+    <algorithms>
+        <!--Crossover iteration strategy PCX-->
+        <algorithm id="xpso-pcx-iteration-repeating" class="pso.PSO">
+            <iterationStrategy class="pso.iterationstrategies.AsyncPSOCrossoverIterationStrategy">
+                <crossoverOperation class="pso.crossover.operations.RepeatingCrossoverSelection">
+                    <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                        <crossoverStrategy class="entity.operators.crossover.real.ParentCentricCrossoverStrategy">
+                            <numberOfParents value="10" />
+                        </crossoverStrategy>
+                        <pbestProvider class="pso.crossover.pbestupdate.IdentityOffspringPBestProvider" />
+                        <velocityProvider class="pso.crossover.velocityprovider.IdentityOffspringVelocityProvider" />
+                    </crossoverStrategy>
+                    <retries class="controlparameter.ConstantControlParameter" parameter="10" />
+                </crossoverOperation>
+            </iterationStrategy>
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" />
+        </algorithm>
+
+        <algorithm id="xpso-pcx-iteration-boltzmann" class="pso.PSO">
+            <iterationStrategy class="pso.iterationstrategies.AsyncPSOCrossoverIterationStrategy">
+                <crossoverOperation class="pso.crossover.operations.BoltzmannCrossoverSelection">
+                    <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                        <crossoverStrategy class="entity.operators.crossover.real.ParentCentricCrossoverStrategy">
+                            <numberOfParents value="10" />
+                        </crossoverStrategy>
+                        <pbestProvider class="pso.crossover.pbestupdate.IdentityOffspringPBestProvider" />
+                        <velocityProvider class="pso.crossover.velocityprovider.IdentityOffspringVelocityProvider" />
+                    </crossoverStrategy>
+                    <!--This is problem dependent I think-->
+                    <comparator class="entity.comparator.BoltzmannComparator">
+                        <tempSchedule class="controlparameter.LinearlyVaryingControlParameter" initialValue="100" finalValue="1" />
+                        <distribution class="math.random.UniformDistribution" />
+                    </comparator>
+                </crossoverOperation>
+            </iterationStrategy>
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" />
+        </algorithm>
+        
+        <!-- Novel Multi Parent Crossover Operator PSO -->
+        <algorithm id="xpso-nmpco" class="pso.PSO">
+            <initialisationStrategy class="algorithm.initialisation.ClonedPopulationInitialisationStrategy">
+                <entityType class="pso.particle.StandardParticle" />
+                <entityNumber value="100" />
+            </initialisationStrategy>
+            <iterationStrategy class="pso.iterationstrategies.GBestMutationIterationStrategy">
+                <delegate class="pso.iterationstrategies.AsyncPSOCrossoverIterationStrategy">
+                    <crossoverOperation class="pso.crossover.operations.MultiParentCrossoverOperation">
+                        <crossover class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.real.MultiParentCrossoverStrategy" />
+                        </crossover>
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="0.8" />
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy" />
+                        <selector class="util.selection.recipes.RandomSelector" />
+                    </crossoverOperation>
+                </delegate>
+                <vMax class="controlparameter.ConstantControlParameter" parameter="1.0" />
+                <distribution class="math.random.CauchyDistribution" />
+            </iterationStrategy>
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="2000" />
+        </algorithm>
+
+        <!-- Novel Multi Parent Crossover Operator PSO without Cauchy Mutation -->
+        <algorithm id="xpso-nmpco-without-cauchy" class="pso.PSO">
+            <initialisationStrategy class="algorithm.initialisation.ClonedPopulationInitialisationStrategy">
+                <entityType class="pso.particle.StandardParticle" />
+                <entityNumber value="100" />
+            </initialisationStrategy>
+            <iterationStrategy class="pso.iterationstrategies.AsyncPSOCrossoverIterationStrategy">
+                <crossoverOperation class="pso.crossover.operations.MultiParentCrossoverOperation">
+                    <crossover class="pso.crossover.ParticleCrossoverStrategy">
+                        <crossoverStrategy class="entity.operators.crossover.real.MultiParentCrossoverStrategy" />
+                    </crossover>
+                    <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="0.8" />
+                    <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy" />
+                    <selector class="util.selection.recipes.RandomSelector" />
+                </crossoverOperation>
+            </iterationStrategy>
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="2000" />
+        </algorithm>
+    </algorithms>
+
+    <problems>
+        <problem id="griewank" class="problem.FunctionOptimisationProblem" domain="R(300:600)^30">
+            <function class="functions.continuous.decorators.ShiftedFunctionDecorator">
+                <function class="functions.continuous.unconstrained.Griewank" />
+                <horizontalShift class="controlparameter.ConstantControlParameter" parameter="500" />
+            </function>
+        </problem>
+    </problems>
+
+    <measurements id="fitness" class="simulator.MeasurementSuite" resolution="100">
+        <addMeasurement class="measurement.single.Fitness" />
+    </measurements>
+
+    <simulations>
+        <simulation samples="5">
+            <algorithm idref="xpso-pcx-iteration-repeating" />
+            <problem idref="griewank" />
+            <measurements idref="fitness" />
+            <output format="TXT" file="data/async-xpso-pcx-iteration-repeating-griewank.txt" />
+        </simulation>
+        <simulation samples="5">
+            <algorithm idref="xpso-pcx-iteration-boltzmann" />
+            <problem idref="griewank" />
+            <measurements idref="fitness" />
+            <output format="TXT" file="data/async-xpso-pcx-iteration-boltzmann-griewank.txt" />
+        </simulation>
+        <simulation samples="5">
+            <algorithm idref="xpso-nmpco" />
+            <problem idref="griewank" />
+            <measurements idref="fitness" />
+            <output format="TXT" file="data/async-xpso-nmpco.txt" />
+        </simulation>
+        <simulation samples="5">
+            <algorithm idref="xpso-nmpco-without-cauchy" />
+            <problem idref="griewank" />
+            <measurements idref="fitness" />
+            <output format="TXT" file="data/async-xpso-nmpco-without-cauchy.txt" />
+        </simulation>
+    </simulations>
+</simulator>

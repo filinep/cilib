@@ -30,7 +30,7 @@ import net.sourceforge.cilib.util.selection.recipes.Selector;
  * Computation, pp 664--668, 2008, doi:10.1109/ICNC.2008.643
  * </p>
  */
-public class MultiParentCrossoverOperation extends PSOCrossoverOperation {
+public class MultiParentCrossoverOperation extends PSOCrossoverOperation implements AsyncCrossoverOperation {
 
     private ParentReplacementStrategy parentReplacementStrategy;
     private ParticleCrossoverStrategy crossover;
@@ -64,13 +64,15 @@ public class MultiParentCrossoverOperation extends PSOCrossoverOperation {
         newTopology.clear();
 
         for (Particle p : pso.getTopology()) {
-            newTopology.add(async(pso.getTopology(), p));
+            newTopology.add(async(pso, p));
         }
 
         return newTopology;
     }
 
-    public Particle async(Topology<Particle> topology, Particle p) {
+    @Override
+    public Particle async(PSO pso, Particle p) {
+        Topology<Particle> topology = pso.getTopology();
         if (Rand.nextDouble() < crossoverProbability.getParameter()) {
             List<Particle> parents = selector.on(topology).select(Samples.first(crossover.getNumberOfParents() - 1));
             parents.add(0, p);

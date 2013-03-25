@@ -15,7 +15,7 @@ import net.sourceforge.cilib.pso.crossover.parentupdate.ParentReplacementStrateg
 import net.sourceforge.cilib.pso.guideprovider.GuideProvider;
 import net.sourceforge.cilib.pso.particle.Particle;
 
-public class DiscreteCrossoverOperation extends PSOCrossoverOperation {
+public class DiscreteCrossoverOperation extends PSOCrossoverOperation implements AsyncCrossoverOperation {
 
     private CrossoverReplaceFunction function;
 
@@ -34,9 +34,14 @@ public class DiscreteCrossoverOperation extends PSOCrossoverOperation {
 
         return newTopology;
     }
+    
+    @Override
+    public Particle async(PSO algorithm, Particle p) {
+        return function.f(p);
+    }
 
     @Override
-    public PSOCrossoverOperation getClone() {
+    public DiscreteCrossoverOperation getClone() {
         return this;
     }
 
