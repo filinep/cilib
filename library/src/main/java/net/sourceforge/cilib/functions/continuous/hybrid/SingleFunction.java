@@ -161,7 +161,7 @@ public class SingleFunction extends ContinuousFunction {
      * @param input
      */
     public void shift(Vector input) {
-        if (shiftVector == null) {
+        if (shiftVector == null || shiftVector.size() != input.size()) {
             if (randomShift) {
                 shiftVector = Vector.newBuilder().copyOf(input).buildRandom();
             } else {

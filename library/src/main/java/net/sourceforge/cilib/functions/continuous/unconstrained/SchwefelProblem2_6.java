@@ -88,7 +88,7 @@ public class SchwefelProblem2_6 extends ContinuousFunction {
      */
     @Override
     public Double f(Vector input) {
-        if(!initialised) {
+        if(!initialised || input.size() != m_z.length) {
             setMatrices(input.size());
             initialised = true;
         }
