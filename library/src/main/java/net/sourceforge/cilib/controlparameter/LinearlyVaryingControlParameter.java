@@ -13,21 +13,21 @@ import net.sourceforge.cilib.algorithm.AbstractAlgorithm;
  */
 public class LinearlyVaryingControlParameter implements ControlParameter {
     
-    private double initialValue;
-    private double finalValue;
+    private ControlParameter initialValue;
+    private ControlParameter finalValue;
     
     public LinearlyVaryingControlParameter() {
         this(0.0, Double.MAX_VALUE);
     }
 
     public LinearlyVaryingControlParameter(double initialValue, double finalValue) {
-        this.initialValue = initialValue;
-        this.finalValue = finalValue;
+        this.initialValue = ConstantControlParameter.of(initialValue);
+        this.finalValue = ConstantControlParameter.of(finalValue);
     }
     
     public LinearlyVaryingControlParameter(LinearlyVaryingControlParameter copy) {
-        this.initialValue = copy.initialValue;
-        this.finalValue = copy.finalValue;
+        this.initialValue = copy.initialValue.getClone();
+        this.finalValue = copy.finalValue.getClone();
     }
     
     @Override
@@ -37,7 +37,7 @@ public class LinearlyVaryingControlParameter implements ControlParameter {
 
     @Override
     public double getParameter() {
-        return getParameter(initialValue, finalValue);
+        return getParameter(initialValue.getParameter(), finalValue.getParameter());
     }
     
     @Override
@@ -46,22 +46,30 @@ public class LinearlyVaryingControlParameter implements ControlParameter {
     } 
 
     public void setInitialValue(double initialValue) {
-        this.initialValue = initialValue;
+        this.initialValue = ConstantControlParameter.of(initialValue);
     }
 
     public void setFinalValue(double finalValue) {
+        this.finalValue = ConstantControlParameter.of(finalValue);
+    }
+    
+    public void setInitialParameter(ControlParameter initialValue) {
+        this.initialValue = initialValue;
+    }
+
+    public void setFinalParameter(ControlParameter finalValue) {
         this.finalValue = finalValue;
     }
 
-    public double getInitialValue() {
+    public ControlParameter getInitialValue() {
         return initialValue;
     }
 
-    public double getFinalValue() {
+    public ControlParameter getFinalValue() {
         return finalValue;
     }
     
     public void setParameter(double newParameter) {
-        finalValue = newParameter;
+        finalValue = ConstantControlParameter.of(newParameter);
     }
 }
