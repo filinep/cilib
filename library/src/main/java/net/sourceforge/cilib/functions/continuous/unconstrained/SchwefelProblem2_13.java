@@ -70,7 +70,7 @@ public class SchwefelProblem2_13 extends ContinuousFunction {
      */
     @Override
     public Double f(Vector input) {
-        if(!initialised) {
+        if(!initialised || input.size() != optimum.length) {
             setMatrices(input.size());
             initialised = true;
         }

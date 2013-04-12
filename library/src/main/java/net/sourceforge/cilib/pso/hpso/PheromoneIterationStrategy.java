@@ -137,7 +137,7 @@ public class PheromoneIterationStrategy implements IterationStrategy<PSO>, Heter
 
         for(ParticleBehavior pb : behaviorPool) {
             int index = behaviorPool.indexOf(pb);
-            pheromoneConcentration.set(index, (sumPheromone - pheromoneConcentration.get(index)) * pheromoneConcentration.get(index) / sumPheromone);
+            pheromoneConcentration.set(index, Math.max((sumPheromone - pheromoneConcentration.get(index)) * pheromoneConcentration.get(index) / sumPheromone, minPeromone.getParameter()));
         }
     }
 
