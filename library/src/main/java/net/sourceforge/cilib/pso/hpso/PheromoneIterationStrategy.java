@@ -103,6 +103,9 @@ public class PheromoneIterationStrategy implements IterationStrategy<PSO>, Heter
     @Override
     public void performIteration(PSO algorithm) {
         ParticleBehavior behavior;
+        for (Double p : pheromoneConcentration)
+        System.out.print(p + " ");
+        System.out.println();
         for(Particle p : algorithm.getTopology()) {
             if (detectionStrategy.detect(p)) {
                 behavior = behaviorSelectionRecipe.on(behaviorPool).select();
@@ -137,7 +140,7 @@ public class PheromoneIterationStrategy implements IterationStrategy<PSO>, Heter
 
         for(ParticleBehavior pb : behaviorPool) {
             int index = behaviorPool.indexOf(pb);
-            pheromoneConcentration.set(index, (sumPheromone - pheromoneConcentration.get(index)) * pheromoneConcentration.get(index) / sumPheromone);
+            pheromoneConcentration.set(index, Math.max((sumPheromone - pheromoneConcentration.get(index)) * pheromoneConcentration.get(index) / sumPheromone, minPeromone.getParameter()));
         }
     }
 
