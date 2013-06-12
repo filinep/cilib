@@ -8,7 +8,9 @@
     <algorithms>
         <!-- Dynamic HPSO -->
         <algorithm id="dhpso" class="pso.PSO">
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition"/>
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="300000">
+<measurement class="measurement.single.FitnessEvaluations"/>
+</addStoppingCondition>
 
             <initialisationStrategy class="algorithm.initialisation.HeterogeneousPopulationInitialisationStrategy">
                 <entityNumber value="30"/>
@@ -103,7 +105,9 @@
 
         <!-- Frequency-based HPSO Moving Window -->
         <algorithm id="fk-hpso-10" class="pso.PSO">
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition"/>
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="300000">
+<measurement class="measurement.single.FitnessEvaluations"/>
+</addStoppingCondition>
 
             <initialisationStrategy class="algorithm.initialisation.HeterogeneousPopulationInitialisationStrategy">
                 <delegate class="algorithm.initialisation.ChargedPopulationInitialisationStrategy">
@@ -233,7 +237,9 @@
 
         <!-- Difference Proportional Probability PSO -->
         <algorithm id="dpp-pso" class="pso.PSO">
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition"/>
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="300000">
+<measurement class="measurement.single.FitnessEvaluations"/>
+</addStoppingCondition>
 
             <initialisationStrategy class="algorithm.initialisation.HeterogeneousPopulationInitialisationStrategy">
                 <entityNumber value="30"/>
@@ -269,7 +275,9 @@
 
         <!-- Adaptive Learning PSO-ii -->
         <algorithm id="alpso-ii" class="pso.PSO">
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="2500"/>
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="300000">
+<measurement class="measurement.single.FitnessEvaluations"/>
+</addStoppingCondition>
 
             <initialisationStrategy class="algorithm.initialisation.HeterogeneousPopulationInitialisationStrategy">
                 <entityNumber value="10"/>
@@ -374,9 +382,119 @@
             </iterationStrategy>
         </algorithm>
 
+        <!-- Self Learning PSO-ii -->
+        <algorithm id="slpso" class="pso.PSO">
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="300000">
+<measurement class="measurement.single.FitnessEvaluations"/>
+</addStoppingCondition>
+
+            <initialisationStrategy class="algorithm.initialisation.HeterogeneousPopulationInitialisationStrategy">
+                <entityNumber value="10"/>
+                <entityType class="pso.particle.StandardParticle"/>
+
+                <!-- initial behaviors -->
+                <addBehavior class="pso.particle.ParticleBehavior">
+                    <velocityProvider class="pso.velocityprovider.ClampingVelocityProvider">
+                        <delegate class="pso.velocityprovider.StandardVelocityProvider">
+                            <cognitiveAcceleration class="controlparameter.ConstantControlParameter" parameter="0.0"/>
+                            <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="1.496"/>
+                            <inertiaWeight class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.9" finalValue="0.4"/>
+                        </delegate>
+                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                    </velocityProvider>
+                    <positionProvider class="pso.positionprovider.StandardPositionProvider"/>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.ParticleBehavior">
+                    <velocityProvider class="pso.velocityprovider.ClampingVelocityProvider">
+                        <delegate class="pso.velocityprovider.StandardVelocityProvider">
+                            <cognitiveAcceleration class="controlparameter.ConstantControlParameter" parameter="1.496"/>
+                            <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="0.0"/>
+                            <inertiaWeight class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.9" finalValue="0.4"/>
+                        </delegate>
+                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                    </velocityProvider>
+                    <positionProvider class="pso.positionprovider.StandardPositionProvider"/>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.ParticleBehavior">
+                    <velocityProvider class="pso.velocityprovider.ClampingVelocityProvider">
+                        <delegate class="pso.velocityprovider.StandardVelocityProvider">
+                            <cognitiveAcceleration class="controlparameter.ConstantControlParameter" parameter="0.0"/>
+                            <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="1.496"/>
+                            <inertiaWeight class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.9" finalValue="0.4"/>
+                        </delegate>
+                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                    </velocityProvider>
+                    <globalGuideProvider class="pso.guideprovider.RandomGuideProvider"/>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.ParticleBehavior">
+                    <velocityProvider class="pso.velocityprovider.ClampingVelocityProvider">
+                        <delegate class="pso.velocityprovider.RandomNearbyVelocityProvider"/>
+                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                    </velocityProvider>
+                    <positionProvider class="pso.positionprovider.StandardPositionProvider"/>
+                </addBehavior>
+                <!-- end initial behaviors -->
+            </initialisationStrategy>
+
+            <iterationStrategy class="pso.hpso.SelfLearningIterationStrategy">
+                <!-- behavior pool -->
+                <addBehavior class="pso.particle.ParticleBehavior">
+                    <velocityProvider class="pso.velocityprovider.ClampingVelocityProvider">
+                        <delegate class="pso.velocityprovider.StandardVelocityProvider">
+                            <cognitiveAcceleration class="controlparameter.ConstantControlParameter" parameter="0.0"/>
+                            <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="1.496"/>
+                            <inertiaWeight class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.9" finalValue="0.4"/>
+                        </delegate>
+                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                    </velocityProvider>
+                    <positionProvider class="pso.positionprovider.StandardPositionProvider"/>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.ParticleBehavior">
+                    <velocityProvider class="pso.velocityprovider.ClampingVelocityProvider">
+                        <delegate class="pso.velocityprovider.StandardVelocityProvider">
+                            <cognitiveAcceleration class="controlparameter.ConstantControlParameter" parameter="1.496"/>
+                            <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="0.0"/>
+                            <inertiaWeight class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.9" finalValue="0.4"/>
+                        </delegate>
+                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                    </velocityProvider>
+                    <positionProvider class="pso.positionprovider.StandardPositionProvider"/>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.ParticleBehavior">
+                    <velocityProvider class="pso.velocityprovider.ClampingVelocityProvider">
+                        <delegate class="pso.velocityprovider.StandardVelocityProvider">
+                            <cognitiveAcceleration class="controlparameter.ConstantControlParameter" parameter="0.0"/>
+                            <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="1.496"/>
+                            <inertiaWeight class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.9" finalValue="0.4"/>
+                        </delegate>
+                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                    </velocityProvider>
+                    <globalGuideProvider class="pso.guideprovider.RandomGuideProvider"/>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.ParticleBehavior">
+                    <velocityProvider class="pso.velocityprovider.ClampingVelocityProvider">
+                        <delegate class="pso.velocityprovider.RandomNearbyVelocityProvider"/>
+                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                    </velocityProvider>
+                    <positionProvider class="pso.positionprovider.StandardPositionProvider"/>
+                </addBehavior>
+                <!-- end behavior pool -->
+
+                <minRatio class="controlparameter.ConstantControlParameter" parameter="0.01"/>
+            </iterationStrategy>
+        </algorithm>
+
         <!-- Pheromone based HPSO Constant Strategy -->
         <algorithm id="pher-const" class="pso.PSO">
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition"/>
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="300000">
+<measurement class="measurement.single.FitnessEvaluations"/>
+</addStoppingCondition>
 
             <initialisationStrategy class="algorithm.initialisation.HeterogeneousPopulationInitialisationStrategy">
                 <delegate class="algorithm.initialisation.ChargedPopulationInitialisationStrategy">
@@ -514,7 +632,9 @@
 
         <!-- Pheromone based HPSO Linear Strategy -->
         <algorithm id="pher-lin" class="pso.PSO">
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition"/>
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="300000">
+<measurement class="measurement.single.FitnessEvaluations"/>
+</addStoppingCondition>
 
             <initialisationStrategy class="algorithm.initialisation.HeterogeneousPopulationInitialisationStrategy">
                 <delegate class="algorithm.initialisation.ChargedPopulationInitialisationStrategy">
@@ -650,7 +770,9 @@
 
         <!-- Pheromone based HPSO Exponential Strategy -->
         <algorithm id="pher-exp" class="pso.PSO">
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition"/>
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="300000">
+<measurement class="measurement.single.FitnessEvaluations"/>
+</addStoppingCondition>
 
             <initialisationStrategy class="algorithm.initialisation.HeterogeneousPopulationInitialisationStrategy">
                 <delegate class="algorithm.initialisation.ChargedPopulationInitialisationStrategy">
@@ -785,7 +907,7 @@
         </algorithm>
     </algorithms>
 
-    <measurements id="measurements" class="simulator.MeasurementSuite" resolution="5">
+    <measurements id="measurements" class="simulator.MeasurementSuite" resolution="10">
         <addMeasurement class="measurement.single.Fitness"/>
         <addMeasurement class="measurement.single.FitnessEvaluations"/>
         <addMeasurement class="measurement.multiple.AdaptiveHPSOBehaviorProfileMeasurement"/>
@@ -820,6 +942,12 @@
             <problem idref="Rastrigin"/>
             <measurements idref="measurements"/>
             <output format="TXT" file="data/alpso-ii_Rastrigin_30_Dimensions.txt"/>
+        </simulation>
+        <simulation samples="5">
+            <algorithm idref="slpso"/>
+            <problem idref="Rastrigin"/>
+            <measurements idref="measurements"/>
+            <output format="TXT" file="data/slpso_Rastrigin_30_Dimensions.txt"/>
         </simulation>
         <simulation samples="5">
             <algorithm idref="pher-const"/>

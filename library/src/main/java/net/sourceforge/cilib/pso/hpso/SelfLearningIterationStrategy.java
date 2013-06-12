@@ -6,19 +6,22 @@
  */
 package net.sourceforge.cilib.pso.hpso;
 
-import fj.Ord;
+import fj.F;
+import fj.F2;
+import fj.P2;
 import static fj.data.List.iterableList;
 import static fj.function.Doubles.sum;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import net.sourceforge.cilib.algorithm.AbstractAlgorithm;
 import net.sourceforge.cilib.algorithm.population.AbstractIterationStrategy;
 import net.sourceforge.cilib.controlparameter.ConstantControlParameter;
 import net.sourceforge.cilib.controlparameter.ControlParameter;
+import net.sourceforge.cilib.controlparameter.UpdateOnIterationControlParameter;
 import static net.sourceforge.cilib.entity.EntityType.Particle.*;
 import net.sourceforge.cilib.entity.Topologies;
 import net.sourceforge.cilib.math.random.generator.Rand;
-import static net.sourceforge.cilib.niching.VectorBasedFunctions.*;
 import net.sourceforge.cilib.problem.solution.Fitness;
 import net.sourceforge.cilib.pso.PSO;
 import net.sourceforge.cilib.pso.particle.Particle;
@@ -26,7 +29,6 @@ import net.sourceforge.cilib.pso.particle.ParticleBehavior;
 import net.sourceforge.cilib.pso.particle.StandardParticle;
 import net.sourceforge.cilib.type.types.Type;
 import net.sourceforge.cilib.type.types.container.Vector;
-import net.sourceforge.cilib.util.distancemeasure.EuclideanDistanceMeasure;
 import net.sourceforge.cilib.util.selection.Samples;
 import net.sourceforge.cilib.util.selection.recipes.RandomSelector;
 import net.sourceforge.cilib.util.selection.recipes.RouletteWheelSelector;
@@ -50,7 +52,7 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
     private List<ParticleBehavior> behaviorPool;
     private SpecialisedRatio weighting;
     private ControlParameter minRatio;
-    private ControlParameter q;
+    private ControlParameter m;
     private Particle aBest;
 
     private enum Props {
@@ -75,7 +77,6 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
 
         public double updateFrequency;
         public double learningProbability;
-        public double improvRatio;
         public double stagnation;
 
         @Override
@@ -91,7 +92,7 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
         this.weighting.setBehaviors(behaviorPool);
         this.behaviorSelectionRecipe = new RouletteWheelSelector<>(new ParticleBehaviorWeighting(weighting));
         this.aBest = new StandardParticle();
-        this.q = ConstantControlParameter.of(10);
+        this.m = new UpdateOnIterationControlParameter(new AdaptiveM());
     }
 
     public SelfLearningIterationStrategy(SelfLearningIterationStrategy copy) {
@@ -101,7 +102,7 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
         this.weighting = copy.weighting;
         this.behaviorSelectionRecipe = copy.behaviorSelectionRecipe;
         this.aBest = copy.aBest.getClone();
-        this.q = copy.q.getClone();
+        this.m = copy.m.getClone();
     }
 
     @Override
@@ -121,13 +122,12 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
             initialise(topology, behaviorPool.size());
         }
 
-        Ord<Particle> ord = Ord.ord(sortByDistance(aBest, new EuclideanDistanceMeasure()));
-        fj.data.List<Particle> canLearnFromAbest = iterableList(topology)
-                .sort(ord).take((int) q.getParameter());
-
+        List<Particle> canLearnFromAbest = new RandomSelector<Particle>().on(topology)
+                .select(Samples.first((int)m.getParameter()));
+        
         for(Particle particle : topology) {
             ParticleProperties props = get(particle);
-            boolean canLearn = canLearnFromAbest.exists(equalParticle.f(particle));
+            boolean canLearn = canLearnFromAbest.contains(particle);
             double oldWeight = props.selectionRatio.get(0);
 
             if (!canLearn) {
@@ -148,7 +148,6 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
             }
 
             Fitness prevFitness = particle.getFitness();
-            Fitness prevPBest = (Fitness) particle.getProperties().get(BEST_FITNESS);
 
             //update particle
             particle.updateVelocity();
@@ -164,20 +163,6 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
                 props.progress.set(i, props.progress.get(i)
                     + Math.max(fitnessDifference(particle.getFitness(), prevFitness), 0));
                 
-                double progressSum = sum(iterableList(props.progress));
-                double alpha = Rand.nextDouble();
-                double penalty = props.success.get(i) == 0
-                        && props.selectionRatio.get(i) == Collections.max(props.selectionRatio)
-                        ? 0.9 : 1.0;
-
-                props.reward.set(i, props.reward.get(i) +
-                    progressSum != 0 && props.selected.get(i) != 0
-                    ? props.progress.get(i) * alpha / progressSum
-                        + (1 - alpha) * props.success.get(i) / props.selected.get(i)
-                        + penalty * props.selectionRatio.get(i)
-                    : penalty * props.selectionRatio.get(i)
-                );
-
                 //gbestupdate with abest
                 for(int j = 0; j < particle.getDimension(); j++) {
                     if(Rand.nextDouble() < props.learningProbability) {
@@ -210,6 +195,19 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
             //if m_{k} >= U_{f}^{k}
             if (props.stagnation >= props.updateFrequency) {
                 props.stagnation = 0;
+                
+                for (int j = 0; j < behaviorPool.size(); j++) {
+                    double progressSum = sum(iterableList(props.progress));
+                    double alpha = Rand.nextDouble();
+                    double penalty = props.success.get(j) == 0
+                            && props.selectionRatio.get(j) == Collections.max(props.selectionRatio)
+                            ? 0.9 : 1.0;
+
+                    props.reward.set(j, (progressSum > 0 ? props.progress.get(j) * alpha / progressSum : 0)
+                        + (props.selected.get(j) > 0 ? (1 - alpha) * props.success.get(j) / props.selected.get(j) : 0)
+                        + penalty * props.selectionRatio.get(j));
+                }
+                
                 double rewardSum = sum(iterableList(props.reward));
                 
                 //update selection ratios
@@ -236,6 +234,33 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
         topology.head().getProperties().put(BEST_FITNESS, aBest.getBestFitness());
         topology.head().getProperties().put(BEST_POSITION, aBest.getBestPosition());
     }
+    
+    public List<Double> getSelectionValues() {
+        final PSO pso = (PSO) AbstractAlgorithm.get();
+        
+        fj.data.List<List<Double>> sd = fj.data.List.nil();
+        for(Particle p : pso.getTopology()) {
+            sd = sd.cons(get(p).selectionRatio);
+        }
+        
+        return new ArrayList<>(sd.foldLeft(new F2<fj.data.List<Double>, List<Double>, fj.data.List<Double>>() {
+                @Override
+                public fj.data.List<Double> f(final fj.data.List<Double> a, final List<Double> b) {
+                    return iterableList(a).zip(iterableList(b)).map(new F<P2<Double, Double>,Double>() {
+                        @Override
+                        public Double f(P2<Double, Double> a) {
+                            return a._1() + a._2();
+                        }
+                    });
+                }
+            }, fj.data.List.replicate(behaviorPool.size(), 0.0))
+            .map(new F<Double, Double>() {
+                @Override
+                public Double f(Double a) {
+                    return a / pso.getTopology().length();
+                }
+            }).toCollection());
+    }
 
     private double fitnessDifference(Fitness newF, Fitness oldF) {
         return newF.compareTo(oldF) *
@@ -257,7 +282,6 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
             props.updateFrequency = Math.max(10*Math.exp(-Math.pow(1.6*k/topology.length(),4)), 1);
             props.learningProbability = Math.max(1-Math.exp(-Math.pow(1.6*k/topology.length(), 4)), 0.05);
             props.stagnation = 0;
-            props.improvRatio = 0.0;
 
             initAdaptiveProperties(props);
 
@@ -307,11 +331,32 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
         return minRatio;
     }
 
-    public void setQ(ControlParameter q) {
-        this.q = q;
+    public void setM(ControlParameter m) {
+        this.m = m;
     }
 
-    public ControlParameter getQ() {
-        return q;
+    public ControlParameter getM() {
+        return m;
+    }
+    
+    private class AdaptiveM implements ControlParameter {
+
+        @Override
+        public double getParameter() {
+            PSO pso = (PSO) AbstractAlgorithm.get();
+            double v =  1 - Math.exp(-100.0 * Math.pow(pso.getPercentageComplete(), 3));
+            return v * pso.getTopology().length();
+        }
+
+        @Override
+        public double getParameter(double min, double max) {
+            return getParameter();
+        }
+
+        @Override
+        public ControlParameter getClone() {
+            return this;
+        }
+        
     }
 }
