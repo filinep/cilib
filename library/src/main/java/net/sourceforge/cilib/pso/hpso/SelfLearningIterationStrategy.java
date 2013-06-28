@@ -66,6 +66,7 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
         public List<Double> reward;
         public List<Double> success;
         public List<Double> selected;
+        public boolean canConverge;
 
         public void incrementSuccess(int i) {
             success.set(i, success.get(i) + 1);
@@ -122,17 +123,8 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
             initialise(topology, behaviorPool.size());
         }
 
-        List<Particle> canLearnFromAbest = new RandomSelector<Particle>().on(topology)
-                .select(Samples.first((int)m.getParameter()));
-        
         for(Particle particle : topology) {
             ParticleProperties props = get(particle);
-            boolean canLearn = canLearnFromAbest.contains(particle);
-            double oldWeight = props.selectionRatio.get(0);
-
-            if (!canLearn) {
-                props.selectionRatio.set(0, 0.0);
-            }
 
             //get behavior
             weighting.setWeights(props.selectionRatio);
@@ -142,10 +134,6 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
 
             int i = behaviorPool.indexOf(behavior);
             props.incrementSelected(i);
-
-            if (!canLearn) {
-                props.selectionRatio.set(0, oldWeight);
-            }
 
             Fitness prevFitness = particle.getFitness();
 
@@ -223,11 +211,33 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
 
         }
 
+        //update parameters
         List<Particle> perm = new RandomSelector<Particle>().on(topology).select(Samples.all());
         for(int k = 0; k < perm.size(); k++) {
             Particle p = perm.get(k);
             get(p).learningProbability = Math.max(1-Math.exp(-Math.pow(1.6*k/perm.size(), 4)), 0.05);
             get(p).updateFrequency = Math.max(10*Math.exp(-Math.pow(1.6*k/perm.size(),4)), 1);
+        }
+        
+        List<Particle> convergingParticles = new RandomSelector<Particle>().on(topology).select(Samples.first((int)m.getParameter()));
+        for (Particle p : topology) {
+            ParticleProperties props = get(p);
+            
+            if (!props.canConverge && convergingParticles.contains(p)) {
+                props.progress = resetList(0);
+                props.reward = resetList(0);
+                props.selected = resetList(0);
+                props.success = resetList(0);
+                props.selectionRatio = resetList(1.0 / behaviorPool.size());
+                props.canConverge = true;
+            } else if (props.canConverge && !convergingParticles.contains(p)) {
+                double sum = sum(iterableList(props.selectionRatio.subList(1, behaviorPool.size())));
+                for (int i = 1; i <  behaviorPool.size(); i++) {
+                    props.selectionRatio.set(i, props.selectionRatio.get(i) / sum);
+                }
+                props.selectionRatio.set(0, 0.0);
+                props.canConverge = false;
+            }
         }
 
         //set one particle's best to abest so it can be measured and the rests neighbourhood best to abest
@@ -235,6 +245,7 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
         topology.head().getProperties().put(BEST_POSITION, aBest.getBestPosition());
     }
     
+    @Override
     public List<Double> getSelectionValues() {
         final PSO pso = (PSO) AbstractAlgorithm.get();
         
@@ -282,10 +293,12 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
             props.updateFrequency = Math.max(10*Math.exp(-Math.pow(1.6*k/topology.length(),4)), 1);
             props.learningProbability = Math.max(1-Math.exp(-Math.pow(1.6*k/topology.length(), 4)), 0.05);
             props.stagnation = 0;
+            props.canConverge = false;
 
             initAdaptiveProperties(props);
 
-            props.selectionRatio = resetList(1.0 / poolSize);
+            props.selectionRatio = resetList(1.0 / (poolSize - 1));
+            props.selectionRatio.set(0, 0.0);
 
             p.getProperties().put(Props.PROPS, props);
             p.setNeighbourhoodBest(aBest);

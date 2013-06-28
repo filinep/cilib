@@ -99,10 +99,10 @@ public class HPSOIterationStrategy implements IterationStrategy<PSO>, Heterogene
     public HPSOIterationStrategy() {
         this.iterationStrategy = new SynchronousIterationStrategy();
         this.detectionStrategy = new PersonalBestStagnationDetectionStrategy();
-        this.behaviorSelectionRecipe = new TournamentSelector<ParticleBehavior>();
-        this.behaviorPool = new ArrayList<ParticleBehavior>();
+        this.behaviorSelectionRecipe = new TournamentSelector<>();
+        this.behaviorPool = new ArrayList<>();
         this.windowSize = ConstantControlParameter.of(10);
-        this.successCounters = new HashMap<ParticleBehavior, List<Integer>>();
+        this.successCounters = new HashMap<>();
 
         ((TournamentSelector<ParticleBehavior>) this.behaviorSelectionRecipe).setTournamentSize(ConstantControlParameter.of(0.4));
     }
@@ -115,8 +115,8 @@ public class HPSOIterationStrategy implements IterationStrategy<PSO>, Heterogene
         this.iterationStrategy = copy.iterationStrategy.getClone();
         this.detectionStrategy = copy.detectionStrategy.getClone();
         this.behaviorSelectionRecipe = copy.behaviorSelectionRecipe;
-        this.behaviorPool = new ArrayList<ParticleBehavior>(copy.behaviorPool);
-        this.successCounters = new HashMap<ParticleBehavior, List<Integer>>(copy.successCounters);
+        this.behaviorPool = new ArrayList<>(copy.behaviorPool);
+        this.successCounters = new HashMap<>(copy.successCounters);
         this.windowSize = copy.windowSize;
     }
 
@@ -185,6 +185,18 @@ public class HPSOIterationStrategy implements IterationStrategy<PSO>, Heterogene
             successCounters.get(pb).set(AbstractAlgorithm.get().getIterations()%(int)windowSize.getParameter(), pb.getSuccessCounter());
         }
     }
+    
+    @Override
+    public List<Double> getSelectionValues() {
+        List<Double> scores = new ArrayList<>();
+        double sum = 0;
+        for (Map.Entry<ParticleBehavior, List<Integer>> e : successCounters.entrySet()) {
+            double v = fj.function.Integers.sum(fj.data.List.<Integer>iterableList(e.getValue()));
+            sum += v;
+            scores.add(v);
+        }
+        return new ArrayList(fj.data.List.<Double>iterableList(scores).map(fj.function.Doubles.multiply.f(1.0 / sum)).toCollection());
+    }
 
     /**
      * Get the current {@linkplain IterationStrategy}.
@@ -241,7 +253,7 @@ public class HPSOIterationStrategy implements IterationStrategy<PSO>, Heterogene
     }
 
     private void addToSuccessCounters(ParticleBehavior behavior) {
-        ArrayList<Integer> zeroList = new ArrayList<Integer>((int)windowSize.getParameter());
+        ArrayList<Integer> zeroList = new ArrayList<>((int)windowSize.getParameter());
         for(int i = 0; i < (int) windowSize.getParameter(); i++) {
             zeroList.add(0);
         }

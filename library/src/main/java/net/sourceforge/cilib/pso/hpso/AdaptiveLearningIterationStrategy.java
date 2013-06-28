@@ -6,7 +6,6 @@
  */
 package net.sourceforge.cilib.pso.hpso;
 
-import static fj.data.List.iterableList;
 import static fj.function.Doubles.sum;
 import static net.sourceforge.cilib.entity.EntityType.Particle.BEST_FITNESS;
 import static net.sourceforge.cilib.entity.EntityType.Particle.BEST_POSITION;
@@ -37,8 +36,12 @@ import net.sourceforge.cilib.util.selection.recipes.Selector;
 import net.sourceforge.cilib.util.selection.weighting.ParticleBehaviorWeighting;
 import net.sourceforge.cilib.util.selection.weighting.SpecialisedRatio;
 import fj.Effect;
+import fj.F;
+import fj.F2;
 import fj.Ord;
 import fj.P2;
+import static fj.data.List.iterableList;
+import net.sourceforge.cilib.algorithm.AbstractAlgorithm;
 
 /**
  * Li and Yang's Adaptive Learning PSO-II (ALPSO-II)
@@ -89,6 +92,7 @@ public class AdaptiveLearningIterationStrategy extends AbstractIterationStrategy
         public double improvRatio;
         public double stagnation;
 
+        @Override
         public ParticleProperties getClone() {
             return new ParticleProperties();
         }
@@ -97,10 +101,10 @@ public class AdaptiveLearningIterationStrategy extends AbstractIterationStrategy
     public AdaptiveLearningIterationStrategy() {
         this.minRatio = ConstantControlParameter.of(0.01);
         this.random = new UniformDistribution();
-        this.behaviorPool = new ArrayList<ParticleBehavior>();
+        this.behaviorPool = new ArrayList<>();
         this.weighting = new SpecialisedRatio();
         this.weighting.setBehaviors(behaviorPool);
-        this.behaviorSelectionRecipe = new RouletteWheelSelector<ParticleBehavior>(new ParticleBehaviorWeighting(weighting));
+        this.behaviorSelectionRecipe = new RouletteWheelSelector<>(new ParticleBehaviorWeighting(weighting));
         this.aBest = new StandardParticle();
         this.q = ConstantControlParameter.of(10);
     }
@@ -109,7 +113,7 @@ public class AdaptiveLearningIterationStrategy extends AbstractIterationStrategy
         super(copy);
         this.minRatio = copy.minRatio.getClone();
         this.random = copy.random;
-        this.behaviorPool = new ArrayList<ParticleBehavior>(copy.behaviorPool);
+        this.behaviorPool = new ArrayList<>(copy.behaviorPool);
         this.weighting = copy.weighting;
         this.behaviorSelectionRecipe = copy.behaviorSelectionRecipe;
         this.aBest = copy.aBest.getClone();
@@ -249,6 +253,34 @@ public class AdaptiveLearningIterationStrategy extends AbstractIterationStrategy
         topology.head().getProperties().put(BEST_FITNESS, aBest.getBestFitness());
         topology.head().getProperties().put(BEST_POSITION, aBest.getBestPosition());
     }
+    
+    @Override
+    public List<Double> getSelectionValues() {
+        final PSO pso = (PSO) AbstractAlgorithm.get();
+        
+        fj.data.List<List<Double>> sd = fj.data.List.nil();
+        for(Particle p : pso.getTopology()) {
+            sd = sd.cons(get(p).common.selectionRatio);
+        }
+        
+        return new ArrayList<>(sd.foldLeft(new F2<fj.data.List<Double>, List<Double>, fj.data.List<Double>>() {
+                @Override
+                public fj.data.List<Double> f(final fj.data.List<Double> a, final List<Double> b) {
+                    return iterableList(a).zip(iterableList(b)).map(new F<P2<Double, Double>,Double>() {
+                        @Override
+                        public Double f(P2<Double, Double> a) {
+                            return a._1() + a._2();
+                        }
+                    });
+                }
+            }, fj.data.List.replicate(behaviorPool.size(), 0.0))
+            .map(new F<Double, Double>() {
+                @Override
+                public Double f(Double a) {
+                    return a / pso.getTopology().length();
+                }
+            }).toCollection());
+    }
 
     private void updateProgressAndReward(ParticleProperties.AdaptiveProperties props, int i, Particle p, Fitness f) {
         props.incrementSuccess(i);
@@ -289,7 +321,7 @@ public class AdaptiveLearningIterationStrategy extends AbstractIterationStrategy
 
     private List<Double> resetList(double n) {
         List<Double> l = Collections.nCopies(behaviorPool.size(), n);
-        return new ArrayList<Double>(l);
+        return new ArrayList<>(l);
     }
 
     private void initialise(final fj.data.List<Particle> topology, final int poolSize) {
