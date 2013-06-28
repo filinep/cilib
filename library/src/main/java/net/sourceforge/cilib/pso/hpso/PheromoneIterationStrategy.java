@@ -49,8 +49,8 @@ public class PheromoneIterationStrategy implements IterationStrategy<PSO>, Heter
      */
     public PheromoneIterationStrategy() {
         this.minPeromone = ConstantControlParameter.of(0.01);
-        this.behaviorPool = new ArrayList<ParticleBehavior>();
-        this.pheromoneConcentration = new ArrayList<Double>();
+        this.behaviorPool = new ArrayList<>();
+        this.pheromoneConcentration = new ArrayList<>();
         this.pheromoneUpdateStrategy = new ConstantPheromoneUpdateStrategy();
 
         this.iterationStrategy = new SynchronousIterationStrategy();
@@ -60,7 +60,7 @@ public class PheromoneIterationStrategy implements IterationStrategy<PSO>, Heter
         weighting.setBehaviors(behaviorPool);
         weighting.setWeights(pheromoneConcentration);
 
-        this.behaviorSelectionRecipe = new RouletteWheelSelector<ParticleBehavior>(new ParticleBehaviorWeighting(weighting));
+        this.behaviorSelectionRecipe = new RouletteWheelSelector<>(new ParticleBehaviorWeighting(weighting));
     }
 
     /**
@@ -69,13 +69,13 @@ public class PheromoneIterationStrategy implements IterationStrategy<PSO>, Heter
      */
     public PheromoneIterationStrategy(PheromoneIterationStrategy copy) {
         this.minPeromone = copy.minPeromone.getClone();
-        this.pheromoneConcentration = new ArrayList<Double>(copy.pheromoneConcentration);
+        this.pheromoneConcentration = new ArrayList<>(copy.pheromoneConcentration);
         this.pheromoneUpdateStrategy = copy.pheromoneUpdateStrategy;
 
         this.iterationStrategy = copy.iterationStrategy.getClone();
         this.detectionStrategy = copy.detectionStrategy.getClone();
         this.behaviorSelectionRecipe = copy.behaviorSelectionRecipe;
-        this.behaviorPool = new ArrayList<ParticleBehavior>(copy.behaviorPool);
+        this.behaviorPool = new ArrayList<>(copy.behaviorPool);
     }
 
     /**
@@ -139,6 +139,13 @@ public class PheromoneIterationStrategy implements IterationStrategy<PSO>, Heter
             int index = behaviorPool.indexOf(pb);
             pheromoneConcentration.set(index, Math.max((sumPheromone - pheromoneConcentration.get(index)) * pheromoneConcentration.get(index) / sumPheromone, minPeromone.getParameter()));
         }
+    }
+    
+    @Override
+    public List<Double> getSelectionValues() {
+        double sum = fj.function.Doubles.sum(fj.data.List.iterableList(pheromoneConcentration));
+        return new ArrayList(fj.data.List.iterableList(pheromoneConcentration)
+                .map(fj.function.Doubles.multiply.f(1.0 / sum)).toCollection());
     }
 
     /**
