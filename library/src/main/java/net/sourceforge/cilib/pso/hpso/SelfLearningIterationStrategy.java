@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import net.sourceforge.cilib.algorithm.AbstractAlgorithm;
+import net.sourceforge.cilib.algorithm.initialisation.HeterogeneousPopulationInitialisationStrategy;
 import net.sourceforge.cilib.algorithm.population.AbstractIterationStrategy;
 import net.sourceforge.cilib.controlparameter.ConstantControlParameter;
 import net.sourceforge.cilib.controlparameter.ControlParameter;
@@ -24,6 +25,8 @@ import net.sourceforge.cilib.entity.Topologies;
 import net.sourceforge.cilib.math.random.generator.Rand;
 import net.sourceforge.cilib.problem.solution.Fitness;
 import net.sourceforge.cilib.pso.PSO;
+import net.sourceforge.cilib.pso.hpso.detectionstrategies.BehaviorChangeTriggerDetectionStrategy;
+import net.sourceforge.cilib.pso.hpso.detectionstrategies.PeriodicDetectionStrategy;
 import net.sourceforge.cilib.pso.particle.Particle;
 import net.sourceforge.cilib.pso.particle.ParticleBehavior;
 import net.sourceforge.cilib.pso.particle.StandardParticle;
@@ -50,6 +53,7 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
     
     private Selector<ParticleBehavior> behaviorSelectionRecipe;
     private List<ParticleBehavior> behaviorPool;
+    private BehaviorChangeTriggerDetectionStrategy detectionStrategy;
     private SpecialisedRatio weighting;
     private ControlParameter minRatio;
     private ControlParameter m;
@@ -94,6 +98,10 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
         this.behaviorSelectionRecipe = new RouletteWheelSelector<>(new ParticleBehaviorWeighting(weighting));
         this.aBest = new StandardParticle();
         this.m = new UpdateOnIterationControlParameter(new AdaptiveM());
+        
+        PeriodicDetectionStrategy detectionStrat = new PeriodicDetectionStrategy();
+        detectionStrat.setPeriod(ConstantControlParameter.of(1.0));
+        this.detectionStrategy = detectionStrat;
     }
 
     public SelfLearningIterationStrategy(SelfLearningIterationStrategy copy) {
@@ -104,6 +112,7 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
         this.behaviorSelectionRecipe = copy.behaviorSelectionRecipe;
         this.aBest = copy.aBest.getClone();
         this.m = copy.m.getClone();
+        this.detectionStrategy = copy.detectionStrategy.getClone();
     }
 
     @Override
@@ -125,15 +134,23 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
 
         for(Particle particle : topology) {
             ParticleProperties props = get(particle);
+            
+            int i = behaviorPool.indexOf(particle.getParticleBehavior());
+            if (i == -1) {
+                i = ((HeterogeneousPopulationInitialisationStrategy) algorithm.getInitialisationStrategy())
+                        .getBehaviorPool().indexOf(particle.getParticleBehavior());
+            }
 
-            //get behavior
-            weighting.setWeights(props.selectionRatio);
+            if (detectionStrategy.detect(particle)) {
+                //get behavior
+                weighting.setWeights(props.selectionRatio);
 
-            ParticleBehavior behavior = behaviorSelectionRecipe.on(behaviorPool).select();
-            particle.setParticleBehavior(behavior);
+                ParticleBehavior behavior = behaviorSelectionRecipe.on(behaviorPool).select();
+                particle.setParticleBehavior(behavior);
 
-            int i = behaviorPool.indexOf(behavior);
-            props.incrementSelected(i);
+                i = behaviorPool.indexOf(behavior);
+                props.incrementSelected(i);
+            }
 
             Fitness prevFitness = particle.getFitness();
 
@@ -350,6 +367,14 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
 
     public ControlParameter getM() {
         return m;
+    }
+
+    public void setDetectionStrategy(BehaviorChangeTriggerDetectionStrategy detectionStrategy) {
+        this.detectionStrategy = detectionStrategy;
+    }
+
+    public BehaviorChangeTriggerDetectionStrategy getDetectionStrategy() {
+        return detectionStrategy;
     }
     
     private class AdaptiveM implements ControlParameter {
