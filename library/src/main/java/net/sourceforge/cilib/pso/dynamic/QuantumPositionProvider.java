@@ -15,6 +15,7 @@ import net.sourceforge.cilib.math.random.UniformDistribution;
 import net.sourceforge.cilib.pso.particle.Particle;
 import net.sourceforge.cilib.pso.positionprovider.PositionProvider;
 import net.sourceforge.cilib.pso.positionprovider.StandardPositionProvider;
+import net.sourceforge.cilib.type.types.Real;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 /**
@@ -88,7 +89,7 @@ public class QuantumPositionProvider implements PositionProvider {
             }//if
             //deals with first dimension
             Vector.Builder builder = Vector.newBuilder();
-            builder.add(this.nucleus.doubleValueOf(0) + sign * this.randomiser.getRandomNumber(0, Math.sqrt(pieces[0])));
+            builder.add(Real.valueOf(this.nucleus.doubleValueOf(0) + sign * this.randomiser.getRandomNumber(0, Math.sqrt(pieces[0])), this.nucleus.boundsOf(0)));
             //deals with the other dimensions
             for (int i = 1; i < dimensions; i++) {
                 sign = 1;
@@ -98,7 +99,7 @@ public class QuantumPositionProvider implements PositionProvider {
                 double rad = Math.sqrt(pieces[i] - pieces[i - 1]);
                 double dis = this.randomiser.getRandomNumber(0, rad);
                 double newpos = this.nucleus.doubleValueOf(i) + sign * dis;
-                builder.add(newpos);
+                builder.add(Real.valueOf(newpos, this.nucleus.boundsOf(i)));
             }//for
             return builder.build();
         }//else
