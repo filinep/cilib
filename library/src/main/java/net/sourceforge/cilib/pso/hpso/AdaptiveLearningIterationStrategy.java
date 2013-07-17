@@ -89,6 +89,7 @@ public class AdaptiveLearningIterationStrategy extends AbstractIterationStrategy
         public double improvRatio;
         public double stagnation;
 
+        @Override
         public ParticleProperties getClone() {
             return new ParticleProperties();
         }
@@ -97,10 +98,10 @@ public class AdaptiveLearningIterationStrategy extends AbstractIterationStrategy
     public AdaptiveLearningIterationStrategy() {
         this.minRatio = ConstantControlParameter.of(0.01);
         this.random = new UniformDistribution();
-        this.behaviorPool = new ArrayList<ParticleBehavior>();
+        this.behaviorPool = new ArrayList<>();
         this.weighting = new SpecialisedRatio();
         this.weighting.setBehaviors(behaviorPool);
-        this.behaviorSelectionRecipe = new RouletteWheelSelector<ParticleBehavior>(new ParticleBehaviorWeighting(weighting));
+        this.behaviorSelectionRecipe = new RouletteWheelSelector<>(new ParticleBehaviorWeighting(weighting));
         this.aBest = new StandardParticle();
         this.q = ConstantControlParameter.of(10);
     }
@@ -109,7 +110,7 @@ public class AdaptiveLearningIterationStrategy extends AbstractIterationStrategy
         super(copy);
         this.minRatio = copy.minRatio.getClone();
         this.random = copy.random;
-        this.behaviorPool = new ArrayList<ParticleBehavior>(copy.behaviorPool);
+        this.behaviorPool = new ArrayList<>(copy.behaviorPool);
         this.weighting = copy.weighting;
         this.behaviorSelectionRecipe = copy.behaviorSelectionRecipe;
         this.aBest = copy.aBest.getClone();
@@ -289,31 +290,31 @@ public class AdaptiveLearningIterationStrategy extends AbstractIterationStrategy
 
     private List<Double> resetList(double n) {
         List<Double> l = Collections.nCopies(behaviorPool.size(), n);
-        return new ArrayList<Double>(l);
+        return new ArrayList<>(l);
     }
 
     private void initialise(final fj.data.List<Particle> topology, final int poolSize) {
         aBest = Topologies.getBestEntity(topology).getClone();
 
         topology.zipIndex().foreach(new Effect<P2<Particle, Integer>>() {
-			@Override
-			public void e(P2<Particle, Integer> p) {
-				ParticleProperties props = new ParticleProperties();
+            @Override
+            public void e(P2<Particle, Integer> p) {
+                ParticleProperties props = new ParticleProperties();
 
-	            props.updateFrequency = Math.max(10*Math.exp(-Math.pow(1.6*p._2()/topology.length(),4)), 1);
-	            props.learningProbability = Math.max(1-Math.exp(-Math.pow(1.6*p._2()/topology.length(), 4)), 0.05);
-	            props.stagnation = 0;
-	            props.improvRatio = 0.0;
+                props.updateFrequency = Math.max(10*Math.exp(-Math.pow(1.6*p._2()/topology.length(),4)), 1);
+                props.learningProbability = Math.max(1-Math.exp(-Math.pow(1.6*p._2()/topology.length(), 4)), 0.05);
+                props.stagnation = 0;
+                props.improvRatio = 0.0;
 
-	            initAdaptiveProperties(props.common);
-	            initAdaptiveProperties(props.prime);
+                initAdaptiveProperties(props.common);
+                initAdaptiveProperties(props.prime);
 
-	            props.common.selectionRatio = resetList(1.0 / poolSize);
-	            props.prime.selectionRatio = resetList(1.0 / poolSize);
+                props.common.selectionRatio = resetList(1.0 / poolSize);
+                props.prime.selectionRatio = resetList(1.0 / poolSize);
 
-	            p._1().getProperties().put(Props.PROPS, props);
-	            p._1().setNeighbourhoodBest(aBest);
-			}
+                p._1().getProperties().put(Props.PROPS, props);
+                p._1().setNeighbourhoodBest(aBest);
+            }
         });
     }
 
