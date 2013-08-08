@@ -174,7 +174,7 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
                         Particle aBestClone = aBest.getClone();
                         Vector aBestVector = (Vector) aBestClone.getBestPosition();
 
-                        aBestVector.setReal(j, ((Vector)particle.getPosition()).doubleValueOf(j));
+                        aBestVector.setReal(j, ((Vector)particle.getCandidateSolution()).doubleValueOf(j));
                         aBestClone.setCandidateSolution(aBestVector);
                         Fitness fitness = particle.getFitnessCalculator().getFitness(aBestClone);
 
@@ -192,7 +192,7 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
             if(particle.getFitness().compareTo(particle.getBestFitness()) == 0) {
                 //set abest
                 if(aBest.getBestFitness().compareTo(particle.getFitness()) < 0) {
-                    aBest.getProperties().put(BEST_POSITION, particle.getPosition().getClone());
+                    aBest.getProperties().put(BEST_POSITION, particle.getCandidateSolution().getClone());
                     aBest.getProperties().put(BEST_FITNESS, particle.getFitness().getClone());
                 }
             }
