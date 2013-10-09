@@ -7,6 +7,7 @@
 package net.sourceforge.cilib.functions.continuous.unconstrained;
 
 import net.sourceforge.cilib.functions.ContinuousFunction;
+import net.sourceforge.cilib.functions.NichingFunction;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 /**
@@ -36,7 +37,7 @@ import net.sourceforge.cilib.type.types.container.Vector;
  * </p>
  *
  */
-public class Shubert extends ContinuousFunction {
+public class Shubert extends ContinuousFunction implements NichingFunction {
 
     /**
      * {@inheritDoc}
@@ -52,5 +53,10 @@ public class Shubert extends ContinuousFunction {
             result *= result2;
         }
         return result;
+    }
+
+    @Override
+    public double getNicheRadius() {
+        return 0.2;
     }
 }

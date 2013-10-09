@@ -7,6 +7,7 @@
 package net.sourceforge.cilib.functions.continuous.unconstrained;
 
 import net.sourceforge.cilib.functions.ContinuousFunction;
+import net.sourceforge.cilib.functions.NichingFunction;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 /**
@@ -16,7 +17,7 @@ import net.sourceforge.cilib.type.types.container.Vector;
  * R(0, 1)^1
  *
  */
-public class MultimodalFunction4 extends ContinuousFunction {
+public class MultimodalFunction4 extends ContinuousFunction implements NichingFunction {
 
     private static final long serialVersionUID = -957215773660609565L;
 
@@ -34,5 +35,10 @@ public class MultimodalFunction4 extends ContinuousFunction {
             sum += x * y;
         }
         return sum;
+    }
+
+    @Override
+    public double getNicheRadius() {
+        return 0.01;
     }
 }

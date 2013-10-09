@@ -10,6 +10,7 @@ import net.sourceforge.cilib.functions.ContinuousFunction;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 import com.google.common.base.Preconditions;
+import net.sourceforge.cilib.functions.NichingFunction;
 
 /**
  * SixHumpCamelBack function.
@@ -36,7 +37,7 @@ import com.google.common.base.Preconditions;
  *
  * @version 1.0
  */
-public class SixHumpCamelBack extends ContinuousFunction {
+public class SixHumpCamelBack extends ContinuousFunction implements NichingFunction {
 
     private static final long serialVersionUID = -3834640752316926216L;
 
@@ -51,5 +52,10 @@ public class SixHumpCamelBack extends ContinuousFunction {
         double x2 = input.doubleValueOf(1);
 
         return (4 - 2.1 * x1 * x1 + Math.pow(x1, 4.0) / 3.0) * x1 * x1 + x1 * x2 + 4 * (x2 * x2 - 1) * x2 * x2;
+    }
+
+    @Override
+    public double getNicheRadius() {
+        return 0.5;
     }
 }

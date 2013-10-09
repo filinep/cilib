@@ -10,6 +10,7 @@ import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
 import net.sourceforge.cilib.functions.ContinuousFunction;
+import net.sourceforge.cilib.functions.NichingFunction;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 /**
@@ -17,7 +18,7 @@ import net.sourceforge.cilib.type.types.container.Vector;
  * on Niching Methods for Multimodal Function Optimization'', Technical Report, Evolutionary Computation and Machine 
  * Learning Group, RMIT University, Australia, 2013
  */
-public class RastriginNiching extends ContinuousFunction {
+public class RastriginNiching extends ContinuousFunction implements NichingFunction {
     
     private List<Double> k;
 
@@ -40,5 +41,10 @@ public class RastriginNiching extends ContinuousFunction {
     
     public void setK(Double k) {
         this.k.add(k);
+    }
+
+    @Override
+    public double getNicheRadius() {
+        return 0.01;
     }
 }

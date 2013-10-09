@@ -8,6 +8,7 @@
 package net.sourceforge.cilib.functions.continuous.unconstrained;
 
 import net.sourceforge.cilib.functions.ContinuousFunction;
+import net.sourceforge.cilib.functions.NichingFunction;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 /**
@@ -26,7 +27,7 @@ import net.sourceforge.cilib.type.types.container.Vector;
  * R(0.25,10)^n
  *
  */
-public class Vincent extends ContinuousFunction {
+public class Vincent extends ContinuousFunction implements NichingFunction {
     /**
      * {@inheritDoc}
      */
@@ -36,5 +37,10 @@ public class Vincent extends ContinuousFunction {
         for (int i = 0; i < input.size(); ++i)
             result += Math.sin(10*Math.log(input.doubleValueOf(i)));
         return -result;
+    }
+
+    @Override
+    public double getNicheRadius() {
+        return 0.5;
     }
 }

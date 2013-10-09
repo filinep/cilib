@@ -10,6 +10,7 @@ import net.sourceforge.cilib.functions.ContinuousFunction;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 import com.google.common.base.Preconditions;
+import net.sourceforge.cilib.functions.NichingFunction;
 
 /**
  * The Himmelblau function.
@@ -29,7 +30,7 @@ import com.google.common.base.Preconditions;
  *
  * @version 1.0
  */
-public class Himmelblau extends ContinuousFunction {
+public class Himmelblau extends ContinuousFunction implements NichingFunction {
 
     private static final long serialVersionUID = 7323733640884766707L;
 
@@ -43,5 +44,10 @@ public class Himmelblau extends ContinuousFunction {
         double x = input.doubleValueOf(0);
         double y = input.doubleValueOf(1);
         return Math.pow((x * x + y - 11), 2) + Math.pow((x + y * y - 7), 2);
+    }
+
+    @Override
+    public double getNicheRadius() {
+        return 0.01;
     }
 }
