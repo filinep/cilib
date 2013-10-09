@@ -6,6 +6,7 @@
  */
 package net.sourceforge.cilib.measurement.multiple;
 
+import fj.Equal;
 import java.util.ArrayList;
 import java.util.List;
 import net.sourceforge.cilib.algorithm.AbstractAlgorithm;
@@ -13,7 +14,6 @@ import net.sourceforge.cilib.algorithm.Algorithm;
 import net.sourceforge.cilib.algorithm.population.MultiPopulationBasedAlgorithm;
 import net.sourceforge.cilib.algorithm.population.SinglePopulationBasedAlgorithm;
 import net.sourceforge.cilib.entity.Entity;
-import net.sourceforge.cilib.entity.Topologies;
 import net.sourceforge.cilib.measurement.Measurement;
 import net.sourceforge.cilib.problem.solution.OptimisationSolution;
 import net.sourceforge.cilib.type.types.Type;
@@ -101,10 +101,20 @@ public class CompositeMeasurement implements Measurement<TypeList> {
         };
         
         for (E e : s.getTopology()) {
-            SinglePopulationBasedAlgorithm dummyPopulation = s.getClone();            
-            dummyPopulation.setTopology(s.getNeighbourhood().f(s.getTopology(), e));
+            boolean found = false;
+            for (SinglePopulationBasedAlgorithm s1 : m.getPopulations()) {
+                if (s1.getTopology().exists(Equal.<E>anyEqual().eq(e))) {
+                    found = true;
+                    break;
+                }
+            }
             
-            m.addPopulationBasedAlgorithm(dummyPopulation);
+            if (!found) {
+                SinglePopulationBasedAlgorithm dummyPopulation = s.getClone();            
+                dummyPopulation.setTopology(s.getNeighbourhood().f(s.getTopology(), e));
+
+                m.addPopulationBasedAlgorithm(dummyPopulation);
+            }
         }
         
         return m;

@@ -14,8 +14,8 @@ import fj.data.List;
 
 public class SpeciationNeighbourhood<E extends Entity> extends Neighbourhood<E> {
 
-    private ControlParameter n = ConstantControlParameter.of(0.1);
-    private ControlParameter radius = ConstantControlParameter.of(20);
+    private ControlParameter n = ConstantControlParameter.of(20);
+    private ControlParameter radius = ConstantControlParameter.of(0.01);
     private DistanceMeasure distance = new EuclideanDistanceMeasure();
 
     public SpeciationNeighbourhood() {}
@@ -51,12 +51,7 @@ public class SpeciationNeighbourhood<E extends Entity> extends Neighbourhood<E> 
             }
         }).take((int) n.getParameter());
 
-        if(neighbours.exists(new F<E, Boolean>() {
-            @Override
-            public Boolean f(E a) {
-                return a.equals(current);
-            }
-        })) {
+        if(neighbours.exists(Equal.<E>anyEqual().eq(current))) {
             return neighbours;
         } else {
             return this.f(sorted.minus(Equal.<E>anyEqual(), neighbours), current);
