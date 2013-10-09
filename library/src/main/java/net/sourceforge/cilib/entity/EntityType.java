@@ -25,7 +25,8 @@ public enum EntityType {
         VELOCITY;
 
         public enum Count {
-            PBEST_STAGNATION_COUNTER;
+            PBEST_STAGNATION_COUNTER,
+            POSITION_UPDATE_COUNTER;
         }
     }
 
