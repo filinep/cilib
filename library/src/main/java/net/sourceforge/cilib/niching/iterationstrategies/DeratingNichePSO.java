@@ -47,16 +47,23 @@ public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm
         DeratingOptimisationProblem problem = (DeratingOptimisationProblem) alg.getOptimisationProblem();
 
         List<SinglePopulationBasedAlgorithm> subswarms = List.iterableList(alg.getPopulations());
-        subswarms = onMainSwarm(Algorithms.<SinglePopulationBasedAlgorithm>initialise())
-            .andThen(phase1(alg))
-            .andThen(onSubswarms(clearDeratingSolutions(problem)))
-            .andThen(phase2(alg))
-            .andThen(joinAndMerge(alg, subswarms))
-            .f(NichingSwarms.of(alg.getMainSwarm(), Collections.<SinglePopulationBasedAlgorithm>emptyList()))._2();
+        
+        NichingSwarms swarms = onMainSwarm(Algorithms.<SinglePopulationBasedAlgorithm>initialise())
+        		.f(NichingSwarms.of(alg.getMainSwarm(), Collections.<SinglePopulationBasedAlgorithm>emptyList()));
+        swarms = phase1(alg).f(swarms);
+        swarms = onSubswarms(clearDeratingSolutions(problem)).f(swarms);
+        for (SinglePopulationBasedAlgorithm sss : swarms._2())
+    		System.out.print(sss.getTopology().length() + " ");
+        System.out.println();
+        swarms = phase2(alg).f(swarms);
+        swarms = joinAndMerge(alg, subswarms).f(swarms);
+        for (SinglePopulationBasedAlgorithm sss : swarms._2())
+    		System.out.print(sss.getTopology().length() + " ");
+        System.out.println();
 
         problem.clearSolutions();
-        problem.addSolutions(subswarms.map(Solutions.getPosition().o(Algorithms.<SinglePopulationBasedAlgorithm>getBestSolution())).toCollection());
-        alg.setPopulations(Lists.newLinkedList(subswarms.toCollection()));
+        problem.addSolutions(swarms._2().map(Solutions.getPosition().o(Algorithms.<SinglePopulationBasedAlgorithm>getBestSolution())).toCollection());
+        alg.setPopulations(Lists.newLinkedList(swarms._2().toCollection()));
         alg.getMainSwarm().setOptimisationProblem(problem);
         // don't need to set the main swarm because it gets reinitialised
     }

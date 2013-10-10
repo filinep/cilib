@@ -10,6 +10,7 @@ import net.sourceforge.cilib.algorithm.Algorithm;
 import net.sourceforge.cilib.problem.solution.OptimisationSolution;
 import net.sourceforge.cilib.type.types.container.Vector;
 import net.sourceforge.cilib.util.distancemeasure.DistanceMeasure;
+import net.sourceforge.cilib.util.distancemeasure.EuclideanDistanceMeasure;
 import net.sourceforge.cilib.util.distancemeasure.ManhattanDistanceMeasure;
 
 /**
@@ -35,7 +36,7 @@ public class OptimiserStalled implements StoppingCondition<Algorithm> {
         maxConsecutiveMinChange = 5;
 
         minChangeCounter = 0;
-        distMeasure = new ManhattanDistanceMeasure();
+        distMeasure = new EuclideanDistanceMeasure();
     }
 
     public OptimiserStalled(OptimiserStalled rhs) {
