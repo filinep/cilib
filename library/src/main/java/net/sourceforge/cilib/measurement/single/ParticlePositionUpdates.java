@@ -28,6 +28,7 @@ public class ParticlePositionUpdates implements Measurement<Int> {
 
     @Override
     public Int getValue(Algorithm algorithm) {
+        updates = 0;
         if (algorithm instanceof SinglePopulationBasedAlgorithm) {
         	updates += posUpdateCount((SinglePopulationBasedAlgorithm<Particle>) algorithm);
             return Int.valueOf(updates);
@@ -50,7 +51,7 @@ public class ParticlePositionUpdates implements Measurement<Int> {
             @Override
             public Integer f(Particle a) {
             	int b = ((Int) a.getProperties().get(EntityType.Particle.Count.POSITION_UPDATE_COUNTER)).intValue();
-            	a.getProperties().put(EntityType.Particle.Count.POSITION_UPDATE_COUNTER, Int.valueOf(0));
+            	//a.getProperties().put(EntityType.Particle.Count.POSITION_UPDATE_COUNTER, Int.valueOf(0));
                 return b;
             }            
         }));

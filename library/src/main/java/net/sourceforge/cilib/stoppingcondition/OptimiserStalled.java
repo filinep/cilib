@@ -24,6 +24,7 @@ public class OptimiserStalled implements StoppingCondition<Algorithm> {
     protected double minChange;
     protected int maxConsecutiveMinChange;
     protected int minChangeCounter;
+    protected int lastIteration;
 
     private final DistanceMeasure distMeasure;
     private OptimisationSolution previousBest;
@@ -32,6 +33,7 @@ public class OptimiserStalled implements StoppingCondition<Algorithm> {
      * Creates a new instance of OptimiserStalled.
      */
     public OptimiserStalled() {
+        lastIteration = -1;
         minChange = 0.05;
         maxConsecutiveMinChange = 5;
 
@@ -40,10 +42,11 @@ public class OptimiserStalled implements StoppingCondition<Algorithm> {
     }
 
     public OptimiserStalled(OptimiserStalled rhs) {
+        lastIteration = -1;
         minChange = rhs.minChange;
         maxConsecutiveMinChange = rhs.maxConsecutiveMinChange;
 
-        minChangeCounter = rhs.minChangeCounter;
+        minChangeCounter = 0;
         distMeasure = rhs.distMeasure;
     }
 
@@ -75,20 +78,24 @@ public class OptimiserStalled implements StoppingCondition<Algorithm> {
     @Override
     public double getPercentageCompleted(Algorithm algorithm) {
         // check if this is the first iteration
-        if (previousBest == null) {
+        if (algorithm.getIterations() == 0) {
             previousBest = algorithm.getBestSolution();
-
+            lastIteration = algorithm.getIterations();
             return 0.0;
         }
 
-        // get the distance between previous and current best
-        double distance = distMeasure.distance((Vector) previousBest.getPosition(), (Vector) algorithm.getBestSolution().getPosition());
+        if (algorithm.getIterations() != lastIteration) {
+            // get the distance between previous and current best
+            double distance = distMeasure.distance((Vector) previousBest.getPosition(), (Vector) algorithm.getBestSolution().getPosition());
 
-        // compare to see change
-        if (distance < minChange)
-            minChangeCounter++;
-        else
-            minChangeCounter = 0;
+            // compare to see change
+            if (distance < minChange)
+                minChangeCounter++;
+            else
+                minChangeCounter = 0;
+        }
+        
+        lastIteration = algorithm.getIterations();
 
         return minChangeCounter / maxConsecutiveMinChange;
     }

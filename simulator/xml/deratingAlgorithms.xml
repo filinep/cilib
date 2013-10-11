@@ -7,7 +7,7 @@
 <simulator>
     <algorithms>
         <algorithm id="deratingNichePSO" class="niching.NichingAlgorithm">
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="200000">
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="20000">
                 <predicate class="stoppingcondition.Maximum"/>
                 <measurement class="measurement.single.ParticlePositionUpdates"/>
             </addStoppingCondition>
@@ -78,10 +78,10 @@
             <mainSwarmCreationMerger class="niching.merging.SingleSwarmMergeStrategy"/>
 
             <subSwarmMerger class="niching.merging.StandardMergeStrategy"/>
-            <subSwarmMerger class="niching.merging.StandardMergeStrategy"/>
+            <subSwarmAbsorber class="niching.merging.StandardMergeStrategy"/>
 
             <subSwarmIterator class="niching.iterators.AllSwarmsIterator">
-                <iterator class="niching.iterators.SingleNicheIteration"/>
+                <iterator class="niching.iterators.IfNotFinishedSingleNicheIteration"/>
             </subSwarmIterator>
 
             <mainSwarmIterator class="niching.iterators.SingleNicheIteration"/>
@@ -132,6 +132,7 @@
     </measurements>
 
     <measurements id="composite" class="simulator.MeasurementSuite" resolution="1">
+        <addMeasurement class="measurement.single.ParticlePositionUpdates"/>
         <addMeasurement class="measurement.single.SwarmSize"/>
         <addMeasurement class="measurement.multiple.CompositeMeasurement">
             <addMeasurement class="measurement.single.SwarmSize"/>
@@ -146,7 +147,7 @@
             <measurements idref="composite" />
             <output format="TXT" file="data/deratingNichePSO-f1.txt"/>
         </simulation>
-        <simulation samples="1">
+        <!--simulation samples="1">
             <algorithm idref="deratingNichePSO"/>
             <problem idref="f2"/>
             <measurements idref="composite" />
@@ -231,6 +232,6 @@
             <problem idref="f5"/>
             <measurements idref="fitness" />
             <output format="TXT" file="data/SNT-GA-f5.txt"/>
-        </simulation>
+        </simulation-->
     </simulations>
 </simulator>

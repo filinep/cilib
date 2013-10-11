@@ -52,14 +52,10 @@ public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm
         		.f(NichingSwarms.of(alg.getMainSwarm(), Collections.<SinglePopulationBasedAlgorithm>emptyList()));
         swarms = phase1(alg).f(swarms);
         swarms = onSubswarms(clearDeratingSolutions(problem)).f(swarms);
-        for (SinglePopulationBasedAlgorithm sss : swarms._2())
-    		System.out.print(sss.getTopology().length() + " ");
-        System.out.println();
         swarms = phase2(alg).f(swarms);
+        long ii = System.currentTimeMillis();
         swarms = joinAndMerge(alg, subswarms).f(swarms);
-        for (SinglePopulationBasedAlgorithm sss : swarms._2())
-    		System.out.print(sss.getTopology().length() + " ");
-        System.out.println();
+        System.out.println(System.currentTimeMillis()-ii);
 
         problem.clearSolutions();
         problem.addSolutions(swarms._2().map(Solutions.getPosition().o(Algorithms.<SinglePopulationBasedAlgorithm>getBestSolution())).toCollection());
@@ -90,8 +86,9 @@ public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm
         return new NichingFunction() {
             @Override
             public NichingSwarms f(NichingSwarms a) {
+                //return NichingSwarms.of(a.getMainSwarm(), joiningList.append(a.getSubswarms()));
                 return merge(alg.getMergeDetector(), alg.getMainSwarmMerger(), alg.getSubSwarmMerger())
-                        .f(NichingSwarms.of(a.getMainSwarm(), joiningList.append(a.getSubswarms())));
+                        .f(NichingSwarms.of(a.getMainSwarm(), a.getSubswarms().append(joiningList)));
             }
         };
     }
@@ -124,7 +121,7 @@ public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm
         return new NichingFunction() {
             @Override
             public NichingSwarms f(NichingSwarms a) {
-                if (!a.getSubswarms().exists(Algorithms.<SinglePopulationBasedAlgorithm>isFinished())) {
+                if (a.getSubswarms().forall(Algorithms.<SinglePopulationBasedAlgorithm>isFinished())) {
                     return a;
                 }
 
