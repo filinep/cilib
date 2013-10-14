@@ -13,10 +13,7 @@ public class IfNotFinishedSingleNicheIteration extends NicheIteration {
 
     @Override
     public SinglePopulationBasedAlgorithm f(SinglePopulationBasedAlgorithm a) {
-        if (a.isFinished())
-            return a;
-        
-        return Algorithms.<SinglePopulationBasedAlgorithm>performIteration().f(a);
+        return Algorithms.<SinglePopulationBasedAlgorithm>iterateUnlessDone().f(a);
     }
 
 }

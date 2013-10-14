@@ -69,9 +69,11 @@ public class CompositeMeasurement implements Measurement<TypeList> {
         }
 
         for (SinglePopulationBasedAlgorithm single : multi.getPopulations()) {
+            TypeList vector1 = new TypeList();
             for (Measurement<? extends Type> measurement : measurements) {
-                vector.add(measurement.getValue(single));
+                vector1.add(measurement.getValue(single));
             }
+            vector.add(vector1);
         }
 
         return vector;
