@@ -85,7 +85,7 @@ public abstract class AbstractAlgorithm implements Algorithm, Stoppable {
         }
 
         for (StoppingCondition sc : copy.stoppingConditions) {
-            addStoppingCondition(sc);
+            addStoppingCondition(sc.getClone());
         }
 
         running = false;

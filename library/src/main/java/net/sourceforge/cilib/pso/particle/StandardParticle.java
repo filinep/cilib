@@ -105,14 +105,14 @@ public class StandardParticle extends AbstractParticle {
         this.getProperties().put(EntityType.Particle.BEST_POSITION, Vector.copyOf((Vector) getCandidateSolution()));
         this.getProperties().put(EntityType.Particle.VELOCITY, Vector.copyOf((Vector) getCandidateSolution()));
 
-        this.positionInitialisationStrategy.initialise(EntityType.CANDIDATE_SOLUTION, this);
-        this.personalBestInitialisationStrategy.initialise(EntityType.Particle.BEST_POSITION, this);
-        this.velocityInitialisationStrategy.initialise(EntityType.Particle.VELOCITY, this);
-
         this.getProperties().put(EntityType.FITNESS, InferiorFitness.instance());
         this.getProperties().put(EntityType.Particle.BEST_FITNESS, InferiorFitness.instance());
         this.getProperties().put(EntityType.PREVIOUS_FITNESS, InferiorFitness.instance());
         this.neighbourhoodBest = this;
+        
+        this.positionInitialisationStrategy.initialise(EntityType.CANDIDATE_SOLUTION, this);
+        this.personalBestInitialisationStrategy.initialise(EntityType.Particle.BEST_POSITION, this);
+        this.velocityInitialisationStrategy.initialise(EntityType.Particle.VELOCITY, this);
 
         this.getProperties().put(EntityType.Particle.Count.PBEST_STAGNATION_COUNTER, Int.valueOf(0));
         this.getProperties().put(EntityType.Particle.Count.POSITION_UPDATE_COUNTER, Int.valueOf(0));

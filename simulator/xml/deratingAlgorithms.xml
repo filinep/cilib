@@ -7,12 +7,29 @@
 <simulator>
     <algorithms>
         <algorithm id="deratingNichePSO" class="niching.NichingAlgorithm">
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="10"/>
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="200000">
+                <predicate class="stoppingcondition.Maximum"/>
+                <measurement class="measurement.single.ParticlePositionUpdates"/>
+            </addStoppingCondition>
             <iterationStrategy class="niching.iterationstrategies.DeratingNichePSO"/>
 
             <!-- need a regular pso -->
             <mainSwarm class="pso.PSO">
-                <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="500"/>
+                <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="0">
+                    <predicate class="stoppingcondition.Minimum"/>
+                    <measurement class="measurement.single.SwarmSize"/>
+                </addStoppingCondition>
+                
+                <initialisationStrategy class="algorithm.initialisation.ClonedPopulationInitialisationStrategy">
+                    <entityType class="pso.particle.StandardParticle">
+                        <velocityProvider class="pso.velocityprovider.StandardVelocityProvider">
+                            <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="0.0"/>
+                            <cognitiveAcceleration class="controlparameter.ConstantControlParameter" parameter="1.2"/>
+                        </velocityProvider>
+                        <velocityInitialisationStrategy class="entity.initialisation.RandomInitialisationStrategy"/>
+                    </entityType>
+                    <entityNumber value="50"/>
+                </initialisationStrategy>
 
                 <iterationStrategy class="pso.iterationstrategies.SynchronousIterationStrategy">
                     <boundaryConstraint class="problem.boundaryconstraint.ReinitialisationBoundary"/>
@@ -22,14 +39,26 @@
             <!-- Set the subswarm type and behavior here -->
             <nicheCreator class="niching.creation.ClosestNeighbourNicheCreationStrategy">
                 <swarmType class="pso.PSO">
+                    <addStoppingCondition class="stoppingcondition.OptimiserStalled"/>
                     <iterationStrategy class="pso.iterationstrategies.SynchronousIterationStrategy">
                         <boundaryConstraint class="problem.boundaryconstraint.ReinitialisationBoundary"/>
                     </iterationStrategy>
                 </swarmType>
+
+                <swarmBehavior class="pso.particle.ParticleBehavior">
+                    <velocityProvider class="pso.velocityprovider.GCVelocityProvider">
+                        <rho class="controlparameter.ConstantControlParameter" parameter="0.02"/>
+                        <delegate class="pso.velocityprovider.StandardVelocityProvider">
+                            <cognitiveAcceleration class="controlparameter.ConstantControlParameter" parameter="1.2"/>
+                            <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="1.2"/>
+                            <inertiaWeight class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.7" finalValue="0.2"/>
+                        </delegate>
+                    </velocityProvider>
+                </swarmBehavior>
             </nicheCreator>
 
             <nicheDetector class="niching.creation.MaintainedFitnessNicheDetection">
-                <threshold class="controlparameter.ConstantControlParameter" parameter="1.0E-12"/>
+                <threshold class="controlparameter.ConstantControlParameter" parameter="1.0E-5"/>
                 <stationaryCounter class="controlparameter.ConstantControlParameter" parameter="3.0"/>
             </nicheDetector>
 
@@ -46,10 +75,10 @@
             <mainSwarmCreationMerger class="niching.merging.SingleSwarmMergeStrategy"/>
 
             <subSwarmMerger class="niching.merging.StandardMergeStrategy"/>
-            <subSwarmMerger class="niching.merging.StandardMergeStrategy"/>
+            <subSwarmAbsorber class="niching.merging.StandardMergeStrategy"/>
 
             <subSwarmIterator class="niching.iterators.AllSwarmsIterator">
-                <iterator class="niching.iterators.SingleNicheIteration"/>
+                <iterator class="niching.iterators.IfNotFinishedSingleNicheIteration"/>
             </subSwarmIterator>
 
             <mainSwarmIterator class="niching.iterators.SingleNicheIteration"/>
@@ -75,18 +104,38 @@
     <problems>
         <problem id="f1" class="problem.DeratingOptimisationProblem" domain="R(0.0:1.0)">
             <function class="functions.continuous.unconstrained.EqualMinima"/>
+            <deratingFunction class="functions.continuous.derating.PowerDeratingFunction">
+                <radius class="controlparameter.ConstantControlParameter" parameter="0.1"/>
+                <alpha class="controlparameter.ConstantControlParameter" parameter="0.8"/>
+            </deratingFunction>
         </problem>
         <problem id="f2" class="problem.DeratingOptimisationProblem" domain="R(0.0:1.0)">
             <function class="functions.continuous.unconstrained.EvenDecreasingMinima"/>
+            <deratingFunction class="functions.continuous.derating.PowerDeratingFunction">
+                <radius class="controlparameter.ConstantControlParameter" parameter="0.1"/>
+                <alpha class="controlparameter.ConstantControlParameter" parameter="0.8"/>
+            </deratingFunction>
         </problem>
         <problem id="f3" class="problem.DeratingOptimisationProblem" domain="R(0.0:1.0)">
             <function class="functions.continuous.unconstrained.UnevenEqualMinima"/>
+            <deratingFunction class="functions.continuous.derating.PowerDeratingFunction">
+                <radius class="controlparameter.ConstantControlParameter" parameter="0.1"/>
+                <alpha class="controlparameter.ConstantControlParameter" parameter="0.8"/>
+            </deratingFunction>
         </problem>
         <problem id="f4" class="problem.DeratingOptimisationProblem" domain="R(0.0:1.0)">
             <function class="functions.continuous.unconstrained.UnevenDecreasingMinima"/>
+            <deratingFunction class="functions.continuous.derating.PowerDeratingFunction">
+                <radius class="controlparameter.ConstantControlParameter" parameter="0.1"/>
+                <alpha class="controlparameter.ConstantControlParameter" parameter="0.8"/>
+            </deratingFunction>
         </problem>
         <problem id="f5" class="problem.DeratingOptimisationProblem" domain="R(-5.0:5.0)^2">
             <function class="functions.continuous.unconstrained.ModifiedHimmelblau"/>
+            <deratingFunction class="functions.continuous.derating.PowerDeratingFunction">
+                <radius class="controlparameter.ConstantControlParameter" parameter="0.1"/>
+                <alpha class="controlparameter.ConstantControlParameter" parameter="0.8"/>
+            </deratingFunction>
         </problem>
     </problems>
 
@@ -95,10 +144,12 @@
     </measurements>
 
     <measurements id="composite" class="simulator.MeasurementSuite" resolution="1">
+        <addMeasurement class="measurement.single.ParticlePositionUpdates"/>
         <addMeasurement class="measurement.single.SwarmSize"/>
         <addMeasurement class="measurement.multiple.CompositeMeasurement">
             <addMeasurement class="measurement.single.SwarmSize"/>
             <addMeasurement class="measurement.single.Solution"/>
+            <addMeasurement class="measurement.single.Fitness"/>
         </addMeasurement>
     </measurements>
 
@@ -134,7 +185,7 @@
             <output format="TXT" file="data/deratingNichePSO-f5.txt"/>
         </simulation>
 
-        <simulation samples="1">
+        <!--simulation samples="1">
             <algorithm idref="SNT-PSO"/>
             <problem idref="f1"/>
             <measurements idref="fitness" />
@@ -194,6 +245,6 @@
             <problem idref="f5"/>
             <measurements idref="fitness" />
             <output format="TXT" file="data/SNT-GA-f5.txt"/>
-        </simulation>
+        </simulation-->
     </simulations>
 </simulator>

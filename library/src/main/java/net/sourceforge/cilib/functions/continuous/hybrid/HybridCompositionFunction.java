@@ -12,6 +12,7 @@ import net.sourceforge.cilib.functions.ContinuousFunction;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 import com.google.common.collect.Lists;
+import net.sourceforge.cilib.functions.NichingFunction;
 
 /**
  * Implementation to create hybrid composition functions from the CEC2005 benchmark functions.
@@ -24,7 +25,7 @@ import com.google.common.collect.Lists;
  * Natural Computing, 1-50. Available at: http://vg.perso.eisti.fr/These/Papiers/Bibli2/CEC05.pdf.
  * </p>
  */
-public class HybridCompositionFunction extends ContinuousFunction {
+public class HybridCompositionFunction extends ContinuousFunction implements NichingFunction {
 
     private final List<SingleFunction> functions;
     private double scaleConstant;
@@ -93,5 +94,10 @@ public class HybridCompositionFunction extends ContinuousFunction {
      */
     public double getScaleConstant() {
         return scaleConstant;
+    }
+
+    @Override
+    public double getNicheRadius() {
+        return 0.01;
     }
 }

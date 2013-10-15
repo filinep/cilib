@@ -6,6 +6,7 @@
  */
 package net.sourceforge.cilib.niching.creation;
 
+import fj.Equal;
 import net.sourceforge.cilib.algorithm.population.SinglePopulationBasedAlgorithm;
 import net.sourceforge.cilib.controlparameter.ConstantControlParameter;
 import net.sourceforge.cilib.controlparameter.LinearlyVaryingControlParameter;
@@ -70,12 +71,7 @@ public class ClosestNeighbourNicheCreationStrategy extends NicheCreationStrategy
     public NichingSwarms f(NichingSwarms a, final Entity b) {
         //There should be at least two particles
         fj.data.List<Entity> t = a.getMainSwarm().getTopology();
-        if (a.getMainSwarm().getTopology().length() <= 1 || !t.exists(new F<Entity, Boolean>() {
-                @Override
-            public Boolean f(Entity e) {
-                        return e.equals(b);
-                }
-        })) {
+        if (a.getMainSwarm().getTopology().length() <= 1 || !t.exists(Equal.<Entity>anyEqual().eq(b))) {
             return a;
         }
 

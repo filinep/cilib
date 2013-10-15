@@ -12,6 +12,15 @@
                 <measurement class="measurement.single.SwarmSize"/>
             </addStoppingCondition>
 
+            <mainSwarm class="pso.PSO">
+                <initialisationStrategy class="algorithm.initialisation.ClonedPopulationInitialisationStrategy">
+                    <entityNumber value="50"/>
+                    <entityType class="pso.particle.StandardParticle">
+                        <personalBestInitialisationStrategy class="entity.initialisation.MutatedPBestInitialisationStrategy"/>
+                    </entityType>
+                </initialisationStrategy>
+            </mainSwarm>
+
             <nicheCreator class="niching.creation.VectorBasedNicheCreationStrategy">
                 <swarmBehavior class="pso.particle.ParticleBehavior">
                     <velocityProvider class="pso.velocityprovider.StandardVelocityProvider">
@@ -127,6 +136,7 @@
 
     <measurements id="solution" class="simulator.MeasurementSuite" resolution="1">
         <addMeasurement class="measurement.single.FitnessEvaluations"/>
+        <addMeasurement class="measurement.single.ParticlePositionUpdates"/>
         <addMeasurement class="measurement.multiple.CompositeMeasurement">
             <addMeasurement class="measurement.single.SwarmSize"/>
             <addMeasurement class="measurement.single.Solution"/>

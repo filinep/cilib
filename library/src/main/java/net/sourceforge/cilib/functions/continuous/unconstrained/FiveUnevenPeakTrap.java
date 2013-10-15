@@ -11,6 +11,7 @@ import net.sourceforge.cilib.functions.ContinuousFunction;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 import com.google.common.base.Preconditions;
+import net.sourceforge.cilib.functions.NichingFunction;
 
 /**
  * <p><b>The Five Uneven Peak Trap Function.</b></p>
@@ -40,7 +41,7 @@ import com.google.common.base.Preconditions;
  * R(0,30)^1
  *
  */
-public class FiveUnevenPeakTrap extends ContinuousFunction {
+public class FiveUnevenPeakTrap extends ContinuousFunction implements NichingFunction {
 
     /**
      * {@inheritDoc}
@@ -71,5 +72,10 @@ public class FiveUnevenPeakTrap extends ContinuousFunction {
             return -80*(x-27.5);
         else
             return 0.0;
+    }
+
+    @Override
+    public double getNicheRadius() {
+        return 0.01;
     }
 }

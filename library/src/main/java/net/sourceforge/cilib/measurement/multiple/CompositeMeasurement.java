@@ -6,6 +6,7 @@
  */
 package net.sourceforge.cilib.measurement.multiple;
 
+import fj.Equal;
 import java.util.ArrayList;
 import java.util.List;
 import net.sourceforge.cilib.algorithm.AbstractAlgorithm;
@@ -13,7 +14,6 @@ import net.sourceforge.cilib.algorithm.Algorithm;
 import net.sourceforge.cilib.algorithm.population.MultiPopulationBasedAlgorithm;
 import net.sourceforge.cilib.algorithm.population.SinglePopulationBasedAlgorithm;
 import net.sourceforge.cilib.entity.Entity;
-import net.sourceforge.cilib.entity.Topologies;
 import net.sourceforge.cilib.measurement.Measurement;
 import net.sourceforge.cilib.problem.solution.OptimisationSolution;
 import net.sourceforge.cilib.type.types.Type;
@@ -57,20 +57,25 @@ public class CompositeMeasurement implements Measurement<TypeList> {
     @Override
     public TypeList getValue(Algorithm algorithm) {
         TypeList vector = new TypeList();
+
         MultiPopulationBasedAlgorithm multi;
+        
         if (algorithm instanceof SinglePopulationBasedAlgorithm) {
             multi = neighbourhood2populations((SinglePopulationBasedAlgorithm<Entity>) algorithm);
         } else {
             multi = (MultiPopulationBasedAlgorithm) algorithm;
         }
+
         for (SinglePopulationBasedAlgorithm single : multi.getPopulations()) {
+            TypeList vector1 = new TypeList();
             for (Measurement<? extends Type> measurement : measurements) {
-                vector.add(measurement.getValue(single));
+                vector1.add(measurement.getValue(single));
             }
+            vector.add(vector1);
         }
         return vector;
     }
-
+    
     private <E extends Entity> MultiPopulationBasedAlgorithm neighbourhood2populations(SinglePopulationBasedAlgorithm<E> s) {
         MultiPopulationBasedAlgorithm m = new MultiPopulationBasedAlgorithm() {
             @Override
@@ -93,11 +98,24 @@ public class CompositeMeasurement implements Measurement<TypeList> {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         };
+        
         for (E e : s.getTopology()) {
-            SinglePopulationBasedAlgorithm dummyPopulation = s.getClone();
-            dummyPopulation.setTopology(s.getNeighbourhood().f(s.getTopology(), e));
-            m.addPopulationBasedAlgorithm(dummyPopulation);
+            boolean found = false;
+            for (SinglePopulationBasedAlgorithm s1 : m.getPopulations()) {
+                if (s1.getTopology().exists(Equal.<E>anyEqual().eq(e))) {
+                    found = true;
+                    break;
+                }
+            }
+            
+            if (!found) {
+                SinglePopulationBasedAlgorithm dummyPopulation = s.getClone();            
+                dummyPopulation.setTopology(s.getNeighbourhood().f(s.getTopology(), e));
+
+                m.addPopulationBasedAlgorithm(dummyPopulation);
+            }
         }
+        
         return m;
     }
 

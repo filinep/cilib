@@ -13,6 +13,8 @@ import fj.data.List;
 import java.util.Collections;
 import net.sourceforge.cilib.algorithm.population.AbstractIterationStrategy;
 import net.sourceforge.cilib.algorithm.population.SinglePopulationBasedAlgorithm;
+import net.sourceforge.cilib.entity.Entity;
+import net.sourceforge.cilib.entity.EntityType;
 import net.sourceforge.cilib.niching.NichingAlgorithm;
 import static net.sourceforge.cilib.niching.NichingFunctions.*;
 import net.sourceforge.cilib.niching.NichingFunctions.NichingFunction;
@@ -20,7 +22,10 @@ import net.sourceforge.cilib.niching.NichingSwarms;
 import static net.sourceforge.cilib.niching.NichingSwarms.*;
 import net.sourceforge.cilib.problem.DeratingOptimisationProblem;
 import net.sourceforge.cilib.problem.solution.OptimisationSolution;
+import net.sourceforge.cilib.pso.particle.Particle;
+import net.sourceforge.cilib.type.types.container.Vector;
 import net.sourceforge.cilib.util.functions.Algorithms;
+import net.sourceforge.cilib.util.functions.Entities;
 import net.sourceforge.cilib.util.functions.Solutions;
 
 public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm> {
@@ -47,18 +52,18 @@ public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm
         DeratingOptimisationProblem problem = (DeratingOptimisationProblem) alg.getOptimisationProblem();
 
         List<SinglePopulationBasedAlgorithm> subswarms = List.iterableList(alg.getPopulations());
-        subswarms = onMainSwarm(Algorithms.<SinglePopulationBasedAlgorithm>initialise())
-            .andThen(phase1(alg))
-            .andThen(onSubswarms(clearDeratingSolutions(problem)))
-            .andThen(phase2(alg))
-            .andThen(joinAndMerge(alg, subswarms))
-            .f(NichingSwarms.of(alg.getMainSwarm(), Collections.<SinglePopulationBasedAlgorithm>emptyList()))._2();
+        
+        NichingSwarms swarms = phase1(alg)
+            .f(NichingSwarms.of(alg.getMainSwarm(), Collections.<SinglePopulationBasedAlgorithm>emptyList()));
+        swarms = onSubswarms(clearDeratingSolutions(problem)).f(swarms);
+        swarms = phase2(alg).f(swarms);
+        swarms = joinAndMerge(alg, subswarms).f(swarms);
 
         problem.clearSolutions();
-        problem.addSolutions(subswarms.map(Solutions.getPosition().o(Algorithms.<SinglePopulationBasedAlgorithm>getBestSolution())).toCollection());
-        alg.setPopulations(Lists.newLinkedList(subswarms.toCollection()));
+        problem.addSolutions(swarms._2().map(Solutions.getPosition().o(Algorithms.<SinglePopulationBasedAlgorithm>getBestSolution())).toCollection());
+        alg.setPopulations(Lists.newLinkedList(swarms._2().toCollection()));
         alg.getMainSwarm().setOptimisationProblem(problem);
-        // don't need to set the main swarm because it gets reinitialised
+        alg.getMainSwarm().performInitialisation();
     }
 
     /**
@@ -71,6 +76,15 @@ public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm
             public SinglePopulationBasedAlgorithm f(SinglePopulationBasedAlgorithm a) {
                 problem.clearSolutions();
                 a.setOptimisationProblem(problem);
+                a.setTopology(a.getTopology().map(new F<Entity,Entity>() {
+                    @Override
+                    public Entity f(Entity a) {
+                        Particle dp = (Particle) a.getClone();
+                        dp.getProperties().put(EntityType.CANDIDATE_SOLUTION, dp.getBestPosition());
+                        a.getProperties().put(EntityType.Particle.BEST_FITNESS, a.getFitnessCalculator().getFitness(dp));
+                        return a;
+                    }
+                }.andThen(Entities.evaluate())));
                 return a;
             }
         };
@@ -84,7 +98,7 @@ public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm
             @Override
             public NichingSwarms f(NichingSwarms a) {
                 return merge(alg.getMergeDetector(), alg.getMainSwarmMerger(), alg.getSubSwarmMerger())
-                        .f(NichingSwarms.of(a.getMainSwarm(), joiningList.append(a.getSubswarms())));
+                        .f(NichingSwarms.of(a.getMainSwarm(), a.getSubswarms().append(joiningList)));
             }
         };
     }
@@ -117,7 +131,7 @@ public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm
         return new NichingFunction() {
             @Override
             public NichingSwarms f(NichingSwarms a) {
-                if (!a.getSubswarms().exists(Algorithms.<SinglePopulationBasedAlgorithm>isFinished())) {
+                if (a.getSubswarms().forall(Algorithms.<SinglePopulationBasedAlgorithm>isFinished())) {
                     return a;
                 }
 

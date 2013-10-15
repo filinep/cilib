@@ -8,6 +8,7 @@
     <algorithms>
         <algorithm id="speciation" class="pso.PSO">
             <neighbourhood class="entity.topologies.SpeciationNeighbourhood">
+                <neighbourhoodSize class="controlparameter.ConstantControlParameter" parameter="20"/>
                 <radius class="controlparameter.ConstantControlParameter" parameter="0.1"/>
             </neighbourhood>
             <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="1000"/>
@@ -52,12 +53,20 @@
         <addMeasurement class="measurement.multiple.MultipleSolutions"/>
         <addMeasurement class="measurement.multiple.MultipleFitness"/>
     </measurements>
+    <measurements id="solution" class="simulator.MeasurementSuite" resolution="1">
+        <addMeasurement class="measurement.single.FitnessEvaluations"/>
+        <addMeasurement class="measurement.multiple.CompositeMeasurement">
+            <addMeasurement class="measurement.single.SwarmSize"/>
+            <addMeasurement class="measurement.single.Solution"/>
+        </addMeasurement>
+        <addMeasurement class="measurement.single.SwarmSize"/>
+    </measurements>
 
     <simulations>
         <simulation samples="1">
             <algorithm idref="speciation"/>
             <problem idref="f1"/>
-            <measurements idref="fitness" />
+            <measurements idref="solution" />
             <output format="TXT" file="data/speciation-f1.txt"/>
         </simulation>
         <simulation samples="1">
