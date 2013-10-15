@@ -1,5 +1,5 @@
 /**           __  __
- *    _____ _/ /_/ /_    Computational Intelligence Library (CIlib)
+ *    _____  / /_/ /_    Computational Intelligence Library (CIlib)
  *   / ___/ / / / __ \   (c) CIRG @ UP
  *  / /__/ / / / /_/ /   http://cilib.net
  *  \___/_/_/_/_.___/
@@ -11,50 +11,38 @@ import net.sourceforge.cilib.functions.Gradient;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 /**
- * Generalised Griewank function.
+ * Multimodal4 function.
  *
- * <p>
- * Characteristics:
- * <ul>
- * <li>Multi-modal</li>
- * <li>Non-separable</li>
- * <li>Regular</li>
- * </ul>
- *
- * f(x) = 0; x = (0,0,...,0);
- * x_i e (-600,600)
- *
- * R(-600, 600)^30
+ * Minimum for domain: 0.0
+ * R(0, 1)^1
  *
  */
-public class Griewank extends ContinuousFunction implements Gradient{
+public class UnevenDecreasingMinima extends ContinuousFunction implements Gradient {
 
-    private static final long serialVersionUID = 1095225532651577254L;
+    private static final long serialVersionUID = -957215773660609565L;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public Double f(Vector input) {
-        double sumsq = 0;
-        double prod = 1;
-        for (int i = 0; i < input.size(); ++i) {
-            sumsq += input.doubleValueOf(i) * input.doubleValueOf(i);
-            prod *= Math.cos(input.doubleValueOf(i) / Math.sqrt(i));
+        double sum = 0.0;
+        for (int i = 0; i < input.size(); i++) {
+            double x = Math.pow(Math.sin(5.0 * Math.PI * (Math.pow(input.doubleValueOf(i), 0.75) - 0.05)), 6.0);
+            double exp1 = -2.0 * Math.log(Math.pow((input.doubleValueOf(i) - 0.08) / 0.854, 2.0));
+            double y = Math.exp(exp1);
+            sum += -x * y;
         }
-        return 1 + sumsq * (1.0 / 4000.0) - prod;
+        return sum;
     }
     
     public Double df(Vector input, int i){
     double result=0.0;
-    double exp1=1;
-    for (int j=1;j<=input.size();j++) {
-    exp1*=(Math.cos(input.doubleValueOf(j-1)/Math.sqrt(j)))/(Math.cos(input.doubleValueOf(i-1)/Math.sqrt(i)));
-    }
-    double exp2=Math.sin(input.doubleValueOf(i-1)/Math.sqrt(i))*1.0/Math.sqrt(i);
-    
-    result=(1.0/2000.0)*input.doubleValueOf(i-1)+exp1*exp2;
-    
+    double exp1=-Math.pow(Math.sin(5.0 * Math.PI * (Math.pow(input.doubleValueOf(i-1), 0.75) - 0.05)), 5.0);
+    double exp2=Math.exp(-2.0 * Math.log(Math.pow((input.doubleValueOf(i-1) - 0.08) / 0.854, 2.0)));
+    double exp3=(4.0*Math.sin(5.0*Math.PI)*(Math.pow(input.doubleValueOf(i-1), 0.75) - 0.05))/(Math.log(2.0)*(input.doubleValueOf(i-1)-0.854));
+    double exp4=22.5*Math.PI*Math.cos(5.0 * Math.PI *(Math.pow(input.doubleValueOf(i-1), 0.75) - 0.05))*(Math.pow(input.doubleValueOf(i-1), -1.0/4.0));
+    result=exp1*exp2*(exp4-exp3);
         return result;
     }
     

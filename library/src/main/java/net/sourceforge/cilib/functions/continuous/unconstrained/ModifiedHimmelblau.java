@@ -9,27 +9,28 @@ package net.sourceforge.cilib.functions.continuous.unconstrained;
 import net.sourceforge.cilib.functions.ContinuousFunction;
 import net.sourceforge.cilib.type.types.container.Vector;
 
+import com.google.common.base.Preconditions;
+
 /**
- * Multimodal3 function.
+ * Multimodal5 function..
  *
  * Minimum: 0.0
- * R(0, 1)^1
+ * R(-6, 6)^2
  *
  */
-public class MultimodalFunction3 extends ContinuousFunction {
+public class ModifiedHimmelblau extends ContinuousFunction {
 
-    private static final long serialVersionUID = 3687474318232647359L;
+    private static final long serialVersionUID = -8704025552791904890L;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public Double f(Vector input) {
-        double sum = 0.0;
-        for (int i = 0; i < input.size(); ++i) {
-            double x = Math.pow(Math.sin(5.0 * Math.PI * (Math.pow(input.doubleValueOf(i), 0.75) - 0.05)), 6.0);
-            sum += x;
-        }
-        return sum;
+        Preconditions.checkArgument(input.size() == 2, "MultimodalFunction5 is only defined for 2 dimensions");
+
+        double x = input.doubleValueOf(0);
+        double y = input.doubleValueOf(1);
+        return 200 - Math.pow((x*x + y - 11), 2) - Math.pow((x + y*y - 7), 2);
     }
 }

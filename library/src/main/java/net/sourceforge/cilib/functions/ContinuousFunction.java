@@ -12,5 +12,7 @@ import fj.F;
 /**
  * Marker interface to differentiate continuous-valued functions.
  */
-public abstract class ContinuousFunction extends F<Vector, Double> {
+public abstract class ContinuousFunction extends F<Vector, Double>
+{
+    
 }

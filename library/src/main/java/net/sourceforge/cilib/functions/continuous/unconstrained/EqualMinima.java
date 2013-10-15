@@ -7,52 +7,36 @@
 package net.sourceforge.cilib.functions.continuous.unconstrained;
 
 import net.sourceforge.cilib.functions.ContinuousFunction;
+import net.sourceforge.cilib.functions.Gradient;
 import net.sourceforge.cilib.type.types.container.Vector;
 
-import com.google.common.base.Preconditions;
-import net.sourceforge.cilib.functions.Gradient;
-
 /**
- * UrsemF1 function.
+ * Multimodal1 function.
  *
- * R(-2.5, 3)^2
- * Minimum: 4.81681
+ * Minimum: 0.0
+ * R(0, 1)^1
  *
  */
-public class UrsemF1 extends ContinuousFunction  implements Gradient{
+public class EqualMinima extends ContinuousFunction implements Gradient {
 
-    private static final long serialVersionUID = -2595919942608678319L;
+    private static final long serialVersionUID = -5261002551096587662L;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Double f(Vector input) {
-        Preconditions.checkArgument(input.size() == 2, "UrsemF1 function is only defined for 2 dimensions");
-
-        double x = input.doubleValueOf(0);
-        double y = input.doubleValueOf(1);
-
-        return Math.sin(2.0 * x - 0.5 * Math.PI) + 3.0 * Math.cos(y) + 0.5 * x;
+        public Double f(Vector input) {
+        double sum = 0.0;
+        for (int i = 0; i < input.size(); ++i) {
+            sum += Math.pow(Math.sin(5.0 * Math.PI * input.doubleValueOf(i)), 6.0);
+        }
+        return sum;
+        
+        
     }
     
-    
     public Double df(Vector input, int i) {
-        Preconditions.checkArgument(input.size() == 2, "UrsemF1 function is only defined for 2 dimensions");
-
-        double x = input.doubleValueOf(0);
-        double y = input.doubleValueOf(1);
-        double res = 0.0;
-        
-        if (i==1)
-        {
-            res = 2.0*Math.cos(2.0 * x - 0.5 * Math.PI)+0.5;
-        }
-        else
-        {
-            res = -3.0*Math.sin(y);
-        }
-
+        double res = 30.0*Math.PI*Math.pow(Math.sin(5.0 * Math.PI * input.doubleValueOf(i-1)), 5.0)*Math.cos(5.0 * Math.PI * input.doubleValueOf(i-1));
         return res;
     }
     

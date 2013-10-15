@@ -10,6 +10,7 @@ import net.sourceforge.cilib.functions.ContinuousFunction;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 import com.google.common.base.Preconditions;
+import net.sourceforge.cilib.functions.Gradient;
 
 /**
  * <p><b>Branin Function</b></p>
@@ -39,11 +40,11 @@ import com.google.common.base.Preconditions;
  *
  *
  */
-public class Branin extends ContinuousFunction {
+public class Branin extends ContinuousFunction implements Gradient {
 
     private static final long serialVersionUID = -2254223453957430344L;
     private double a = 1.0;
-    private double b = 5.1 / (4 * Math.PI * Math.PI);
+    private double b = 5.1 / (4.0 * Math.PI * Math.PI);
     private double c = 5.0 / Math.PI;
     private double d = 6.0;
     private double e = 10.0;
@@ -54,7 +55,7 @@ public class Branin extends ContinuousFunction {
      */
     public Branin() {
         a = 1.0;
-        b = 5.1 / (4 * Math.PI * Math.PI);
+        b = 5.1 / (4.0 * Math.PI * Math.PI);
         c = 5.0 / Math.PI;
         d = 6.0;
         e = 10.0;
@@ -73,4 +74,61 @@ public class Branin extends ContinuousFunction {
 
         return a * Math.pow((x2 - b * x1 * x1 + c * x1 - d), 2) + e * (1 - f) * Math.cos(x1) + e;
     }
+    
+    public Double df(Vector input, int i) {
+        Preconditions.checkArgument(input.size() == 2, "Branin function is only defined for 2 dimensions");
+        
+        double x1 = input.doubleValueOf(0);
+        double x2 = input.doubleValueOf(1);
+        double res = 0.0;
+        
+        if (i == 1)
+        {
+            res = 2.0*a*(x2 - b * x1 * x1 + c * x1 - d)*(c-2.0*b*x1)-e*(1-f)*Math.sin(x1);
+        }
+        else
+        {
+            res = 2.0*a*(x2 - b * x1 * x1 + c * x1 - d);
+        }
+
+        return res;
+    }
+    
+    public double GetGradientVectorAverage ( Vector x)
+    {
+        
+        double sum = 0;
+        
+        for (int i = 1; i <= x.size(); ++i)
+        {
+            sum += this.df(x,i);
+        }
+           
+        return sum/x.size();
+    }
+    
+    public double GetGradientVectorLength (Vector x)
+    {
+        double sumsqrt = 0;
+        
+        for (int i = 1; i <= x.size(); ++i)
+        {
+            sumsqrt += this.df(x,i)*this.df(x,i);
+        }
+        
+        return Math.sqrt(sumsqrt);
+    }
+    
+    public Vector GetGradientVector (Vector x)
+    {
+        Vector.Builder vectorBuilder = Vector.newBuilder();
+        
+        for (int i = 1; i <= x.size(); ++i)
+        {
+             vectorBuilder.add(this.df(x,i));
+        }
+        
+        return vectorBuilder.build();
+    }
 }
+

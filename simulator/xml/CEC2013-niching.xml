@@ -94,19 +94,19 @@
 
         <problem id="f2" class="problem.FunctionOptimisationProblem" domain="R(0:1)">
             <objective class="problem.objective.Maximise"/>
-            <function class="functions.continuous.unconstrained.MultimodalFunction1"/>
+            <function class="functions.continuous.unconstrained.EqualMinima"/>
         </problem>
 
         <problem id="f3" class="problem.FunctionOptimisationProblem" domain="R(0:1)">
             <objective class="problem.objective.Maximise"/>
-            <function class="functions.continuous.unconstrained.MultimodalFunction4"/>
+            <function class="functions.continuous.unconstrained.UnevenDecreasingMinima"/>
         </problem>
 
         <problem id="f4" class="problem.FunctionOptimisationProblem" domain="R(-6:6)^2">
             <objective class="problem.objective.Maximise"/>
             <function class="functions.continuous.decorators.ShiftedFunctionDecorator">
                 <function class="functions.continuous.decorators.ScaledFunctionDecorator">
-                    <function class="functions.continuous.unconstrained.Himmelblau"/>
+                    <function class="functions.continuous.unconstrained.InvertedHimmelblau"/>
                     <verticalScale class="controlparameter.ConstantControlParameter" parameter="-1"/>
                 </function>
                 <verticalShift class="controlparameter.ConstantControlParameter" parameter="200"/>
@@ -116,7 +116,7 @@
         <problem id="f5" class="problem.FunctionOptimisationProblem" domain="R(-1.9:1.9),R(-1.1:1.1)">
             <objective class="problem.objective.Maximise"/>
             <function class="functions.continuous.decorators.ScaledFunctionDecorator">
-                <function class="functions.continuous.unconstrained.SixHumpCamelBack"/>
+                <function class="functions.continuous.unconstrained.InvertedSixHumpCamelBack"/>
                 <verticalScale class="controlparameter.ConstantControlParameter" parameter="-4"/>
             </function>
         </problem>
@@ -124,7 +124,7 @@
         <problem id="f6" class="problem.FunctionOptimisationProblem" domain="R(-10:10)^2">
             <objective class="problem.objective.Maximise"/>
             <function class="functions.continuous.decorators.ScaledFunctionDecorator">
-                <function class="functions.continuous.unconstrained.Shubert"/>
+                <function class="functions.continuous.unconstrained.InvertedShubert"/>
                 <verticalScale class="controlparameter.ConstantControlParameter" parameter="-1"/>
             </function>
         </problem>
@@ -132,7 +132,7 @@
         <problem id="f7-2D" class="problem.FunctionOptimisationProblem" domain="R(0.25:10)^2">
             <objective class="problem.objective.Maximise"/>
             <function class="functions.continuous.decorators.ScaledFunctionDecorator">
-                <function class="functions.continuous.unconstrained.Vincent"/>
+                <function class="functions.continuous.unconstrained.InvertedVincent"/>
                 <verticalScale class="controlparameter.ConstantControlParameter" parameter="-2"/>
             </function>
         </problem>
@@ -140,7 +140,7 @@
         <problem id="f7-3D" class="problem.FunctionOptimisationProblem" domain="R(0.25:10)^3">
             <objective class="problem.objective.Maximise"/>
             <function class="functions.continuous.decorators.ScaledFunctionDecorator">
-                <function class="functions.continuous.unconstrained.Vincent"/>
+                <function class="functions.continuous.unconstrained.InvertedVincent"/>
                 <verticalScale class="controlparameter.ConstantControlParameter" parameter="-3"/>
             </function>
         </problem>

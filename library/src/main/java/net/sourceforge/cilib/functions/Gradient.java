@@ -8,10 +8,11 @@ package net.sourceforge.cilib.functions;
 
 import net.sourceforge.cilib.type.types.container.Vector;
 
+
 /**
  *
  */
-public interface Differentiable {
+public interface Gradient {
 
     /**
      * Obtain the gradient {@code Vector} for the provided input {@code Vector}.
@@ -22,5 +23,7 @@ public interface Differentiable {
      * @return A {@link net.sourceforge.cilib.type.types.container.Vector} containing
      *         the gradient of the provided input.
      */
-    Vector getGradient (Vector x);
+    public double GetGradientVectorAverage(Vector x);
+    public double GetGradientVectorLength (Vector x);
+    public Vector GetGradientVector (Vector x);
 }

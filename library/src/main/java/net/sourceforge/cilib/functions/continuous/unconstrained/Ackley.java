@@ -7,6 +7,7 @@
 package net.sourceforge.cilib.functions.continuous.unconstrained;
 
 import net.sourceforge.cilib.functions.ContinuousFunction;
+import net.sourceforge.cilib.functions.Gradient;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 /**
@@ -34,7 +35,7 @@ import net.sourceforge.cilib.type.types.container.Vector;
  *
  *
  */
-public class Ackley extends ContinuousFunction {
+public class Ackley extends ContinuousFunction implements Gradient{
 
     private static final long serialVersionUID = -7803711986955989075L;
 
@@ -43,13 +44,63 @@ public class Ackley extends ContinuousFunction {
      */
     @Override
     public Double f(Vector input) {
-        final int size = input.size();
+        final double size = (double)(input.size());
         double sumsq = 0.0;
         double sumcos = 0.0;
         for (int i = 0; i < size; ++i) {
             sumsq += input.doubleValueOf(i) * input.doubleValueOf(i);
-            sumcos += Math.cos(2 * Math.PI * input.doubleValueOf(i));
+            sumcos += Math.cos(2.0 * Math.PI * input.doubleValueOf(i));
         }
-        return -20.0 * Math.exp(-0.2 * Math.sqrt(sumsq / size)) - Math.exp(sumcos / size) + 20 + Math.E;
+        return -20.0 * Math.exp(-0.2 * Math.sqrt(sumsq / size)) - Math.exp(sumcos / size) + 20.0 + Math.E;
+    }
+    
+    
+    public Double df(Vector input, int i) {
+        final double size = (double)(input.size());
+        double sumsq = 0.0;
+        double sumcos = 0.0;
+        double sin = Math.sin(2.0*Math.PI*input.doubleValueOf(i-1));
+        for (int k = 0; k < size; ++k) {
+            sumsq += input.doubleValueOf(k) * input.doubleValueOf(k);
+            sumcos += Math.cos(2.0 * Math.PI * input.doubleValueOf(k));
+        }
+        return (4.0*input.doubleValueOf(i-1)/size)*(Math.exp(-0.2 * Math.sqrt(sumsq / size)))/Math.sqrt(sumsq / size)+(2.0*Math.PI/size)*sin*Math.exp(sumcos / size);
+    }
+    
+    public double GetGradientVectorAverage ( Vector x)
+    {
+        
+        double sum = 0;
+        
+        for (int i = 1; i <= x.size(); ++i)
+        {
+            sum += this.df(x,i);
+        }
+           
+        return sum/x.size();
+    }
+    
+    public double GetGradientVectorLength (Vector x)
+    {
+        double sumsqrt = 0;
+        
+        for (int i = 1; i <= x.size(); ++i)
+        {
+            sumsqrt += this.df(x,i)*this.df(x,i);
+        }
+        
+        return Math.sqrt(sumsqrt);
+    }
+    
+    public Vector GetGradientVector (Vector x)
+    {
+        Vector.Builder vectorBuilder = Vector.newBuilder();
+        
+        for (int i = 1; i <= x.size(); ++i)
+        {
+             vectorBuilder.add(this.df(x,i));
+        }
+        
+        return vectorBuilder.build();
     }
 }

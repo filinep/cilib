@@ -7,53 +7,51 @@
 package net.sourceforge.cilib.functions.continuous.unconstrained;
 
 import net.sourceforge.cilib.functions.ContinuousFunction;
+import net.sourceforge.cilib.functions.Gradient;
 import net.sourceforge.cilib.type.types.container.Vector;
 
-import com.google.common.base.Preconditions;
-import net.sourceforge.cilib.functions.Gradient;
-
 /**
- * UrsemF1 function.
+ * InvertedSchwefel function.
  *
- * R(-2.5, 3)^2
- * Minimum: 4.81681
+ * <p>
+ * Characteristics:
+ * <ul>
+ * <li>Multimodal</li>
+ * <li>Separable</li>
+ * <li>Discontinuous</li>
+ * </ul>
+ *
+ * f(x) = 0; x = (-420.9687,...,-420.9687);
+ *
+ * x e [-512.03,511.97]
+ *
+ * R(-512.03, 511.97)^30
  *
  */
-public class UrsemF1 extends ContinuousFunction  implements Gradient{
+public class InvertedSchwefel extends ContinuousFunction implements Gradient{
 
-    private static final long serialVersionUID = -2595919942608678319L;
+    private static final long serialVersionUID = 3835871629510784855L;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public Double f(Vector input) {
-        Preconditions.checkArgument(input.size() == 2, "UrsemF1 function is only defined for 2 dimensions");
-
-        double x = input.doubleValueOf(0);
-        double y = input.doubleValueOf(1);
-
-        return Math.sin(2.0 * x - 0.5 * Math.PI) + 3.0 * Math.cos(y) + 0.5 * x;
+        double sum = 0;
+        for (int i = 0; i < input.size(); ++i) {
+            sum += input.doubleValueOf(i) * Math.sin(Math.sqrt(Math.abs(input.doubleValueOf(i))));
+        }
+        return sum ;
     }
     
+    public Double df(Vector input, int i){
+    double result=0.0;
+    double exp1=(input.doubleValueOf(i-1)*Math.cos(Math.sqrt(Math.abs(input.doubleValueOf(i-1)))))/(2.0*Math.sqrt(Math.abs(input.doubleValueOf(i-1))));
+    double exp2=(input.doubleValueOf(i-1))/(Math.abs(input.doubleValueOf(i-1)));
+    double exp3=Math.sin(Math.abs(input.doubleValueOf(i-1)));
     
-    public Double df(Vector input, int i) {
-        Preconditions.checkArgument(input.size() == 2, "UrsemF1 function is only defined for 2 dimensions");
-
-        double x = input.doubleValueOf(0);
-        double y = input.doubleValueOf(1);
-        double res = 0.0;
-        
-        if (i==1)
-        {
-            res = 2.0*Math.cos(2.0 * x - 0.5 * Math.PI)+0.5;
-        }
-        else
-        {
-            res = -3.0*Math.sin(y);
-        }
-
-        return res;
+    result=exp1*exp2+exp3;
+        return result;
     }
     
     public double GetGradientVectorAverage ( Vector x)

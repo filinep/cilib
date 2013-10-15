@@ -7,7 +7,7 @@
 package net.sourceforge.cilib.functions.continuous.bbob;
 
 import net.sourceforge.cilib.functions.ContinuousFunction;
-import net.sourceforge.cilib.functions.continuous.unconstrained.Schwefel;
+import net.sourceforge.cilib.functions.continuous.unconstrained.InvertedSchwefel;
 import net.sourceforge.cilib.functions.continuous.decorators.IllConditionedFunctionDecorator;
 import net.sourceforge.cilib.type.types.container.Vector;
 import net.sourceforge.cilib.math.random.UniformDistribution;
@@ -49,18 +49,18 @@ public class BBOB20 extends AbstractBBOB {
 
 	private class Inner extends ContinuousFunction {
 		private Penalty pen;
-		private Schwefel schwefel;
+		private InvertedSchwefel invertedSchwefel;
 
 		public Inner() {
 			this.pen = Helper.newPenalty(5.0);
-			this.schwefel = new Schwefel();
+			this.invertedSchwefel = new InvertedSchwefel();
 		}
 
 		@Override
 		public Double f(Vector zHat) {
 			Vector z = zHat.plus(xOpt).multiply(100);
 
-			return (schwefel.f(z) / z.size()) + 100 * pen.f(z.multiply(0.01));
+			return (invertedSchwefel.f(z) / z.size()) + 100 * pen.f(z.multiply(0.01));
 		}
 	}
 }

@@ -7,53 +7,43 @@
 package net.sourceforge.cilib.functions.continuous.unconstrained;
 
 import net.sourceforge.cilib.functions.ContinuousFunction;
+import net.sourceforge.cilib.functions.Gradient;
 import net.sourceforge.cilib.type.types.container.Vector;
 
-import com.google.common.base.Preconditions;
-import net.sourceforge.cilib.functions.Gradient;
-
 /**
- * UrsemF1 function.
+ * Multimodal2 function.
  *
- * R(-2.5, 3)^2
- * Minimum: 4.81681
+ * Minimum: 0.0
+ * R(0, 1)^1
  *
  */
-public class UrsemF1 extends ContinuousFunction  implements Gradient{
+public class EvenDecreasingMinima extends ContinuousFunction implements Gradient {
 
-    private static final long serialVersionUID = -2595919942608678319L;
+    private static final long serialVersionUID = -5046586719830749372L;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public Double f(Vector input) {
-        Preconditions.checkArgument(input.size() == 2, "UrsemF1 function is only defined for 2 dimensions");
-
-        double x = input.doubleValueOf(0);
-        double y = input.doubleValueOf(1);
-
-        return Math.sin(2.0 * x - 0.5 * Math.PI) + 3.0 * Math.cos(y) + 0.5 * x;
+        double sum = 0.0;
+        for (int i = 0; i < input.size(); i++) {
+            double x1 = Math.pow(Math.sin(5.0 * Math.PI * input.doubleValueOf(i)), 6.0);
+            double exp1 = Math.pow((input.doubleValueOf(i) - 0.1) / 0.8, 2.0);
+            double exp2 = -2.0 * Math.log(exp1)/Math.log(2.0);
+            double x2 = Math.exp(exp2);
+            sum += -x1 * x2;
+        }
+        return sum;
     }
     
-    
-    public Double df(Vector input, int i) {
-        Preconditions.checkArgument(input.size() == 2, "UrsemF1 function is only defined for 2 dimensions");
-
-        double x = input.doubleValueOf(0);
-        double y = input.doubleValueOf(1);
-        double res = 0.0;
-        
-        if (i==1)
-        {
-            res = 2.0*Math.cos(2.0 * x - 0.5 * Math.PI)+0.5;
-        }
-        else
-        {
-            res = -3.0*Math.sin(y);
-        }
-
-        return res;
+    public Double df(Vector input, int i){
+    double result=0.0;
+    double exp1=Math.pow(Math.sin(5.0 * Math.PI *input.doubleValueOf(i-1)),5);
+    double exp2=Math.exp(-2.0 * Math.log(Math.pow((input.doubleValueOf(i-1) - 0.1) / 0.8, 2.0))/Math.log(2.0));
+    double exp3=30*Math.PI*Math.cos(5.0*Math.PI*input.doubleValueOf(i-1))-(3.2*Math.sin(5*Math.PI*input.doubleValueOf(i-1)))/(Math.log(2.0)*(input.doubleValueOf(i-1)-0.1));
+    result=exp1*exp2*exp3;
+        return -result;
     }
     
     public double GetGradientVectorAverage ( Vector x)

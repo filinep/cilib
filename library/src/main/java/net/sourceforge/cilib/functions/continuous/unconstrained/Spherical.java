@@ -37,7 +37,7 @@ import fj.F;
  * R(-5.12, 5.12)^30
  *
  */
-public class Spherical extends ContinuousFunction implements Differentiable {
+public class Spherical extends ContinuousFunction {
 
     private static final long serialVersionUID = 5811377575647995206L;
 
@@ -57,13 +57,4 @@ public class Spherical extends ContinuousFunction implements Differentiable {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Vector getGradient(Vector x) {
-        return x.map(new F<Numeric, Numeric>() {
-            @Override
-            public Numeric f(Numeric x) {
-                return Real.valueOf(x.doubleValue() * 2);
-            }
-        });
-    }
 }

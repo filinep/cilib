@@ -13,47 +13,62 @@ import com.google.common.base.Preconditions;
 import net.sourceforge.cilib.functions.Gradient;
 
 /**
- * UrsemF1 function.
+ * InvertedSixHumpCamelBack function.
  *
- * R(-2.5, 3)^2
- * Minimum: 4.81681
+ * <p>Title: CILib</p>
+ * <p>Description: CILib (Computational Intelligence Library)</p>
+ * <p>Copyright: Copyright (c) 2004</p>
+ * <p>Company: </p>
  *
+ * <p>
+ * Characteristics:
+ * <ul>
+ * <li>Only defined for 2 dimensions</li>
+ * <li>Multimodal</li>
+ * <li>Continuous</li>
+ * <li>Non Separable</li>
+ * </ul>
+ * </p>
+ *
+ * f(x) = -1.0316; x = (-0.0898, 0.1726); x = (0.0898, -0.1726)
+ * x_1 e [-3, 3]; x_2 e [-2, 2]
+ *
+ * R(-3,3),R(-2,2)
+ *
+ * @version 1.0
  */
-public class UrsemF1 extends ContinuousFunction  implements Gradient{
+public class InvertedSixHumpCamelBack extends ContinuousFunction implements Gradient {
 
-    private static final long serialVersionUID = -2595919942608678319L;
+    private static final long serialVersionUID = -3834640752316926216L;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public Double f(Vector input) {
-        Preconditions.checkArgument(input.size() == 2, "UrsemF1 function is only defined for 2 dimensions");
+        Preconditions.checkArgument(input.size() == 2, "SixHumpCamelBack function is only defined for 2 dimensions");
 
-        double x = input.doubleValueOf(0);
-        double y = input.doubleValueOf(1);
+        double x1 = input.doubleValueOf(0);
+        double x2 = input.doubleValueOf(1);
 
-        return Math.sin(2.0 * x - 0.5 * Math.PI) + 3.0 * Math.cos(y) + 0.5 * x;
+        return (-4.0*x1*x1+2.1*Math.pow(x1,4)-(Math.pow(x1,6)/3.0)-x1*x2+4.0*x2*x2-4.0*Math.pow(x2,4));
     }
     
+    public Double df(Vector input, int i){
+    double result=0.0;
+    double x1 = input.doubleValueOf(0);
+    double x2 = input.doubleValueOf(1);
     
-    public Double df(Vector input, int i) {
-        Preconditions.checkArgument(input.size() == 2, "UrsemF1 function is only defined for 2 dimensions");
-
-        double x = input.doubleValueOf(0);
-        double y = input.doubleValueOf(1);
-        double res = 0.0;
+    if (i==1) {
         
-        if (i==1)
-        {
-            res = 2.0*Math.cos(2.0 * x - 0.5 * Math.PI)+0.5;
-        }
-        else
-        {
-            res = -3.0*Math.sin(y);
-        }
-
-        return res;
+        result=-8.0*x1+8.4*Math.pow(x1,3)-2.0*Math.pow(x1,5)-x2;
+    }
+    
+    if(i==2) {
+        result=-x1+8.0*x2-16.0*Math.pow(x2,3);
+        
+    }
+          return result;
     }
     
     public double GetGradientVectorAverage ( Vector x)

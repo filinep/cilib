@@ -7,72 +7,81 @@
 package net.sourceforge.cilib.functions.continuous.unconstrained;
 
 import net.sourceforge.cilib.functions.ContinuousFunction;
+import net.sourceforge.cilib.functions.Gradient;
 import net.sourceforge.cilib.type.types.container.Vector;
 
-import com.google.common.base.Preconditions;
-import net.sourceforge.cilib.functions.Gradient;
-
 /**
- * <p><b>Bukin 6 Function.</b></p>
+ * <p><b>The InvertedShubert Function.</b></p>
  *
- * <p><b>Reference:</b> S.K. Mishra, <i>Some New Test Functions
- * for Global Optimization and Performance of Repulsive Particle Swarm Methods</i>
- * North-Eastern Hill University, India, 2002</p>
- *
- * <p>Minimum:
+ * <p>Global Minimum:
  * <ul>
- * <li> &fnof;(<b>x</b>*) = 0.0 </li>
- * <li> <b>x</b>* = (-10,1)</li>
- * <li> for x<sub>1</sub> in [-15,-5], x<sub>2</sub> in [-3,3]</li>
+ * <li>&fnof;(<b>x</b>*) = -186.7309088</li>
+ * <li> Many global minima: n=1 has 3, n=2 has 9, n=3 has 81, n=4 has 324, n has pow(3,n)</li>
+ * <li> All unevenly spaced</li>
+ * <li> for x<sub>i</sub> in [-10,10]</li>
+ * </ul>
+ * </p>
+ *
+ * <p>Local Minimum:
+ * <ul>
+ * <li> Many local minima</li>
  * </ul>
  * </p>
  *
  * <p>Characteristics:
  * <ul>
- * <li>Only defined for 2 dimensions</li>
+ * <li>Multi-dimensional</li>
  * <li>Multimodal</li>
- * <li>Seperable</li>
- * <li>Nonregular</li>
+ * <li>Non-Separable</li>
  * </ul>
  * </p>
  *
- * R(-15,-5),R(-3,3)
- *
  */
-public class Bukin6 extends ContinuousFunction implements Gradient {
-
-    private static final long serialVersionUID = -5557883529972004157L;
+public class InvertedShubert extends ContinuousFunction implements Gradient {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public Double f(Vector input) {
-        Preconditions.checkArgument(input.size() == 2, "Bukin 6 function is only defined for 2 dimensions");
-
-        double x1 = input.doubleValueOf(0);
-        double x2 = input.doubleValueOf(1);
-
-        return 100.0 * Math.sqrt(Math.abs(x2 - 0.01 * x1 * x1)) + 0.01 * Math.abs(x1 + 10.0);
+        double result = 1.0;
+        for (int i = 0; i < input.size(); ++i) {
+            double result2 = 0.0;
+            for (int j = 1; j <= 5; j++) {
+                result2 += j*Math.cos((j+1)*input.doubleValueOf(i) + j);
+            }
+            result *= result2;
+        }
+        return result;
     }
     
     public Double df(Vector input, int i) {
-        Preconditions.checkArgument(input.size() == 2, "Bukin 6 function is only defined for 2 dimensions");
-
-        double x1 = input.doubleValueOf(0);
-        double x2 = input.doubleValueOf(1);
         double res = 0.0;
-        
-        if(i==1)
+        double sum1 = 0.0;
+        for (int k = 1; k <= 5; ++k)
         {
-            res = 0.01*(x1+10.0)/Math.abs(x1+10.0) - (x1*(x2-0.01*x1*x1))/(Math.pow(Math.abs(x2-0.01*x1*x1),1.5));
+            sum1 += k*Math.cos(k+1);
         }
-        else
+        double prod = 1.0;
+        for (int j = 1; j <= input.size(); ++j)
         {
-            res = 50.0*(x1*(x2-0.01*x1*x1))/(Math.pow(Math.abs(x2-0.01*x1*x1),1.5));
+            double sum2 = 0.0;
+            for (int l = 1; l <= 5; ++l)
+            {
+                sum2 += l*input.doubleValueOf(j-1)*Math.cos(l+1);
+            }
+            prod = prod*sum2 + 15.0;
+            
         }
-
+        double sum3 = 0.0;
+        for (int m = 1; m <= 5; ++m)
+            {
+                sum3 += m*input.doubleValueOf(i-1)*Math.cos(m+1);
+            }
+        res = sum1 + prod/sum3;
+           
         return res;
+        
     }
     
     public double GetGradientVectorAverage ( Vector x)

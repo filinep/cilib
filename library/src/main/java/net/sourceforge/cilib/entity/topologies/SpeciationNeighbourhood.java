@@ -14,8 +14,8 @@ import fj.data.List;
 
 public class SpeciationNeighbourhood<E extends Entity> extends Neighbourhood<E> {
 
-    private ControlParameter n = ConstantControlParameter.of(0.1);
-    private ControlParameter radius = ConstantControlParameter.of(20);
+    private ControlParameter n = ConstantControlParameter.of(20);
+    private ControlParameter radius = ConstantControlParameter.of(0.1);
     private DistanceMeasure distance = new EuclideanDistanceMeasure();
 
     public SpeciationNeighbourhood() {}

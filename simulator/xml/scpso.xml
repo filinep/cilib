@@ -31,7 +31,7 @@
         </algorithm>
 
         <problem class="problem.FunctionOptimisationProblem" domain="R(-512.03:511.97)^30">
-            <function class="functions.continuous.unconstrained.Schwefel" />
+            <function class="functions.continuous.unconstrained.InvertedSchwefel" />
         </problem>
 
         <measurements class="simulator.MeasurementSuite" resolution="10">

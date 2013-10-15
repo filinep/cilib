@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE simulator [
+<!ATTLIST algorithm id ID #IMPLIED>
+<!ATTLIST problem id ID #IMPLIED>
+<!ATTLIST measurements id ID #IMPLIED>
+]>
+
+<simulator>
+    <algorithms>
+       <algorithm id="nichePSO" class="niching.NichingAlgorithm">
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="1000"/>
+
+            <mainSwarm class="pso.PSO">
+                <initialisationStrategy class="algorithm.initialisation.ClonedPopulationInitialisationStrategy">
+                    <entityType class="pso.particle.StandardParticle">
+                        <velocityProvider class="pso.velocityprovider.StandardVelocityProvider">
+                            <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="0.0"/>
+                            <cognitiveAcceleration class="controlparameter.ConstantControlParameter" parameter="1.2"/>
+                        </velocityProvider>
+                        <velocityInitialisationStrategy class="entity.initialisation.RandomInitialisationStrategy"/>
+                    </entityType>
+                    <entityNumber value="30"/>
+                </initialisationStrategy>
+
+                <iterationStrategy class="pso.iterationstrategies.SynchronousIterationStrategy">
+                    <boundaryConstraint class="problem.boundaryconstraint.ReinitialisationBoundary"/>
+                </iterationStrategy>
+            </mainSwarm>
+
+            <nicheCreator class="niching.creation.ClosestNeighbourNicheCreationStrategy">
+                <swarmType class="pso.PSO">
+                    <iterationStrategy class="pso.iterationstrategies.SynchronousIterationStrategy">
+                        <boundaryConstraint class="problem.boundaryconstraint.ReinitialisationBoundary"/>
+                    </iterationStrategy>
+                </swarmType>
+
+                <swarmBehavior class="pso.particle.ParticleBehavior">
+                    <velocityProvider class="pso.velocityprovider.GCVelocityProvider">
+                        <rho class="controlparameter.ConstantControlParameter" parameter="0.001"/>
+                        <delegate class="pso.velocityprovider.ClampingVelocityProvider">
+                            <vMax class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                            <delegate class="pso.velocityprovider.StandardVelocityProvider">
+                                <cognitiveAcceleration class="controlparameter.ConstantControlParameter" parameter="1.2"/>
+                                <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="1.2"/>
+                                <inertiaWeight class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.7" finalValue="0.2"/>
+                            </delegate>
+                        </delegate>
+                    </velocityProvider>
+                </swarmBehavior>
+            </nicheCreator>
+
+            <nicheDetector class="niching.creation.MaintainedFitnessNicheDetection">
+                <threshold class="controlparameter.ConstantControlParameter" parameter="1.0E-4"/>
+                <stationaryCounter class="controlparameter.ConstantControlParameter" parameter="3.0"/>
+            </nicheDetector>
+
+            <mergeDetector class="niching.merging.detection.RadiusOverlapMergeDetection">
+                <threshold class="controlparameter.ConstantControlParameter" parameter="1.0E-12"/>
+            </mergeDetector>
+
+            <absorptionDetector class="niching.merging.detection.RadiusOverlapMergeDetection">
+                <threshold class="controlparameter.ConstantControlParameter" parameter="1.0E-12"/>
+            </absorptionDetector>
+
+            <mainSwarmMerger class="niching.merging.SingleSwarmMergeStrategy"/>
+            <mainSwarmAbsorber class="niching.merging.SingleSwarmMergeStrategy"/>
+            <mainSwarmCreationMerger class="niching.merging.SingleSwarmMergeStrategy"/>
+
+            <subSwarmMerger class="niching.merging.StandardMergeStrategy"/>
+            <subSwarmAbsorber class="niching.merging.StandardMergeStrategy"/>
+
+            <subSwarmIterator class="niching.iterators.AllSwarmsIterator">
+                <iterator class="niching.iterators.SingleNicheIteration"/>
+            </subSwarmIterator>
+
+            <mainSwarmIterator class="niching.iterators.SingleNicheIteration"/>
+
+            <iterationStrategy class="niching.iterationstrategies.NichePSO"/>
+        </algorithm>
+
+        <algorithm id="scatter-merge" idref="nichePSO">
+            <mainSwarmMerger class="niching.merging.ScatterMergeStrategy"/>
+            <subSwarmMerger class="niching.merging.ScatterMergeStrategy"/>
+        </algorithm>
+        
+    </algorithms>
+
+    <problems>
+        <problem id="nn4-8-1-lin" class="problem.nn.NNDataTrainingProblem" trainingSetPercentage="0.7" generalisationSetPercentage="0.3">
+            <dataTableBuilder class="io.DataTableBuilder">
+                <dataReader class="io.ARFFFileReader" sourceURL="../library/src/test/resources/datasets/iris.arff"/>
+            </dataTableBuilder>
+            <neuralNetwork class="nn.NeuralNetwork">
+                <architecture class="nn.architecture.Architecture">
+                    <architectureBuilder class="nn.architecture.builder.FeedForwardArchitectureBuilder">
+                        <addLayer class="nn.architecture.builder.LayerConfiguration" size="4"/>
+                        <addLayer class="nn.architecture.builder.LayerConfiguration" size="8">
+                            <activationFunction class="functions.activation.Sigmoid" />
+                        </addLayer>
+                        <addLayer class="nn.architecture.builder.LayerConfiguration" size="1"/>
+                        <layerBuilder class="nn.architecture.builder.PrototypeFullyConnectedLayerBuilder">
+                            <domainProvider class="nn.domain.PresetNeuronDomain">
+                                <weightDomainPrototype class="type.StringBasedDomainRegistry" domainString="R(-4:4)"/>
+                            </domainProvider>
+                        </layerBuilder>
+                    </architectureBuilder>
+                </architecture>
+            </neuralNetwork>
+        </problem>
+    </problems>
+
+    <measurements id="fitness" class="simulator.MeasurementSuite" resolution="1">
+        <addMeasurement class="measurement.single.SwarmSize"/>
+        <addMeasurement class="measurement.multiple.CompositeMeasurement">
+            <addMeasurement class="measurement.single.SwarmSize"/>
+            <addMeasurement class="measurement.single.Solution"/>
+            <addMeasurement class="measurement.multiple.MultipleFitness"/>
+        </addMeasurement>
+    </measurements>
+
+    <simulations>
+        <simulation samples="3">
+            <algorithm idref="nichePSO"/>
+            <problem idref="nn4-8-1-lin"/>
+            <measurements idref="fitness" />
+            <output format="TXT" file="nichePSOnnTrainning.txt"/>
+        </simulation>
+    </simulations>
+</simulator>
