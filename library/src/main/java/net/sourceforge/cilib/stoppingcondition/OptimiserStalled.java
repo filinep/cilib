@@ -78,7 +78,7 @@ public class OptimiserStalled implements StoppingCondition<Algorithm> {
     @Override
     public double getPercentageCompleted(Algorithm algorithm) {
         // check if this is the first iteration
-        if (algorithm.getIterations() == 0) {
+        if (algorithm.getIterations() == 0 || previousBest == null) {
             previousBest = algorithm.getBestSolution();
             lastIteration = algorithm.getIterations();
             return 0.0;

@@ -49,7 +49,7 @@
             </nicheCreator>
 
             <nicheDetector class="niching.creation.MaintainedFitnessNicheDetection">
-                <threshold class="controlparameter.ConstantControlParameter" parameter="1.0E-5"/>
+                <threshold class="controlparameter.ConstantControlParameter" parameter="1.0E-12"/>
                 <stationaryCounter class="controlparameter.ConstantControlParameter" parameter="3.0"/>
             </nicheDetector>
 
@@ -76,15 +76,10 @@
 
             <iterationStrategy class="niching.iterationstrategies.NichePSO"/>
         </algorithm>
-
-        <algorithm id="scatter-merge" idref="nichePSO">
-            <mainSwarmMerger class="niching.merging.ScatterMergeStrategy"/>
-            <subSwarmMerger class="niching.merging.ScatterMergeStrategy"/>
-        </algorithm>
     </algorithms>
 
     <problems>
-        <problem id="f1" class="problem.FunctionOptimisationProblem" domain="R(0:1)^1">
+        <problem id="f1" class="problem.FunctionOptimisationProblem" domain="R(0:1)">
             <objective class="problem.objective.Minimise"/>
             <function class="functions.continuous.unconstrained.EqualMinima"/>
         </problem>
@@ -197,11 +192,18 @@
 
     <measurements id="fitness" class="simulator.MeasurementSuite" resolution="1">
         <addMeasurement class="measurement.single.ParticlePositionUpdates"/>
+        <addMeasurement class="measurement.multiple.SumGradientAverageAndInvertedNichesNumber"/>
         <addMeasurement class="measurement.single.SwarmSize"/>
-        
+        <addMeasurement class="measurement.single.Niches">
+            <peakHeight value="0.0"/>
+        </addMeasurement>
         <addMeasurement class="measurement.multiple.CompositeMeasurement">
+            <addMeasurement class="measurement.single.SwarmSize"/>
+            <addMeasurement class="measurement.single.Solution"/>
+            <addMeasurement class="measurement.single.Fitness"/>
             <addMeasurement class="measurement.single.GradientVector"/>
             <addMeasurement class="measurement.single.GradientVectorLength"/>
+            <addMeasurement class="measurement.single.GradientAverage"/>
         </addMeasurement>
     </measurements>
 

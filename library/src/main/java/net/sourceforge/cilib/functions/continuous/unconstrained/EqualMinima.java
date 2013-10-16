@@ -30,14 +30,14 @@ public class EqualMinima extends ContinuousFunction implements Gradient {
         for (int i = 0; i < input.size(); ++i) {
             sum += Math.pow(Math.sin(5.0 * Math.PI * input.doubleValueOf(i)), 6.0);
         }
-        return sum;
+        return -sum;
         
         
     }
     
     public Double df(Vector input, int i) {
         double res = 30.0*Math.PI*Math.pow(Math.sin(5.0 * Math.PI * input.doubleValueOf(i-1)), 5.0)*Math.cos(5.0 * Math.PI * input.doubleValueOf(i-1));
-        return res;
+        return -res;
     }
     
     public double GetGradientVectorAverage ( Vector x)

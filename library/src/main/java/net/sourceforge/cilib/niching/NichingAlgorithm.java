@@ -41,6 +41,7 @@ import net.sourceforge.cilib.stoppingcondition.StoppingCondition;
 import net.sourceforge.cilib.type.types.Int;
 
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
 
 /**
  * <p>
@@ -173,12 +174,11 @@ public class NichingAlgorithm extends MultiPopulationBasedAlgorithm implements H
      */
     @Override
     public void algorithmInitialisation() {
-        for (StoppingCondition stoppingCondition : getStoppingConditions()) {
+        /*for (StoppingCondition stoppingCondition : getStoppingConditions()) {
             this.mainSwarm.addStoppingCondition(stoppingCondition);
-        }
+        }*/
 
         this.mainSwarm.setOptimisationProblem(getOptimisationProblem());
-
         this.mainSwarm.performInitialisation();
 
         for (Entity e : mainSwarm.getTopology()) {
@@ -186,6 +186,8 @@ public class NichingAlgorithm extends MultiPopulationBasedAlgorithm implements H
         }
 
         this.entityType = this.mainSwarm.getTopology().head();
+        
+        this.setPopulations(new ArrayList());
     }
 
     @Override

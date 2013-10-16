@@ -73,7 +73,10 @@ public class DeratingOptimisationProblem extends FunctionOptimisationProblem {
             double distance = distanceMeasure.distance(input, v);
 
             if (distance < deratingFunction.getRadius()) {
-                fitness *= getDeratingFunction().f(Vector.of(distance));
+                if (getObjective() instanceof Maximise)
+                    fitness *= getDeratingFunction().f(Vector.of(distance));
+                else
+                    fitness /= getDeratingFunction().f(Vector.of(distance));
             }
         }
 

@@ -7,7 +7,7 @@
 <simulator>
     <algorithms>
         <algorithm id="deratingNichePSO" class="niching.NichingAlgorithm">
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="200000">
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="50000">
                 <predicate class="stoppingcondition.Maximum"/>
                 <measurement class="measurement.single.ParticlePositionUpdates"/>
             </addStoppingCondition>
@@ -144,6 +144,7 @@
     </measurements>
 
     <measurements id="composite" class="simulator.MeasurementSuite" resolution="1">
+        <addMeasurement class="measurement.multiple.SumGradientAverageAndInvertedNichesNumber"/>
         <addMeasurement class="measurement.single.ParticlePositionUpdates"/>
         <addMeasurement class="measurement.single.SwarmSize"/>
         <addMeasurement class="measurement.multiple.CompositeMeasurement">
