@@ -6,7 +6,6 @@
  */
 package net.sourceforge.cilib.measurement.single;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import fj.F;
@@ -20,22 +19,24 @@ import net.sourceforge.cilib.entity.Entity;
 import net.sourceforge.cilib.entity.EntityType;
 import net.sourceforge.cilib.entity.Topologies;
 import net.sourceforge.cilib.entity.topologies.SpeciationNeighbourhood;
+import net.sourceforge.cilib.functions.Gradient;
 import net.sourceforge.cilib.measurement.Measurement;
 import net.sourceforge.cilib.niching.NichingAlgorithm;
+import net.sourceforge.cilib.problem.FunctionOptimisationProblem;
+import net.sourceforge.cilib.problem.Problem;
 import net.sourceforge.cilib.pso.particle.Particle;
 import net.sourceforge.cilib.type.types.container.TypeList;
+import net.sourceforge.cilib.type.types.container.Vector;
 
 public class LocalNiches implements Measurement<TypeList> {
 
     private List<Particle> niches;
     private SpeciationNeighbourhood neighbourhood;
-    private Double peakHeight;
     private Double error;
     private Boolean useMemoryInformation;
 
     public LocalNiches() {
         this.neighbourhood = new SpeciationNeighbourhood();
-        this.peakHeight = null;
         this.error = 1e-4;
         this.useMemoryInformation = true;
     }
@@ -43,17 +44,17 @@ public class LocalNiches implements Measurement<TypeList> {
     private LocalNiches(LocalNiches copy) {
         this.niches = copy.niches;
         this.neighbourhood = copy.neighbourhood;
-        this.peakHeight = copy.peakHeight;
         this.error = copy.error;
         this.useMemoryInformation = copy.useMemoryInformation;
     }
 
+    @Override
     public LocalNiches getClone() {
         return new LocalNiches(this);
     }
 
+    @Override
     public TypeList getValue(Algorithm algorithm) {
-        Preconditions.checkNotNull(peakHeight, "GlobalOptimaFitness must be set in GlobalOptimaCount measurement.");
         niches = Lists.newArrayList();
 
         if (algorithm instanceof NichingAlgorithm) {
@@ -81,22 +82,22 @@ public class LocalNiches implements Measurement<TypeList> {
         }
 
         neighbourhood.setNeighbourhoodSize(ConstantControlParameter.of(niches.size()));
+        Problem d = algorithm.getOptimisationProblem();
+        FunctionOptimisationProblem fop = (FunctionOptimisationProblem)d;
+        final Gradient df = (Gradient)fop.getFunction();
+        
         ArrayList<Particle> es = Java.<Particle>List_ArrayList().f(fj.data.List.iterableList(Topologies.getNeighbourhoodBestEntities(fj.data.List.iterableList(niches), neighbourhood))
-                .filter(new F<Particle, Boolean>() {
-                    @Override
-                    public Boolean f(Particle a) {
-                        return Math.abs(a.getFitness().getValue() - peakHeight) < error;
-                    }
-                }));
+            .filter(new F<Particle, Boolean>() {
+                @Override
+                public Boolean f(Particle a) {
+                    return df.GetGradientVectorLength((Vector)a.getCandidateSolution()) < error;
+                }
+            }));
         TypeList t = new TypeList();
         for (Entity e : es) {
             t.add(e.getCandidateSolution());
         }
         return t;
-    }
-
-    public void setPeakHeight(double ph) {
-        this.peakHeight = ph;
     }
 
     public void setRadius(double r) {

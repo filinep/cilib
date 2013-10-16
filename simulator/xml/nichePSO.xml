@@ -79,7 +79,7 @@
     </algorithms>
 
     <problems>
-        <problem id="f1" class="problem.FunctionOptimisationProblem" domain="R(0:1)">
+        <problem id="f1" class="problem.FunctionOptimisationProblem" domain="R(0:1)^5">
             <objective class="problem.objective.Minimise"/>
             <function class="functions.continuous.unconstrained.EqualMinima"/>
         </problem>
@@ -194,8 +194,8 @@
         <addMeasurement class="measurement.single.ParticlePositionUpdates"/>
         <addMeasurement class="measurement.multiple.SumGradientAverageAndInvertedNichesNumber"/>
         <addMeasurement class="measurement.single.SwarmSize"/>
-        <addMeasurement class="measurement.single.Niches">
-            <peakHeight value="0.0"/>
+        <addMeasurement class="measurement.single.LocalNiches">
+            <radius value="0.01"/>
         </addMeasurement>
         <addMeasurement class="measurement.multiple.CompositeMeasurement">
             <addMeasurement class="measurement.single.SwarmSize"/>
