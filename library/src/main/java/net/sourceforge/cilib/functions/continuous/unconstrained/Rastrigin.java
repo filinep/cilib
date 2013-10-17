@@ -8,6 +8,7 @@ package net.sourceforge.cilib.functions.continuous.unconstrained;
 
 import net.sourceforge.cilib.functions.ContinuousFunction;
 import net.sourceforge.cilib.functions.Differentiable;
+import net.sourceforge.cilib.functions.NichingFunction;
 import net.sourceforge.cilib.type.types.Numeric;
 import net.sourceforge.cilib.type.types.Real;
 import net.sourceforge.cilib.type.types.container.Vector;
@@ -35,7 +36,7 @@ import net.sourceforge.cilib.functions.Gradient;
  * R(-5.12, 5.12)^30
  *
  */
-public class Rastrigin extends ContinuousFunction implements Gradient {
+public class Rastrigin extends ContinuousFunction implements Gradient, NichingFunction {
 
     private static final long serialVersionUID = 447701182683968035L;
 
@@ -97,4 +98,9 @@ public class Rastrigin extends ContinuousFunction implements Gradient {
         
         return vectorBuilder.build();
     }
+
+	@Override
+	public double getNicheRadius() {
+		return 0.01;
+	}
 }

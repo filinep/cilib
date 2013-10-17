@@ -7,7 +7,12 @@
 package net.sourceforge.cilib.pso;
 
 import com.google.common.collect.Lists;
+
+import fj.F;
+import fj.Show;
+
 import java.util.List;
+
 import net.sourceforge.cilib.algorithm.initialisation.ClonedPopulationInitialisationStrategy;
 import net.sourceforge.cilib.algorithm.population.IterationStrategy;
 import net.sourceforge.cilib.algorithm.population.SinglePopulationBasedAlgorithm;
@@ -17,6 +22,8 @@ import net.sourceforge.cilib.problem.solution.OptimisationSolution;
 import net.sourceforge.cilib.pso.iterationstrategies.SynchronousIterationStrategy;
 import net.sourceforge.cilib.pso.particle.Particle;
 import net.sourceforge.cilib.pso.particle.StandardParticle;
+import net.sourceforge.cilib.type.types.container.StructuredType;
+import net.sourceforge.cilib.util.functions.Entities;
 
 /**
  * <p>

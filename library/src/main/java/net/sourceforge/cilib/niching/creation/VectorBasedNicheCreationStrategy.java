@@ -57,7 +57,7 @@ public class VectorBasedNicheCreationStrategy extends NicheCreationStrategy {
 
     @Override
     public NichingSwarms f(NichingSwarms swarms, Entity b) {
-        Particle gBest = (Particle) Topologies.getBestEntity(swarms.getMainSwarm().getTopology(), new SocialBestFitnessComparator());
+    	Particle gBest = (Particle) Topologies.getBestEntity(swarms.getMainSwarm().getTopology(), new SocialBestFitnessComparator());
         List<Particle> newTopology = List.list(gBest);
         List<Particle> swarm = ((List<Particle>) topologyProvider.f(swarms)).delete(gBest, Equal.equal(equalParticle.curry()));
 

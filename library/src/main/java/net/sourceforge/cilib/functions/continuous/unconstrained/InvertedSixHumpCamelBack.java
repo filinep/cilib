@@ -7,9 +7,11 @@
 package net.sourceforge.cilib.functions.continuous.unconstrained;
 
 import net.sourceforge.cilib.functions.ContinuousFunction;
+import net.sourceforge.cilib.functions.NichingFunction;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 import com.google.common.base.Preconditions;
+
 import net.sourceforge.cilib.functions.Gradient;
 
 /**
@@ -37,7 +39,7 @@ import net.sourceforge.cilib.functions.Gradient;
  *
  * @version 1.0
  */
-public class InvertedSixHumpCamelBack extends ContinuousFunction implements Gradient {
+public class InvertedSixHumpCamelBack extends ContinuousFunction implements Gradient, NichingFunction {
 
     private static final long serialVersionUID = -3834640752316926216L;
 
@@ -107,4 +109,9 @@ public class InvertedSixHumpCamelBack extends ContinuousFunction implements Grad
         
         return vectorBuilder.build();
     }
+
+	@Override
+	public double getNicheRadius() {
+		return 0.5;
+	}
 }

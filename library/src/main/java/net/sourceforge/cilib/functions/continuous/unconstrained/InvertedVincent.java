@@ -9,6 +9,7 @@ package net.sourceforge.cilib.functions.continuous.unconstrained;
 
 import net.sourceforge.cilib.functions.ContinuousFunction;
 import net.sourceforge.cilib.functions.Gradient;
+import net.sourceforge.cilib.functions.NichingFunction;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 /**
@@ -27,7 +28,7 @@ import net.sourceforge.cilib.type.types.container.Vector;
  * R(0.25,10)^n
  *
  */
-public class InvertedVincent extends ContinuousFunction implements Gradient{
+public class InvertedVincent extends ContinuousFunction implements Gradient, NichingFunction {
     /**
      * {@inheritDoc}
      */
@@ -82,4 +83,9 @@ public class InvertedVincent extends ContinuousFunction implements Gradient{
         
         return vectorBuilder.build();
     }
+
+	@Override
+	public double getNicheRadius() {
+		return 0.2;
+	}
 }

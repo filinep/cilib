@@ -12,6 +12,7 @@ import net.sourceforge.cilib.controlparameter.ControlParameter;
 import net.sourceforge.cilib.math.random.UniformDistribution;
 import net.sourceforge.cilib.problem.solution.Fitness;
 import net.sourceforge.cilib.pso.particle.Particle;
+import net.sourceforge.cilib.type.types.Real;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 public class VectorBasedPositionProvider implements PositionProvider {
@@ -43,12 +44,12 @@ public class VectorBasedPositionProvider implements PositionProvider {
         Fitness newFitness = particle.getFitnessCalculator().getFitness(tmp);
 
         final UniformDistribution uniform = new UniformDistribution();
-        Vector newPBest = newPos.multiply(new P1<Number>() {
+        Vector newPBest = newPos.plus(Vector.newBuilder().repeat(newPos.size(), Real.valueOf(1.0)).build().multiply(new P1<Number>() {
             @Override
             public Number _1() {
                 return uniform.getRandomNumber(-granularity.getParameter(), granularity.getParameter());
             }
-        }).plus(newPos);
+        }));
         tmp.setCandidateSolution(newPos);
         Fitness newPBestFitness = particle.getFitnessCalculator().getFitness(tmp);
 

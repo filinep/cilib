@@ -8,6 +8,7 @@ package net.sourceforge.cilib.functions.continuous.unconstrained;
 
 import net.sourceforge.cilib.functions.ContinuousFunction;
 import net.sourceforge.cilib.functions.Gradient;
+import net.sourceforge.cilib.functions.NichingFunction;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 /**
@@ -37,7 +38,7 @@ import net.sourceforge.cilib.type.types.container.Vector;
  * </p>
  *
  */
-public class InvertedShubert extends ContinuousFunction implements Gradient {
+public class InvertedShubert extends ContinuousFunction implements Gradient, NichingFunction {
 
     /**
      * {@inheritDoc}
@@ -120,4 +121,9 @@ public class InvertedShubert extends ContinuousFunction implements Gradient {
         
         return vectorBuilder.build();
     }
+
+	@Override
+	public double getNicheRadius() {
+		return 0.5;
+	}
 }

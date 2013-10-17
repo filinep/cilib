@@ -7,14 +7,29 @@
 package net.sourceforge.cilib.controlparameter;
 
 import net.sourceforge.cilib.algorithm.AbstractAlgorithm;
+import net.sourceforge.cilib.algorithm.Algorithm;
 import net.sourceforge.cilib.functions.NichingFunction;
 import net.sourceforge.cilib.problem.FunctionOptimisationProblem;
+import net.sourceforge.cilib.problem.Problem;
+import net.sourceforge.cilib.tuning.TuningAlgorithm;
+import net.sourceforge.cilib.tuning.TuningProblem;
 
 public class NichingRadiusControlParameter implements ControlParameter {
+	
+	private double defaultRadius = 0.01;
 
     @Override
     public double getParameter() {
-        return ((NichingFunction) ((FunctionOptimisationProblem) AbstractAlgorithm.get().getOptimisationProblem()).getFunction()).getNicheRadius();
+    	Algorithm alg = AbstractAlgorithm.get();
+    	Problem prob = alg.getOptimisationProblem();
+    	if (prob instanceof TuningProblem) {
+    		prob = ((TuningProblem) prob).getCurrentProblem();
+    	}
+    	
+    	if (((FunctionOptimisationProblem) prob).getFunction() instanceof NichingFunction)
+    		return ((NichingFunction) ((FunctionOptimisationProblem) prob).getFunction()).getNicheRadius();
+    	else
+			return defaultRadius;         
     }
 
     @Override
@@ -26,5 +41,9 @@ public class NichingRadiusControlParameter implements ControlParameter {
     public ControlParameter getClone() {
         return this;
     }
+    
+    public void setDefaultRadius(double defaultRadius) {
+		this.defaultRadius = defaultRadius;
+	}
 
 }

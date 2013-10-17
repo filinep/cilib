@@ -6,105 +6,109 @@
  */
 package net.sourceforge.cilib.measurement.single;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import fj.F;
-import fj.data.Java;
-import java.util.ArrayList;
-import java.util.List;
+import net.sourceforge.cilib.algorithm.AbstractAlgorithm;
 import net.sourceforge.cilib.algorithm.Algorithm;
+import net.sourceforge.cilib.algorithm.population.MultiPopulationBasedAlgorithm;
 import net.sourceforge.cilib.algorithm.population.SinglePopulationBasedAlgorithm;
 import net.sourceforge.cilib.controlparameter.ConstantControlParameter;
+import net.sourceforge.cilib.controlparameter.ControlParameter;
 import net.sourceforge.cilib.entity.Entity;
-import net.sourceforge.cilib.entity.EntityType;
-import net.sourceforge.cilib.entity.Topologies;
-import net.sourceforge.cilib.entity.topologies.SpeciationNeighbourhood;
-import net.sourceforge.cilib.functions.Gradient;
 import net.sourceforge.cilib.measurement.Measurement;
-import net.sourceforge.cilib.niching.NichingAlgorithm;
-import net.sourceforge.cilib.problem.FunctionOptimisationProblem;
-import net.sourceforge.cilib.problem.Problem;
-import net.sourceforge.cilib.pso.particle.Particle;
+import net.sourceforge.cilib.problem.solution.OptimisationSolution;
 import net.sourceforge.cilib.type.types.container.TypeList;
 import net.sourceforge.cilib.type.types.container.Vector;
+import net.sourceforge.cilib.util.distancemeasure.EuclideanDistanceMeasure;
+import net.sourceforge.cilib.util.functions.Algorithms;
+import fj.Equal;
+import fj.F;
+import fj.Ord;
+import fj.data.List;
 
 public class LocalNiches implements Measurement<TypeList> {
 
-    private List<Particle> niches;
-    private SpeciationNeighbourhood neighbourhood;
-    private Double error;
-    private Boolean useMemoryInformation;
-
-    public LocalNiches() {
-        this.neighbourhood = new SpeciationNeighbourhood();
-        this.error = 1e-4;
-        this.useMemoryInformation = true;
-    }
-
-    private LocalNiches(LocalNiches copy) {
-        this.niches = copy.niches;
-        this.neighbourhood = copy.neighbourhood;
-        this.error = copy.error;
-        this.useMemoryInformation = copy.useMemoryInformation;
-    }
+private ControlParameter nicheRadius = ConstantControlParameter.of(0.01);
+	
+	public void setNicheRadius(ControlParameter nicheRadius) {
+		this.nicheRadius = nicheRadius;
+	}
 
     @Override
     public LocalNiches getClone() {
-        return new LocalNiches(this);
+        return this;
     }
 
     @Override
     public TypeList getValue(Algorithm algorithm) {
-        niches = Lists.newArrayList();
 
-        if (algorithm instanceof NichingAlgorithm) {
-            NichingAlgorithm pba = (NichingAlgorithm) algorithm;
-            Iterables.addAll(niches, pba.getTopology());
-
-            for (SinglePopulationBasedAlgorithm p : pba.getPopulations()) {
-                Iterables.addAll(niches, p.getTopology());
-            }
+        MultiPopulationBasedAlgorithm multi;
+        if (algorithm instanceof SinglePopulationBasedAlgorithm) {
+            multi = neighbourhood2populations((SinglePopulationBasedAlgorithm<Entity>) algorithm);
         } else {
-            SinglePopulationBasedAlgorithm pba = (SinglePopulationBasedAlgorithm) algorithm;
-            Iterables.addAll(niches, pba.getTopology());
+            multi = (MultiPopulationBasedAlgorithm) algorithm;
         }
-
-        if (useMemoryInformation) {
-            for (int i = 0; i < niches.size(); i++) {
-                if (niches.get(i) instanceof Particle) {
-                    Particle p = (Particle) niches.get(i);
-                    Particle clone = p.getClone();
-                    clone.setCandidateSolution(clone.getBestPosition());
-                    clone.getProperties().put(EntityType.Particle.BEST_FITNESS, clone.getBestFitness());
-                    niches.set(i, clone);
-                }
-            }
-        }
-
-        neighbourhood.setNeighbourhoodSize(ConstantControlParameter.of(niches.size()));
-        Problem d = algorithm.getOptimisationProblem();
-        FunctionOptimisationProblem fop = (FunctionOptimisationProblem)d;
-        final Gradient df = (Gradient)fop.getFunction();
         
-        ArrayList<Particle> es = Java.<Particle>List_ArrayList().f(fj.data.List.iterableList(Topologies.getNeighbourhoodBestEntities(fj.data.List.iterableList(niches), neighbourhood))
-            .filter(new F<Particle, Boolean>() {
-                @Override
-                public Boolean f(Particle a) {
-                    return df.GetGradientVectorLength((Vector)a.getCandidateSolution()) < error;
-                }
-            }));
-        TypeList t = new TypeList();
-        for (Entity e : es) {
-            t.add(e.getCandidateSolution());
+        List<Vector> niches = merge(List.iterableList(multi.getPopulations())
+        		.map(Algorithms.<SinglePopulationBasedAlgorithm>getBestSolution()),
+        		List.<Vector>nil());
+                
+        TypeList tl = new TypeList();
+        for (Vector element : niches) {
+        	tl.add(element);
         }
-        return t;
+        
+        return tl; 
+    }
+    
+    private List<Vector> merge(final List<OptimisationSolution> swarm, final List<Vector> acc) {
+    	if (swarm.isEmpty()) {
+    		return acc;
+    	}
+    	
+    	if (swarm.tail().isEmpty()) {
+    		return merge(List.<OptimisationSolution>nil(), acc.cons((Vector) swarm.head().getPosition()));
+    	}
+    	
+    	List<OptimisationSolution> toMerge = swarm.tail().filter(new F<OptimisationSolution, Boolean>() {
+			@Override
+			public Boolean f(OptimisationSolution e) {
+				return new EuclideanDistanceMeasure()
+					.distance((Vector) swarm.head().getPosition(), (Vector) e.getPosition()) < nicheRadius.getParameter();
+			}
+		}).cons(swarm.head());
+    	
+    	return merge(swarm.minus(Equal.<OptimisationSolution>anyEqual(), toMerge), 
+    			acc.cons((Vector) toMerge.maximum(Ord.<OptimisationSolution>comparableOrd()).getPosition()));
     }
 
-    public void setRadius(double r) {
-        neighbourhood.setRadius(ConstantControlParameter.of(r));
-    }
+    private <E extends Entity> MultiPopulationBasedAlgorithm neighbourhood2populations(SinglePopulationBasedAlgorithm<E> s) {
+        MultiPopulationBasedAlgorithm m = new MultiPopulationBasedAlgorithm() {
+            @Override
+            protected void algorithmIteration() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
 
-    public void setError(Double error) {
-        this.error = error;
+            @Override
+            public AbstractAlgorithm getClone() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public OptimisationSolution getBestSolution() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public Iterable<OptimisationSolution> getSolutions() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
+        
+        for (E e : s.getTopology()) {
+            SinglePopulationBasedAlgorithm dummyPopulation = s.getClone();
+            dummyPopulation.setTopology(s.getNeighbourhood().f(s.getTopology(), e));
+            m.addPopulationBasedAlgorithm(dummyPopulation);
+        }
+        
+        return m;
     }
 }
