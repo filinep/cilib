@@ -39,6 +39,7 @@ import fj.Ord;
 import fj.P1;
 import fj.data.List;
 import fj.function.Doubles;
+import net.sourceforge.cilib.type.types.Real;
 
 public class VectorBasedNicheCreationStrategy extends NicheCreationStrategy {
     private DistanceMeasure distanceMeasure;
@@ -86,13 +87,13 @@ public class VectorBasedNicheCreationStrategy extends NicheCreationStrategy {
             Particle newP = gBest.getClone();
 
             // new position within the niche
-            Vector solution = (Vector) newP.getCandidateSolution();
-            solution = solution.multiply(new P1<Number>() {
-                @Override
-                public Number _1() {
-                    return uniform.getRandomNumber(-nicheRadius, nicheRadius);
-                }
-            }).plus((Vector) gBest.getCandidateSolution());
+            Vector solution = ((Vector) gBest.getCandidateSolution())
+                .plus(Vector.newBuilder().repeat(gBest.getDimension(), Real.valueOf(1.0)).build().multiply(new P1<Number>() {
+                    @Override
+                    public Number _1() {
+                        return uniform.getRandomNumber(-nicheRadius, nicheRadius);
+                    }
+                }));
 
             newP.setCandidateSolution(solution);
             newP.getProperties().put(EntityType.Coevolution.POPULATION_ID, Int.valueOf(swarms.getSubswarms().length() + 1));

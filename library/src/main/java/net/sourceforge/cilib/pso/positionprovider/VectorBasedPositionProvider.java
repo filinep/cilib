@@ -9,6 +9,7 @@ package net.sourceforge.cilib.pso.positionprovider;
 import fj.P1;
 import net.sourceforge.cilib.controlparameter.ConstantControlParameter;
 import net.sourceforge.cilib.controlparameter.ControlParameter;
+import net.sourceforge.cilib.entity.EntityType;
 import net.sourceforge.cilib.math.random.UniformDistribution;
 import net.sourceforge.cilib.problem.solution.Fitness;
 import net.sourceforge.cilib.pso.particle.Particle;
@@ -57,6 +58,8 @@ public class VectorBasedPositionProvider implements PositionProvider {
             Vector tmpVector = Vector.copyOf(newPos);
             newPos = newPBest;
             newPBest = tmpVector;
+            
+            newPBestFitness = newFitness;
         }
 
         double dot = ((Vector) particle.getNeighbourhoodBest().getBestPosition())
@@ -65,6 +68,9 @@ public class VectorBasedPositionProvider implements PositionProvider {
         if (dot < 0) {
             return (Vector) particle.getCandidateSolution();
         }
+        
+        particle.getProperties().put(EntityType.Particle.BEST_POSITION, newPBest);
+        particle.getProperties().put(EntityType.Particle.BEST_FITNESS, newPBestFitness);
 
         return newPos;
     }

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE simulator [
+<!ATTLIST algorithm id ID #IMPLIED>
+<!ATTLIST problem id ID #IMPLIED>
+<!ATTLIST measurements id ID #IMPLIED>
+]>
+<simulator>
+    <algorithms>
+        <algorithm id="enhancedVBPSO" class="niching.NichingAlgorithm">
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="25000">
+                <predicate class="stoppingcondition.Maximum"/>
+                <measurement class="measurement.single.ParticlePositionUpdates"/>
+            </addStoppingCondition>
+
+            <mainSwarm class="pso.PSO">
+                <initialisationStrategy class="algorithm.initialisation.ClonedPopulationInitialisationStrategy">
+                    <entityNumber value="50"/>
+                    <entityType class="pso.particle.StandardParticle">
+                        <personalBestInitialisationStrategy class="entity.initialisation.MutatedPBestInitialisationStrategy"/>
+                    </entityType>
+                </initialisationStrategy>
+            </mainSwarm>
+
+            <nicheCreator class="niching.creation.VectorBasedNicheCreationStrategy">
+                <swarmBehavior class="pso.particle.ParticleBehavior">
+                    <velocityProvider class="pso.velocityprovider.StandardVelocityProvider">
+                        <inertiaWeight class="controlparameter.ConstantControlParameter" parameter="0.8"/>
+                        <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <cognitiveAcceleration class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                    </velocityProvider>
+                    <positionProvider class="pso.positionprovider.VectorBasedPositionProvider">
+                        <granularity class="tuning.TuningControlParameter" index="0"/>
+                    </positionProvider>
+                </swarmBehavior>
+
+                <swarmType class="pso.PSO">
+                    <iterationStrategy class="pso.iterationstrategies.SynchronousIterationStrategy">
+                        <boundaryConstraint class="problem.boundaryconstraint.ReinitialisationBoundary"/>
+                    </iterationStrategy>
+                </swarmType>
+            </nicheCreator>
+
+            <nicheDetector class="niching.creation.AlwaysTrueNicheDetection"/>
+
+            <subSwarmIterator class="niching.iterators.MergingSubswarmIterator">
+                <iterator class="niching.iterators.SingleNicheIteration"/>
+                <granularity class="tuning.TuningControlParameter" index="0"/>
+                <iterations class="controlparameter.LinearlyVaryingControlParameter" initialValue="10" finalValue="1"/>
+            </subSwarmIterator>
+
+            <iterationStrategy class="niching.iterationstrategies.VectorBasedPSO"/>
+        </algorithm>
+
+        <algorithm id="frace" class="tuning.TuningAlgorithm">
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="200"/>
+
+            <iterationStrategy class="tuning.IFRaceIterationStrategy">
+                <iterationStrategy class="tuning.FRaceIterationStrategy">
+                    <minProblems class="controlparameter.ConstantControlParameter" parameter="10"/>
+                    <minSolutions class="controlparameter.ConstantControlParameter" parameter="2"/>
+                </iterationStrategy>
+
+                <parameterChangeTrigger class="tuning.parameterchange.triggers.PeriodicParameterChangeTrigger">
+                    <period class="controlparameter.ConstantControlParameter" parameter="20"/>
+                </parameterChangeTrigger>
+
+                <parameterChangeReaction class="tuning.parameterchange.reactions.MinMaxParameterChangeReaction">
+                    <count class="controlparameter.ConstantControlParameter" parameter="32"/>
+                </parameterChangeReaction>
+            </iterationStrategy>
+
+            <parameterProvider class="tuning.parameterlist.SobolParameterListProvider">
+                <addParameterBounds class="tuning.parameters.TuningBounds" lowerBound="0.0" upperBound="5.0"/>
+                <count value="32"/>
+            </parameterProvider>
+        </algorithm>
+    </algorithms>
+
+    <problems>
+        <problem id="tuning" class="tuning.TuningProblem" domain="R(-5:5)^10">
+
+            <samples value="10"/>
+            <targetAlgorithm idref="enhancedVBPSO"/>
+            <measurement class="measurement.multiple.SumGradientAverageAndInvertedNichesNumber">
+                <nicheRadius class="controlparameter.NichingRadiusControlParameter"/>
+            </measurement>
+
+            <problemsProvider class="tuning.problem.StandardProblemGenerator">
+                    <addProblem id="f1" class="problem.FunctionOptimisationProblem" domain="R(0:1)">
+                        <objective class="problem.objective.Minimise"/>
+                        <function class="functions.continuous.unconstrained.EqualMinima"/>
+                    </addProblem>
+
+                    <addProblem id="f2" class="problem.FunctionOptimisationProblem" domain="R(0:1)^3">
+                        <objective class="problem.objective.Minimise"/>
+                        <function class="functions.continuous.unconstrained.UnevenDecreasingMinima"/>
+                    </addProblem>
+
+                    <addProblem id="f3" class="problem.DeratingOptimisationProblem" domain="R(-6:6)^2">
+                        <objective class="problem.objective.Minimise"/>
+                        <function class="functions.continuous.unconstrained.InvertedHimmelblau"/>
+                    </addProblem>
+
+                    <addProblem id="f4" class="problem.FunctionOptimisationProblem" domain="R(-5.12:5.12)^5">
+                        <objective class="problem.objective.Minimise"/>
+                        <function class="functions.continuous.unconstrained.Rastrigin"/>
+                    </addProblem>
+
+                    <addProblem id="f5" class="problem.FunctionOptimisationProblem" domain="R(-1.9:1.9),R(-1.1:1.1)">
+                        <objective class="problem.objective.Minimise"/>
+                        <function class="functions.continuous.unconstrained.InvertedSixHumpCamelBack"/>
+                    </addProblem>
+
+                    <addProblem id="f6" class="problem.FunctionOptimisationProblem" domain="R(-10:10)^5">
+                        <objective class="problem.objective.Minimise"/>
+                        <function class="functions.continuous.unconstrained.InvertedShubert"/>
+                    </addProblem>
+
+                    <addProblem id="f7" class="problem.FunctionOptimisationProblem" domain="R(0.25:10)^5">
+                        <objective class="problem.objective.Minimise"/>
+                        <function class="functions.continuous.unconstrained.InvertedVincent"/>
+                    </addProblem>
+
+                    <addProblem id="f8" class="problem.FunctionOptimisationProblem" domain="R(0:1)^5">
+                        <objective class="problem.objective.Minimise"/>
+                        <function class="functions.continuous.unconstrained.EqualMinima"/>
+                    </addProblem>
+
+                    <addProblem id="f9" class="problem.FunctionOptimisationProblem" domain="R(-10:10)^2">
+                        <objective class="problem.objective.Minimise"/>
+                        <function class="functions.continuous.unconstrained.InvertedShubert"/>
+                    </addProblem>
+
+                    <addProblem id="f10" class="problem.FunctionOptimisationProblem" domain="R(0.25:10)^2">
+                        <objective class="problem.objective.Minimise"/>
+                        <function class="functions.continuous.unconstrained.InvertedVincent"/>
+                    </addProblem>
+            </problemsProvider>
+        </problem>
+    </problems>
+
+    <measurements id="measurements" class="simulator.MeasurementSuite" resolution="1">
+        <addMeasurement class="measurement.multiple.MultipleSolutions"/>
+    </measurements>
+
+    <simulations>
+        <simulation samples="1">
+            <algorithm idref="frace"/>
+            <problem idref="tuning"/>
+            <measurements idref="measurements" />
+            <output format="TXT" file="data/frace/nichePSO-frace-sobol.txt"/>
+        </simulation>
+    </simulations>
+</simulator>
