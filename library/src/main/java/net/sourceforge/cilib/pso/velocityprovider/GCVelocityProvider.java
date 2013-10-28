@@ -9,7 +9,6 @@ package net.sourceforge.cilib.pso.velocityprovider;
 import net.sourceforge.cilib.algorithm.AbstractAlgorithm;
 import net.sourceforge.cilib.controlparameter.ConstantControlParameter;
 import net.sourceforge.cilib.controlparameter.ControlParameter;
-import net.sourceforge.cilib.controlparameter.SettableControlParameter;
 import net.sourceforge.cilib.entity.Topologies;
 import net.sourceforge.cilib.entity.comparator.SocialBestFitnessComparator;
 import net.sourceforge.cilib.math.random.generator.Rand;
@@ -17,6 +16,7 @@ import net.sourceforge.cilib.problem.solution.Fitness;
 import net.sourceforge.cilib.problem.solution.InferiorFitness;
 import net.sourceforge.cilib.pso.PSO;
 import net.sourceforge.cilib.pso.particle.Particle;
+import net.sourceforge.cilib.type.types.Bounds;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 /**
@@ -51,7 +51,7 @@ public class GCVelocityProvider implements VelocityProvider {
 
     private ControlParameter inertiaWeight;
     private ControlParameter rhoLowerBound;
-    private SettableControlParameter rho;
+    private ControlParameter rho;
 
     private int successCount;
     private int failureCount;
@@ -91,7 +91,7 @@ public class GCVelocityProvider implements VelocityProvider {
         this.delegate = copy.delegate.getClone();
         this.inertiaWeight = copy.inertiaWeight.getClone();
 
-        this.rho = copy.rho;//.getClone();
+        this.rho = copy.rho.getClone();
         this.rhoLowerBound = copy.rhoLowerBound.getClone();
 
         this.successCount = copy.successCount;
@@ -134,6 +134,8 @@ public class GCVelocityProvider implements VelocityProvider {
                 builder.add(component);
             }
 
+            this.oldFitness = particle.getFitness().getClone(); // Keep a copy of the old Fitness object - particle.calculateFitness() within the IterationStrategy resets the fitness value
+
             result = builder.build();
         }
         else {
@@ -153,7 +155,7 @@ public class GCVelocityProvider implements VelocityProvider {
         PSO pso = (PSO) AbstractAlgorithm.get();
 
         if (particle == Topologies.getBestEntity(pso.getTopology(), new SocialBestFitnessComparator<Particle>())) {
-            Fitness newFitness = particle.getBestFitness();
+            Fitness newFitness = particle.getFitnessCalculator().getFitness(particle);
 
             if (!newFitness.equals(oldFitness)) {
                 this.failureCount = 0;
@@ -163,27 +165,39 @@ public class GCVelocityProvider implements VelocityProvider {
                 this.failureCount++;
             }
             
-            this.oldFitness = particle.getBestFitness().getClone();
+            updateRho((Vector) particle.getCandidateSolution());
+            return;
+        }
 
-            double tmp = rho.getParameter();
+        this.failureCount = 0;
+        this.successCount = 0;
+    }
 
-            if (this.successCount > this.successCountThreshold) {
+    /**
+     * Update the <code>rho</code> value.
+     * @param position
+     */
+    private void updateRho(Vector position) { // the Rho value is problem and dimension dependent
+        double tmp = 0.0;
+
+        Bounds component = position.boundsOf(0);
+        double average = (component.getUpperBound() - component.getLowerBound()) / this.rhoExpandCoefficient.getParameter();
+
+        if (this.successCount >= this.successCountThreshold) {
                 tmp = this.rhoExpandCoefficient.getParameter() * this.rho.getParameter();
             }
-            if (this.failureCount > this.failureCountThreshold) {
+        if (this.failureCount >= this.failureCountThreshold) {
                 tmp = this.rhoContractCoefficient.getParameter() * this.rho.getParameter();
             }
 
             if (tmp <= this.rhoLowerBound.getParameter()) {
                 tmp = this.rhoLowerBound.getParameter();
             }
-
-            this.rho.setParameter(tmp);
-            //System.out.println(rho.getParameter());
-        } else {
-            this.failureCount = 0;
-            this.successCount = 0;
+        if (tmp >= average) {
+            tmp = average;
         }
+
+        this.rho = ConstantControlParameter.of(tmp);
     }
 
     public VelocityProvider getDelegate() {
@@ -222,7 +236,7 @@ public class GCVelocityProvider implements VelocityProvider {
      * Set the value for <code>rho</code>.
      * @param rho The value to set.
      */
-    public void setRho(SettableControlParameter rho) {
+    public void setRho(ControlParameter rho) {
         this.rho = rho;
     }
 
