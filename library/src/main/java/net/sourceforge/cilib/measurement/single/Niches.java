@@ -74,7 +74,7 @@ public class Niches implements Measurement<TypeList> {
                     Particle p = (Particle) niches.get(i);
                     Particle clone = p.getClone();
                     clone.setCandidateSolution(clone.getBestPosition());
-                    clone.getProperties().put(EntityType.Particle.BEST_FITNESS, clone.getBestFitness());
+                    clone.getProperties().put(EntityType.FITNESS, clone.getBestFitness());
                     niches.set(i, clone);
                 }
             }

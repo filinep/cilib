@@ -23,6 +23,12 @@ public class ExponentiallyVaryingControlParameter implements ControlParameter {
         this.curve = 1.0;
     }
     
+    public ExponentiallyVaryingControlParameter(double i, double f) {
+        this.initialValue = i;
+        this.finalValue = f;
+        this.curve = 1.0;
+    }
+    
     public ExponentiallyVaryingControlParameter(ExponentiallyVaryingControlParameter copy) {
         this.initialValue = copy.initialValue;
         this.finalValue = copy.finalValue;
