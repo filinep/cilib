@@ -12,24 +12,14 @@
                 <measurement class="measurement.single.ParticlePositionUpdates"/>
             </addStoppingCondition>
 
-            <neighbourhood class="entity.topologies.SpeciationNeighbourhood">
-                <neighbourhoodSize class="controlparameter.ConstantControlParameter" parameter="200"/>
-                <radius class="controlparameter.NichingRadiusControlParameter"/>
-            </neighbourhood>
-
             <initialisationStrategy class="algorithm.initialisation.ClonedPopulationInitialisationStrategy">
-                <entityType class="pso.particle.StandardParticle">
-                    <velocityProvider class="pso.velocityprovider.StandardVelocityProvider">
-                        <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="0.0"/>
-                        <cognitiveAcceleration class="controlparameter.ConstantControlParameter" parameter="1.2"/>
-                        <inertiaWeight class="controlparameter.ConstantControlParameter" parameter="0.7"/>
-                    </velocityProvider>
-                    <velocityInitialisationStrategy class="entity.initialisation.RandomInitialisationStrategy"/>
-                </entityType>
+                <entityType class="pso.particle.StandardParticle"/>
                 <entityNumber value="50"/>
             </initialisationStrategy>
 
-            <iterationStrategy class="pso.iterationstrategies.SynchronousIterationStrategy">
+            <iterationStrategy class="pso.iterationstrategies.SpeciationIterationStrategy">
+                <neighbourhoodSize class="controlparameter.ConstantControlParameter" parameter="200"/>
+                <radius class="controlparameter.ConstantControlParameter" parameter="0.1"/>
                 <boundaryConstraint class="problem.boundaryconstraint.ReinitialisationBoundary"/>
             </iterationStrategy>
         </algorithm>

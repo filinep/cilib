@@ -7,7 +7,7 @@
 <simulator>
     <algorithms>
         <algorithm id="deratingNichePSO" class="niching.NichingAlgorithm">
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="25000">
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="200000">
                 <predicate class="stoppingcondition.Maximum"/>
                 <measurement class="measurement.single.ParticlePositionUpdates"/>
             </addStoppingCondition>
@@ -87,7 +87,9 @@
 
             <mainSwarmIterator class="niching.iterators.SingleNicheIteration"/>
 
-            <iterationStrategy class="niching.iterationstrategies.DeratingNichePSO"/>
+            <iterationStrategy class="niching.iterationstrategies.DeratingNichePSO">
+                <mergingVersion value="false"/>
+            </iterationStrategy>
         </algorithm>
 
         <algorithm id="SNT-PSO" class="niching.SequentialNichingTechnique">
@@ -172,18 +174,13 @@
         </problem>
     </problems>
 
-    <measurements id="fitness" class="simulator.MeasurementSuite" resolution="1">
-        <addMeasurement class="measurement.single.ParticlePositionUpdates"/>
-        <addMeasurement class="measurement.multiple.SumGradientAverageAndInvertedNichesNumber"/>
+    <measurements id="fitness" class="simulator.MeasurementSuite" resolution="1"> 
+       <addMeasurement class="measurement.single.ParticlePositionUpdates"/>
         <addMeasurement class="measurement.single.SwarmSize"/>
-        <addMeasurement class="measurement.single.LocalNiches">
-            <nicheRadius class="controlparameter.ConstantControlParameter" parameter="0.01"/>
-        </addMeasurement>
         <addMeasurement class="measurement.multiple.CompositeMeasurement">
             <addMeasurement class="measurement.single.SwarmSize"/>
             <addMeasurement class="measurement.single.Solution"/>
             <addMeasurement class="measurement.single.Fitness"/>
-            <addMeasurement class="measurement.single.GradientVector"/>
             <addMeasurement class="measurement.single.GradientVectorLength"/>
         </addMeasurement>
     </measurements>

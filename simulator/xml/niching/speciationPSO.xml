@@ -12,10 +12,10 @@
                 <measurement class="measurement.single.ParticlePositionUpdates"/>
             </addStoppingCondition>
 
-            <neighbourhood class="entity.topologies.SpeciationNeighbourhood">
+            <iterationStrategy class="pso.iterationstrategies.SpeciationIterationStrategy">
                 <neighbourhoodSize class="controlparameter.ConstantControlParameter" parameter="20"/>
                 <radius class="controlparameter.ConstantControlParameter" parameter="0.1"/>
-            </neighbourhood>
+            </iterationStrategy>
         </algorithm>
     </algorithms>
 
@@ -133,16 +133,10 @@
 
     <measurements id="fitness" class="simulator.MeasurementSuite" resolution="1">
         <addMeasurement class="measurement.single.ParticlePositionUpdates"/>
-        <addMeasurement class="measurement.multiple.SumGradientAverageAndInvertedNichesNumber"/>
-        <addMeasurement class="measurement.single.SwarmSize"/>
-        <addMeasurement class="measurement.single.LocalNiches">
-            <nicheRadius class="controlparameter.ConstantControlParameter" parameter="0.01"/>
-        </addMeasurement>
         <addMeasurement class="measurement.multiple.CompositeMeasurement">
             <addMeasurement class="measurement.single.SwarmSize"/>
             <addMeasurement class="measurement.single.Solution"/>
             <addMeasurement class="measurement.single.Fitness"/>
-            <addMeasurement class="measurement.single.GradientVector"/>
             <addMeasurement class="measurement.single.GradientVectorLength"/>
         </addMeasurement>
     </measurements>

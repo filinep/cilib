@@ -42,6 +42,8 @@ import net.sourceforge.cilib.type.types.Int;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import net.sourceforge.cilib.algorithm.AlgorithmEvent;
+import net.sourceforge.cilib.algorithm.AlgorithmListener;
 
 /**
  * <p>
@@ -76,6 +78,8 @@ public class NichingAlgorithm extends MultiPopulationBasedAlgorithm implements H
     protected MergeStrategy mainSwarmAbsorber;
     protected MergeStrategy subSwarmAbsorber;
     protected MergeDetection absorptionDetector;
+    
+    protected boolean finalMerge = false;
 
     /**
      * Default constructor. The defaults are:
@@ -188,6 +192,33 @@ public class NichingAlgorithm extends MultiPopulationBasedAlgorithm implements H
         this.entityType = this.mainSwarm.getTopology().head();
         
         this.setPopulations(new ArrayList());
+        
+        if (finalMerge) {
+            this.addAlgorithmListener(new AlgorithmListener() {
+                @Override
+                public void algorithmStarted(AlgorithmEvent e) {}
+
+                @Override
+                public void algorithmFinished(AlgorithmEvent e) {
+                    NichingSwarms s = NichingFunctions.merge(mergeDetector, mainSwarmMerger, subSwarmMerger)
+                            .f(NichingSwarms.of(mainSwarm, subPopulationsAlgorithms));
+                    mainSwarm = s._1();
+                    subPopulationsAlgorithms = new ArrayList<>(s._2().toCollection());
+                }
+
+                @Override
+                public void iterationCompleted(AlgorithmEvent e) {}
+
+                @Override
+                public AlgorithmListener getClone() {
+                    return this;
+                }
+            });
+        }
+    }
+
+    public void setFinalMerge(boolean finalMerge) {
+        this.finalMerge = finalMerge;
     }
 
     @Override

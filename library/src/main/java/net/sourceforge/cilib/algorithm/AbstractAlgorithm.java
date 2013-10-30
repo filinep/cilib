@@ -205,7 +205,7 @@ public abstract class AbstractAlgorithm implements Algorithm, Stoppable {
      * @param listener An {@link AlgorithmListener} to be added.
      */
     public final void addAlgorithmListener(AlgorithmListener listener) {
-        algorithmListeners.add(listener);
+        algorithmListeners.add(0, listener);
     }
 
     /**
