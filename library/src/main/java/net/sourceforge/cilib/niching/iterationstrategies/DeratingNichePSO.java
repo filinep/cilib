@@ -93,7 +93,7 @@ public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm
     /**
      * Add new swarms to subswarms list and merge swarms if possible
      */
-    public static NichingFunction joinAndMerge(final NichingAlgorithm alg, final List<SinglePopulationBasedAlgorithm> joiningList, boolean mergingVersion) {
+    public static NichingFunction joinAndMerge(final NichingAlgorithm alg, final List<SinglePopulationBasedAlgorithm> joiningList, final boolean mergingVersion) {
         return new NichingFunction() {
             @Override
             public NichingSwarms f(NichingSwarms a) {
