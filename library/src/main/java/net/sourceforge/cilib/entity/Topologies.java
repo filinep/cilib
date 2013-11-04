@@ -18,6 +18,7 @@ import com.google.common.collect.Lists;
 
 import fj.F;
 import fj.data.List;
+import net.sourceforge.cilib.pso.particle.Particle;
 
 /**
  * Topology related utilities.
@@ -25,6 +26,19 @@ import fj.data.List;
 public final class Topologies {
 
     private Topologies() {
+    }
+    
+    public static Set<Particle> getNBestEntities(List<Particle> p) {
+        Set<Particle> nBests = new LinkedHashSet<Particle>(p.length());
+
+        for (Particle e : p) {
+            Particle best = e.getNeighbourhoodBest();
+            if (best != null) {
+                nBests.add(best);
+            }
+        }
+
+        return nBests;
     }
 
     /**

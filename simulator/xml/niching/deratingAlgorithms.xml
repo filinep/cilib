@@ -18,7 +18,7 @@
                     <predicate class="stoppingcondition.Minimum"/>
                     <measurement class="measurement.single.SwarmSize"/>
                 </addStoppingCondition>
-                <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="500">
+                <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="2000">
                     <predicate class="stoppingcondition.Maximum"/>
                     <measurement class="measurement.generic.Iterations"/>
                 </addStoppingCondition>
@@ -35,7 +35,7 @@
                 </initialisationStrategy>
 
                 <iterationStrategy class="pso.iterationstrategies.SynchronousIterationStrategy">
-                    <boundaryConstraint class="problem.boundaryconstraint.ReinitialisationBoundary"/>
+                    <boundaryConstraint class="problem.boundaryconstraint.ClampingBoundary"/>
                 </iterationStrategy>
             </mainSwarm>
 
@@ -44,7 +44,7 @@
                 <swarmType class="pso.PSO">
                     <addStoppingCondition class="stoppingcondition.OptimiserStalled"/>
                     <iterationStrategy class="pso.iterationstrategies.SynchronousIterationStrategy">
-                        <boundaryConstraint class="problem.boundaryconstraint.ReinitialisationBoundary"/>
+                        <boundaryConstraint class="problem.boundaryconstraint.ClampingBoundary"/>
                     </iterationStrategy>
                 </swarmType>
 

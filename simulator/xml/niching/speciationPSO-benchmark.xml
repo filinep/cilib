@@ -7,7 +7,7 @@
 <simulator>
     <algorithms>
         <algorithm id="speciationPSO" class="pso.PSO">
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="200000">
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="25000">
                 <predicate class="stoppingcondition.Maximum"/>
                 <measurement class="measurement.single.ParticlePositionUpdates"/>
             </addStoppingCondition>
@@ -19,7 +19,8 @@
 
             <iterationStrategy class="pso.iterationstrategies.SpeciationIterationStrategy">
                 <neighbourhoodSize class="controlparameter.ConstantControlParameter" parameter="50"/>
-                <radius class="controlparameter.NichingRadiusControlParameter"/>
+                <!--radius class="controlparameter.NichingRadiusControlParameter"/-->
+                <radius class="controlparameter.ConstantControlParameter" parameter="0.1"/>
                 <boundaryConstraint class="problem.boundaryconstraint.ReinitialisationBoundary"/>
             </iterationStrategy>
         </algorithm>
