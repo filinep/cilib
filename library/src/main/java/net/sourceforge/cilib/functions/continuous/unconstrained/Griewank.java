@@ -40,7 +40,7 @@ public class Griewank extends ContinuousFunction implements Gradient{
         double prod = 1;
         for (int i = 0; i < input.size(); ++i) {
             sumsq += input.doubleValueOf(i) * input.doubleValueOf(i);
-            prod *= Math.cos(input.doubleValueOf(i) / Math.sqrt(i));
+            prod *= Math.cos(input.doubleValueOf(i) / Math.sqrt(i+1));
         }
         return 1 + sumsq * (1.0 / 4000.0) - prod;
     }

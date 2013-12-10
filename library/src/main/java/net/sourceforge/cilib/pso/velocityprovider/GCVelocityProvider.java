@@ -178,7 +178,7 @@ public class GCVelocityProvider implements VelocityProvider {
      * @param position
      */
     private void updateRho(Vector position) { // the Rho value is problem and dimension dependent
-        double tmp = 0.0;
+        double tmp = this.rho.getParameter();
 
         Bounds component = position.boundsOf(0);
         double average = (component.getUpperBound() - component.getLowerBound()) / this.rhoExpandCoefficient.getParameter();
@@ -193,9 +193,9 @@ public class GCVelocityProvider implements VelocityProvider {
             if (tmp <= this.rhoLowerBound.getParameter()) {
                 tmp = this.rhoLowerBound.getParameter();
             }
-        if (tmp >= average) {
+        /*if (tmp >= average) {
             tmp = average;
-        }
+        }*/
 
         this.rho = ConstantControlParameter.of(tmp);
     }
