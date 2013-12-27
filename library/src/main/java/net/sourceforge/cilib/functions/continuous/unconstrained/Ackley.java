@@ -67,7 +67,7 @@ public class Ackley extends ContinuousFunction implements Gradient{
         return (4.0*input.doubleValueOf(i-1)/size)*(Math.exp(-0.2 * Math.sqrt(sumsq / size)))/Math.sqrt(sumsq / size)+(2.0*Math.PI/size)*sin*Math.exp(sumcos / size);
     }
     
-    public double GetGradientVectorAverage ( Vector x)
+    public double getAverageGradientVector ( Vector x)
     {
         
         double sum = 0;
@@ -80,7 +80,7 @@ public class Ackley extends ContinuousFunction implements Gradient{
         return sum/x.size();
     }
     
-    public double GetGradientVectorLength (Vector x)
+    public double getGradientVectorLength (Vector x)
     {
         double sumsqrt = 0;
         
@@ -92,7 +92,7 @@ public class Ackley extends ContinuousFunction implements Gradient{
         return Math.sqrt(sumsqrt);
     }
     
-    public Vector GetGradientVector (Vector x)
+    public Vector getGradientVector (Vector x)
     {
         Vector.Builder vectorBuilder = Vector.newBuilder();
         

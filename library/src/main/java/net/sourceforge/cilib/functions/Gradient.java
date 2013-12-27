@@ -23,7 +23,7 @@ public interface Gradient {
      * @return A {@link net.sourceforge.cilib.type.types.container.Vector} containing
      *         the gradient of the provided input.
      */
-    public double GetGradientVectorAverage(Vector x);
-    public double GetGradientVectorLength (Vector x);
-    public Vector GetGradientVector (Vector x);
+    public double getAverageGradientVector(Vector x);
+    public double getGradientVectorLength(Vector x);
+    public Vector getGradientVector(Vector x);
 }

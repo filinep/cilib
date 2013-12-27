@@ -13,6 +13,7 @@ import net.sourceforge.cilib.type.types.container.Vector;
 import com.google.common.base.Preconditions;
 
 import net.sourceforge.cilib.functions.Gradient;
+import net.sourceforge.cilib.type.types.Numeric;
 
 /**
  * The InvertedHimmelblau function.
@@ -53,58 +54,38 @@ public class InvertedHimmelblau extends ContinuousFunction implements Gradient, 
 
         double x = input.doubleValueOf(0);
         double y = input.doubleValueOf(1);
-        double res = 0;
         
-        if (i == 1)
-        {
-            res = 4.0*x*(Math.pow(x, 2.0)+y-11.0)+2.0*(x+Math.pow(y, 2.0)-7.0);
+        if (i == 1) {
+            return 4.0 * x * (x * x + y - 11.0) + 2.0 * (x + y * y - 7.0);
         }
-        else
-        {
-            res = 2.0*(Math.pow(x, 2.0)+y-11.0)+4.0*y*(x+Math.pow(y, 2.0)-7.0);
-        }
-        return res;
+        
+        return 2.0 * (x * x + y - 11.0) + 4.0 * y * (x + y * y - 7.0);
     }
     
-    public double GetGradientVectorAverage ( Vector x)
-    {
-        
+    public double getAverageGradientVector(Vector x) {
         double sum = 0;
-        
-        for (int i = 1; i <= x.size(); ++i)
-        {
-            sum += this.df(x,i);
+        for (Numeric n : getGradientVector(x)) {
+            sum += n.doubleValue();
         }
-           
-        return sum/x.size();
+        return sum / x.size();
     }
     
-    public double GetGradientVectorLength (Vector x)
-    {
-        double sumsqrt = 0;
-        
-        for (int i = 1; i <= x.size(); ++i)
-        {
-            sumsqrt += this.df(x,i)*this.df(x,i);
-        }
-        
-        return Math.sqrt(sumsqrt);
+    public double getGradientVectorLength(Vector x) {
+        return getGradientVector(x).length();
     }
     
-    public Vector GetGradientVector (Vector x)
-    {
-        Vector.Builder vectorBuilder = Vector.newBuilder();
-        
-        for (int i = 1; i <= x.size(); ++i)
-        {
-             vectorBuilder.add(this.df(x,i));
-        }
-        
-        return vectorBuilder.build();
+    public Vector getGradientVector(Vector input) {
+        Preconditions.checkArgument(input.size() == 2, "Himmelblau function is only defined for 2 dimensions");
+
+        double x = input.doubleValueOf(0);
+        double y = input.doubleValueOf(1);
+
+        return Vector.of(2.0 * (x * x + y - 11.0) + 4.0 * y * (x + y * y - 7.0), 
+                         4.0 * x * (x * x + y - 11.0) + 2.0 * (x + y * y - 7.0));
     }
 
-	@Override
-	public double getNicheRadius() {
-		return 0.01;
-	}
+    @Override
+    public double getNicheRadius() {
+            return 0.01;
+    }
 }

@@ -6,19 +6,20 @@
  */
 package net.sourceforge.cilib.measurement.single.diversity;
 
-import java.util.Iterator;
 import net.sourceforge.cilib.algorithm.Algorithm;
 import net.sourceforge.cilib.algorithm.population.SinglePopulationBasedAlgorithm;
 import net.sourceforge.cilib.entity.Entity;
 import net.sourceforge.cilib.measurement.Measurement;
 import net.sourceforge.cilib.measurement.single.diversity.centerinitialisationstrategies.CenterInitialisationStrategy;
-import net.sourceforge.cilib.measurement.single.diversity.centerinitialisationstrategies.SpatialCenterInitialisationStrategy;
+import net.sourceforge.cilib.measurement.single.diversity.centerinitialisationstrategies.GBestCenterInitialisationStrategy;
 import net.sourceforge.cilib.measurement.single.diversity.normalisation.DiversityNormalisation;
-import net.sourceforge.cilib.measurement.single.diversity.normalisation.NormalisationParameter;
+import net.sourceforge.cilib.niching.NichingAlgorithm;
 import net.sourceforge.cilib.type.types.Real;
 import net.sourceforge.cilib.type.types.container.Vector;
 import net.sourceforge.cilib.util.distancemeasure.DistanceMeasure;
 import net.sourceforge.cilib.util.distancemeasure.EuclideanDistanceMeasure;
+import net.sourceforge.cilib.entity.visitor.DiameterVisitor;
+import net.sourceforge.cilib.measurement.single.diversity.normalisation.SearchSpaceNormalisation;
 
 /**
  * TODO: Add JavaDoc.
@@ -33,8 +34,8 @@ public class Diversity implements Measurement<Real> {
 
     public Diversity() {
         distanceMeasure = new EuclideanDistanceMeasure();
-        populationCenter = new SpatialCenterInitialisationStrategy();
-        normalisationParameter = new NormalisationParameter();
+        populationCenter = new GBestCenterInitialisationStrategy();
+        normalisationParameter = new SearchSpaceNormalisation();
     }
 
     public Diversity(Diversity other) {
@@ -50,21 +51,26 @@ public class Diversity implements Measurement<Real> {
 
     @Override
     public Real getValue(Algorithm algorithm) {
-        SinglePopulationBasedAlgorithm populationBasedAlgorithm = (SinglePopulationBasedAlgorithm) algorithm;
-        int numberOfEntities = populationBasedAlgorithm.getTopology().length();
-
-        Vector center = populationCenter.getCenter(populationBasedAlgorithm.getTopology());
-        Iterator<? extends Entity> populationIterator = populationBasedAlgorithm.getTopology().iterator();
-
-        double distanceSum = 0.0;
-
-        while (populationIterator.hasNext()) {
-            Vector currentEntityPosition = (Vector) (((Entity) populationIterator.next()).getCandidateSolution());
-            distanceSum += distanceMeasure.distance(center, currentEntityPosition);
+        fj.data.List<? extends Entity> topology;
+        if (algorithm instanceof SinglePopulationBasedAlgorithm) {
+            topology = ((SinglePopulationBasedAlgorithm) algorithm).getTopology();
+        } else {
+            NichingAlgorithm na = (NichingAlgorithm) algorithm;
+            topology = na.getMainSwarm().getTopology();
+            for (SinglePopulationBasedAlgorithm s : na.getPopulations()) {
+                topology = topology.append(s.getTopology());
+            }
         }
 
-        distanceSum /= numberOfEntities;
-        distanceSum /= normalisationParameter.getNormalisationParameter(populationBasedAlgorithm);
+        Vector center = populationCenter.getCenter(topology);
+        double distanceSum = 0.0;
+
+        for (Entity e : topology) {
+            distanceSum += distanceMeasure.distance(center, e.getCandidateSolution());
+        }
+
+        distanceSum /= topology.length();
+        distanceSum /= new DiameterVisitor().f(topology);
 
         return Real.valueOf(distanceSum);
     }

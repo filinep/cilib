@@ -42,6 +42,7 @@ import net.sourceforge.cilib.type.types.Int;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Collections;
 import net.sourceforge.cilib.algorithm.AlgorithmEvent;
 import net.sourceforge.cilib.algorithm.AlgorithmListener;
 
@@ -233,7 +234,9 @@ public class NichingAlgorithm extends MultiPopulationBasedAlgorithm implements H
      */
     @Override
     public OptimisationSolution getBestSolution() {
-        throw new UnsupportedOperationException("Niching algorithms do not have a single solution.");
+        java.util.List<OptimisationSolution> ss = getSolutions();
+        Collections.sort(ss);
+        return ss.get(ss.size() - 1);
     }
 
     /**

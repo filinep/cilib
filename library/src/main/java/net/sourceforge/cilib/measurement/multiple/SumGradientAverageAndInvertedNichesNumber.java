@@ -72,7 +72,7 @@ public class SumGradientAverageAndInvertedNichesNumber implements Measurement<Re
         
         for (Vector single : niches) {
             ++i;
-            res += df.GetGradientVectorLength(single);
+            res += df.getGradientVectorLength(single);
         }
         
         return Real.valueOf((res + 1) / ((double) i)); // Difference !!!

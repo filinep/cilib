@@ -58,7 +58,7 @@ public class PenHolder extends ContinuousFunction implements Gradient{
     return result;
         }
     
-    public double GetGradientVectorAverage ( Vector x)
+    public double getAverageGradientVector ( Vector x)
     {
         
         double sum = 0;
@@ -71,7 +71,7 @@ public class PenHolder extends ContinuousFunction implements Gradient{
         return sum/x.size();
     }
     
-    public double GetGradientVectorLength (Vector x)
+    public double getGradientVectorLength (Vector x)
     {
         double sumsqrt = 0;
         
@@ -83,7 +83,7 @@ public class PenHolder extends ContinuousFunction implements Gradient{
         return Math.sqrt(sumsqrt);
     }
     
-    public Vector GetGradientVector (Vector x)
+    public Vector getGradientVector (Vector x)
     {
         Vector.Builder vectorBuilder = Vector.newBuilder();
         

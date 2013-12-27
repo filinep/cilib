@@ -30,6 +30,6 @@ public class GradientVectorLength implements Measurement<Real> {
         FunctionOptimisationProblem fop = (FunctionOptimisationProblem)d;
         Gradient df = (Gradient)fop.getFunction();
         
-        return Real.valueOf(df.GetGradientVectorLength((Vector)best.getPosition()));
+        return Real.valueOf(df.getGradientVectorLength((Vector)best.getPosition()));
     }
 }

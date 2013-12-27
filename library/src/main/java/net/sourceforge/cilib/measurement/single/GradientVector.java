@@ -31,6 +31,6 @@ public class GradientVector implements Measurement<StringType>  {
         FunctionOptimisationProblem fop = (FunctionOptimisationProblem)d;
         Gradient df = (Gradient)fop.getFunction();
         
-        return new StringType((df.GetGradientVector((Vector)best.getPosition())).toString());
+        return new StringType((df.getGradientVector((Vector)best.getPosition())).toString());
     }
 }

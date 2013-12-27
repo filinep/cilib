@@ -36,7 +36,7 @@ public class GradientAverage implements Measurement<Real> {
         FunctionOptimisationProblem fop = (FunctionOptimisationProblem)d;
         Gradient df = (Gradient)fop.getFunction();
         
-        return Real.valueOf(df.GetGradientVectorAverage((Vector)best.getPosition()));
+        return Real.valueOf(df.getAverageGradientVector((Vector)best.getPosition()));
     }
     
 }

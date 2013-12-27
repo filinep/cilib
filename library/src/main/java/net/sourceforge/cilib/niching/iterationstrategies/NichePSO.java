@@ -20,6 +20,7 @@ import net.sourceforge.cilib.niching.creation.NicheDetection;
 import net.sourceforge.cilib.niching.merging.MergeStrategy;
 import net.sourceforge.cilib.pso.particle.Particle;
 import static net.sourceforge.cilib.util.functions.Populations.enforceTopology;
+import net.sourceforge.cilib.entity.Entity;
 
 public class NichePSO extends AbstractIterationStrategy<NichingAlgorithm> {
 
@@ -48,18 +49,18 @@ public class NichePSO extends AbstractIterationStrategy<NichingAlgorithm> {
     public void performIteration(NichingAlgorithm alg) {
         P2<SinglePopulationBasedAlgorithm, List<SinglePopulationBasedAlgorithm>> newSwarms =
                 onMainSwarm(alg.getMainSwarmIterator())
-                .andThen(alg.getSubSwarmIterator())
-                .andThen(merge(alg.getMergeDetector(),
+            .andThen(alg.getSubSwarmIterator())
+            .andThen(merge(alg.getMergeDetector(),
                     alg.getMainSwarmMerger(),
                     alg.getSubSwarmMerger()))
-                .andThen(absorb(alg.getAbsorptionDetector(),
+            .andThen(absorb(alg.getAbsorptionDetector(),
                     alg.getMainSwarmAbsorber(),
                     alg.getSubSwarmAbsorber()))
-                .andThen(onMainSwarm(enforceTopology(((Particle) alg.getEntityType()).getParticleBehavior())))
-                .andThen(createNiches(alg.getNicheDetector(),
+            .andThen(onMainSwarm(enforceTopology(((Particle) alg.getEntityType()).getParticleBehavior())))
+            .andThen(createNiches(alg.getNicheDetector(),
                     alg.getNicheCreator(),
                     alg.getMainSwarmCreationMerger()))
-                .f(NichingSwarms.of(alg.getMainSwarm(), alg.getPopulations()));
+            .f(NichingSwarms.of(alg.getMainSwarm(), alg.getPopulations()));
 
         alg.setPopulations(Lists.newArrayList(newSwarms._2().toCollection()));
         alg.setMainSwarm(newSwarms._1());

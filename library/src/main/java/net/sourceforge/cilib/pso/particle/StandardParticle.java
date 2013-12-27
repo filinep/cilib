@@ -161,6 +161,7 @@ public class StandardParticle extends AbstractParticle {
     @Override
     public void reinitialise() {
         this.positionInitialisationStrategy.initialise(EntityType.CANDIDATE_SOLUTION, this);
+        this.getProperties().put(EntityType.Particle.VELOCITY, Vector.copyOf((Vector) getCandidateSolution()));
         this.velocityInitialisationStrategy.initialise(EntityType.Particle.VELOCITY, this);
     }
 }

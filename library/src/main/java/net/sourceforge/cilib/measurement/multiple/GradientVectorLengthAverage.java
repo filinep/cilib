@@ -52,7 +52,7 @@ public class GradientVectorLengthAverage implements Measurement<Real> {
             FunctionOptimisationProblem fop = (FunctionOptimisationProblem) d;
             Gradient df = (Gradient) fop.getFunction();
 
-            res += df.GetGradientVectorLength((Vector) best.getPosition());
+            res += df.getGradientVectorLength((Vector) best.getPosition());
         }
         return Real.valueOf(res / ((double)i));
     }

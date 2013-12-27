@@ -62,7 +62,7 @@ public class Rastrigin extends ContinuousFunction implements Gradient, NichingFu
      * {@inheritDoc}
      */
     
-    public double GetGradientVectorAverage ( Vector x)
+    public double getAverageGradientVector ( Vector x)
     {
         
         double sum = 0;
@@ -75,7 +75,7 @@ public class Rastrigin extends ContinuousFunction implements Gradient, NichingFu
         return sum/x.size();
     }
     
-    public double GetGradientVectorLength (Vector x)
+    public double getGradientVectorLength (Vector x)
     {
         double sumsqrt = 0;
         
@@ -87,7 +87,7 @@ public class Rastrigin extends ContinuousFunction implements Gradient, NichingFu
         return Math.sqrt(sumsqrt);
     }
     
-    public Vector GetGradientVector (Vector x)
+    public Vector getGradientVector (Vector x)
     {
         Vector.Builder vectorBuilder = Vector.newBuilder();
         
