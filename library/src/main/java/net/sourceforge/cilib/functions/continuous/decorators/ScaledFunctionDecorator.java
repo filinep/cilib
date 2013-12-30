@@ -9,6 +9,8 @@ package net.sourceforge.cilib.functions.continuous.decorators;
 import net.sourceforge.cilib.controlparameter.ConstantControlParameter;
 import net.sourceforge.cilib.controlparameter.ControlParameter;
 import net.sourceforge.cilib.functions.ContinuousFunction;
+import net.sourceforge.cilib.functions.Gradient;
+import net.sourceforge.cilib.type.types.Numeric;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 /**
@@ -25,7 +27,7 @@ import net.sourceforge.cilib.type.types.container.Vector;
  * g(x) is f(x) compressed in the vertical direction by a factor of 1/c
  *
  */
-public class ScaledFunctionDecorator extends ContinuousFunction {
+public class ScaledFunctionDecorator extends ContinuousFunction implements Gradient {
 
     private static final long serialVersionUID = -5316734133098401441L;
     private ContinuousFunction function;
@@ -84,5 +86,28 @@ public class ScaledFunctionDecorator extends ContinuousFunction {
 
     public ControlParameter getHorizontalScale() {
         return horizontalScale;
+    }
+
+    public double getAverageGradientVector(Vector x) {
+        double sum = 0;
+        for (Numeric n : getGradientVector(x)) {
+            sum += n.doubleValue();
+        }
+        return sum / x.size();
+    }
+    
+    public double getGradientVectorLength(Vector x) {
+        return getGradientVector(x).length();
+    }
+
+    @Override
+    public Vector getGradientVector(Vector x) {
+        Vector tmp = Vector.copyOf(x);
+
+        for (int i = 0; i < x.size(); i++) {
+            tmp.setReal(i, (horizontalScale.getParameter() * x.doubleValueOf(i)));
+        }
+
+        return ((Gradient)function).getGradientVector(tmp).multiply(verticalScale.getParameter());
     }
 }

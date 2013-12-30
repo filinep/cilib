@@ -10,7 +10,9 @@ import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
 import net.sourceforge.cilib.functions.ContinuousFunction;
+import net.sourceforge.cilib.functions.Gradient;
 import net.sourceforge.cilib.functions.NichingFunction;
+import net.sourceforge.cilib.type.types.Numeric;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 /**
@@ -18,7 +20,7 @@ import net.sourceforge.cilib.type.types.container.Vector;
  * on Niching Methods for Multimodal Function Optimization'', Technical Report, Evolutionary Computation and Machine 
  * Learning Group, RMIT University, Australia, 2013
  */
-public class RastriginNiching extends ContinuousFunction implements NichingFunction {
+public class RastriginNiching extends ContinuousFunction implements Gradient, NichingFunction {
     
     private List<Double> k;
 
@@ -41,6 +43,28 @@ public class RastriginNiching extends ContinuousFunction implements NichingFunct
     
     public void setK(Double k) {
         this.k.add(k);
+    }
+    
+    public double getAverageGradientVector(Vector x) {
+        double sum = 0;
+        for (Numeric n : getGradientVector(x)) {
+            sum += n.doubleValue();
+        }
+        return sum / x.size();
+    }
+    
+    public double getGradientVectorLength(Vector x) {
+        return getGradientVector(x).length();
+    }
+
+    public Vector getGradientVector(Vector x) {
+        Vector.Builder vectorBuilder = Vector.newBuilder();
+
+        for (int i = 0; i < x.size(); ++i) {
+            vectorBuilder.add(18*Math.PI*k.get(i)*Math.sin(2*Math.PI*k.get(i)*x.doubleValueOf(i)));
+        }
+
+        return vectorBuilder.build();
     }
 
     @Override

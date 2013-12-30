@@ -33,7 +33,7 @@ import net.sourceforge.cilib.type.types.Numeric;
  *
  * @version 1.0
  */
-public class InvertedHimmelblau extends ContinuousFunction implements Gradient, NichingFunction {
+public class Himmelblau extends ContinuousFunction implements Gradient, NichingFunction {
 
     private static final long serialVersionUID = 7323733640884766707L;
 
@@ -46,20 +46,7 @@ public class InvertedHimmelblau extends ContinuousFunction implements Gradient, 
 
         double x = input.doubleValueOf(0);
         double y = input.doubleValueOf(1);
-        return -200.0+Math.pow((x * x + y - 11.0), 2.0) + Math.pow((x + y * y - 7.0), 2.0);
-    }
-    
-    public Double df(Vector input, int i) {
-        Preconditions.checkArgument(input.size() == 2, "Himmelblau function is only defined for 2 dimensions");
-
-        double x = input.doubleValueOf(0);
-        double y = input.doubleValueOf(1);
-        
-        if (i == 1) {
-            return 4.0 * x * (x * x + y - 11.0) + 2.0 * (x + y * y - 7.0);
-        }
-        
-        return 2.0 * (x * x + y - 11.0) + 4.0 * y * (x + y * y - 7.0);
+        return Math.pow((x * x + y - 11.0), 2.0) + Math.pow((x + y * y - 7.0), 2.0);
     }
     
     public double getAverageGradientVector(Vector x) {
@@ -80,12 +67,12 @@ public class InvertedHimmelblau extends ContinuousFunction implements Gradient, 
         double x = input.doubleValueOf(0);
         double y = input.doubleValueOf(1);
 
-        return Vector.of(2.0 * (x * x + y - 11.0) + 4.0 * y * (x + y * y - 7.0), 
-                         4.0 * x * (x * x + y - 11.0) + 2.0 * (x + y * y - 7.0));
+        return Vector.of(4.0 * x * (x * x + y - 11.0) - 2.0 * (x + y * y - 7.0),
+                         2.0 * (x * x + y - 11.0) - 4.0 * y * (x + y * y - 7.0));
     }
 
     @Override
     public double getNicheRadius() {
-            return 0.01;
+        return 0.01;
     }
 }

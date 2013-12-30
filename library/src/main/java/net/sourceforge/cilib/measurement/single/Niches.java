@@ -81,13 +81,13 @@ public class Niches implements Measurement<TypeList> {
         }
 
         neighbourhood.setNeighbourhoodSize(ConstantControlParameter.of(niches.size()));
-        ArrayList<Particle> es = Java.<Particle>List_ArrayList().f(fj.data.List.iterableList(Topologies.getNeighbourhoodBestEntities(fj.data.List.iterableList(niches), neighbourhood))
+        fj.data.List<Particle> es = fj.data.List.iterableList(Topologies.getNeighbourhoodBestEntities(fj.data.List.iterableList(niches), neighbourhood))
                 .filter(new F<Particle, Boolean>() {
                     @Override
                     public Boolean f(Particle a) {
                         return Math.abs(a.getFitness().getValue() - peakHeight) < error;
                     }
-                }));
+                });
         TypeList t = new TypeList();
         for (Entity e : es) {
             t.add(e.getCandidateSolution());

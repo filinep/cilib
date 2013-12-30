@@ -9,6 +9,7 @@ package net.sourceforge.cilib.functions.continuous.decorators;
 import net.sourceforge.cilib.controlparameter.ConstantControlParameter;
 import net.sourceforge.cilib.controlparameter.ControlParameter;
 import net.sourceforge.cilib.functions.ContinuousFunction;
+import net.sourceforge.cilib.functions.Gradient;
 import net.sourceforge.cilib.type.types.container.Vector;
 
 /**
@@ -29,7 +30,7 @@ import net.sourceforge.cilib.type.types.container.Vector;
  *             (c < 0) means that g(x) is f(x) shifted c units downwards
  *
  */
-public class ShiftedFunctionDecorator extends ContinuousFunction {
+public class ShiftedFunctionDecorator extends ContinuousFunction implements Gradient {
 
     private static final long serialVersionUID = 8687711759870298103L;
     private ContinuousFunction function;
@@ -109,5 +110,20 @@ public class ShiftedFunctionDecorator extends ContinuousFunction {
 
     public boolean getRandomShift() {
         return randomShift;
+    }
+
+    @Override
+    public double getAverageGradientVector(Vector x) {
+        return ((Gradient)function).getAverageGradientVector(x.subtract(shiftVector));
+    }
+
+    @Override
+    public double getGradientVectorLength(Vector x) {
+        return ((Gradient)function).getGradientVectorLength(x.subtract(shiftVector));
+    }
+
+    @Override
+    public Vector getGradientVector(Vector x) {
+        return ((Gradient)function).getGradientVector(x.subtract(shiftVector));
     }
 }

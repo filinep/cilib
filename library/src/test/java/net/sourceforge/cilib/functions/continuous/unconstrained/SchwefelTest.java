@@ -18,7 +18,7 @@ public class SchwefelTest {
 
     @Before
     public void instantiate() {
-        this.function = new Schwefel();
+        this.function = new InvertedSchwefel();
     }
 
     /** Test of evaluate method, of class {@link Schwefel}. */

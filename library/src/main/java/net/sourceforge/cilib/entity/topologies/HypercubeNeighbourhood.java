@@ -4,7 +4,7 @@ import fj.Equal;
 import fj.F;
 import fj.data.List;
 
-public class HypercudeNeighbourhood<E> extends Neighbourhood<E> {
+public class HypercubeNeighbourhood<E> extends Neighbourhood<E> {
     private int n = 5;
 
     @Override
@@ -13,7 +13,7 @@ public class HypercudeNeighbourhood<E> extends Neighbourhood<E> {
         return List.range(0, n).map(new F<Integer, E>() {
             @Override
             public E f(Integer a) {
-                return list.index(index ^ Double.valueOf(Math.pow(2, a)).intValue());
+                return list.index((index ^ Double.valueOf(Math.pow(2, a)).intValue())%list.length());
             }
         });
     }

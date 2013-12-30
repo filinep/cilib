@@ -16,7 +16,7 @@ import net.sourceforge.cilib.type.types.container.Vector;
  * Minimum for domain: 0.0 R(0, 1)^1
  *
  */
-public class UnevenDecreasingMinima extends ContinuousFunction implements Gradient, NichingFunction {
+public class UnevenDecreasingMaxima extends ContinuousFunction implements Gradient, NichingFunction {
 
     private static final long serialVersionUID = -957215773660609565L;
 
@@ -27,23 +27,23 @@ public class UnevenDecreasingMinima extends ContinuousFunction implements Gradie
     public Double f(Vector input) {
         double sum = 0.0;
         for (int i = 0; i < input.size(); i++) {
-            double x = Math.pow(Math.sin(5.0 * Math.PI * Math.pow(input.doubleValueOf(i), 0.75) - 0.05), 6.0);
+            double x = Math.pow(Math.sin(5.0 * Math.PI * (Math.pow(input.doubleValueOf(i), 0.75) - 0.05)), 6.0);
             double exp1 = -2.0 * Math.log(2) * Math.pow((input.doubleValueOf(i) - 0.08) / 0.854, 2.0);
             double y = Math.exp(exp1);
-            sum += -x * y;
+            sum += x * y;
         }
         return sum;
     }
 
     public double df(double x) {
-        double exp = -2.0 * Math.log(2) * Math.pow((x - 0.08) / 0.854, 2.0);
-        double sin5 = Math.pow(Math.sin(5.0 * Math.PI * Math.pow(x, 0.75) - 0.05), 5.0);
-        double sin6 = Math.pow(Math.sin(5.0 * Math.PI * Math.pow(x, 0.75) - 0.05), 6.0);
-        double cos = 45 * Math.PI * Math.cos(5.0 * Math.PI * Math.pow(x, 0.75) - 0.05);
-        double rest = (x - 0.08) * Math.log(2) * 4 / (0.854 * 0.854);
+        double exp = Math.exp(-2.0 * Math.log(2) * Math.pow((x - 0.08) / 0.854, 2.0));
+        double sin5 = Math.pow(Math.sin(5.0 * Math.PI * (Math.pow(x, 0.75) - 0.05)), 5.0);
+        double sin6 = Math.pow(Math.sin(5.0 * Math.PI * (Math.pow(x, 0.75) - 0.05)), 6.0);
+        double cos = 45 * Math.PI * Math.cos(5.0 * Math.PI * (Math.pow(x, 0.75) - 0.05));
+        double rest = (x - 0.08) * Math.log(2) * 4 / (0.854* 0.854);
         double denom = 2 * Math.pow(x, 0.25);
 
-        return rest * sin6 * exp - cos * sin5 * exp / denom;
+        return cos * sin5 * exp / denom - rest * sin6 * exp;
     }
 
     public double getAverageGradientVector(Vector x) {

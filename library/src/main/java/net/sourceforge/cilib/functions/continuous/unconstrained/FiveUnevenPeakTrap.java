@@ -55,21 +55,21 @@ public class FiveUnevenPeakTrap extends ContinuousFunction implements NichingFun
         if (x < 0)
             return 0.0;
         else if (x < 2.5)
-            return -80*(2.5-x);
+            return 80*(2.5-x);
         else if (x < 5)
-            return -64*(x-2.5);
+            return 64*(x-2.5);
         else if (x < 7.5)
-            return -64*(7.5-x);
+            return 64*(7.5-x);
         else if (x < 12.5)
-            return -28*(x-7.5);
+            return 28*(x-7.5);
         else if (x < 17.5)
-            return -28*(17.5-x);
+            return 28*(17.5-x);
         else if (x < 22.5)
-            return -32*(x-17.5);
+            return 32*(x-17.5);
         else if (x < 27.5)
-            return -32*(27.5-x);
+            return 32*(27.5-x);
         else if (x <= 30)
-            return -80*(x-27.5);
+            return 80*(x-27.5);
         else
             return 0.0;
     }

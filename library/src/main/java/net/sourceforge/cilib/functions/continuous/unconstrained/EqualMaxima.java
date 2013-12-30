@@ -16,7 +16,7 @@ import net.sourceforge.cilib.type.types.container.Vector;
  * Minimum: 0.0 R(0, 1)^1
  *
  */
-public class EqualMinima extends ContinuousFunction implements Gradient, NichingFunction {
+public class EqualMaxima extends ContinuousFunction implements Gradient, NichingFunction {
 
     private static final long serialVersionUID = -5261002551096587662L;
 
@@ -29,7 +29,7 @@ public class EqualMinima extends ContinuousFunction implements Gradient, Niching
         for (int i = 0; i < input.size(); ++i) {
             sum += Math.pow(Math.sin(5.0 * Math.PI * input.doubleValueOf(i)), 6.0);
         }
-        return -sum;
+        return sum;
 
     }
 
@@ -49,7 +49,7 @@ public class EqualMinima extends ContinuousFunction implements Gradient, Niching
         Vector.Builder vectorBuilder = Vector.newBuilder();
 
         for (int i = 0; i < x.size(); ++i) {
-            vectorBuilder.add(-30.0 * Math.PI * Math.pow(Math.sin(5.0 * Math.PI * x.doubleValueOf(i)), 5.0) * Math.cos(5.0 * Math.PI * x.doubleValueOf(i)));
+            vectorBuilder.add(30.0 * Math.PI * Math.pow(Math.sin(5.0 * Math.PI * x.doubleValueOf(i)), 5.0) * Math.cos(5.0 * Math.PI * x.doubleValueOf(i)));
         }
 
         return vectorBuilder.build();

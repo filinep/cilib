@@ -34,14 +34,4 @@ public class SphericalTest {
         x.setReal(2, 0.0);
         assertEquals(0.0, function.f(x), 0.0);
     }
-
-    /**
-     * Test of gradient method, of class {@link Spherical}.
-     */
-    @Test
-    public void testGradient() {
-        Vector x = Vector.of(1.0, 2.0, 3.0);
-
-        assertEquals(Vector.of(2.0, 4.0, 6.0), function.getGradient(x));
-    }
 }
