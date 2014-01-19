@@ -8,7 +8,6 @@ package net.sourceforge.cilib.pso.hpso.detectionstrategies;
 
 import net.sourceforge.cilib.entity.EntityType;
 import net.sourceforge.cilib.pso.particle.Particle;
-import net.sourceforge.cilib.type.types.container.Vector;
 
 public class VelocityResetDetectionDecorator implements BehaviorChangeTriggerDetectionStrategy {
     

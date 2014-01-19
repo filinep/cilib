@@ -32,4 +32,9 @@ public interface HeterogeneousIterationStrategy {
      * @return The current {@link List} of {@link ParticleBehavior} objects.
      */
     public List<ParticleBehavior> getBehaviorPool();
+    
+    /**
+     * Get the values used in selecting behaviors e.g. pheromone, success scores, etc.
+     */
+    public List<Double> getSelectionValues();
 }

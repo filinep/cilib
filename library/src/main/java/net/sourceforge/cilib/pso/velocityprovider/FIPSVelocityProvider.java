@@ -68,4 +68,16 @@ public class FIPSVelocityProvider implements VelocityProvider {
 
         return builder.build();
     }
+
+    public void setSocialAcceleration(ControlParameter socialAcceleration) {
+        this.socialAcceleration = socialAcceleration;
+    }
+
+    public void setInertiaWeight(ControlParameter inertiaWeight) {
+        this.inertiaWeight = inertiaWeight;
+    }
+
+    public void setCognitiveAcceleration(ControlParameter cognitiveAcceleration) {
+        this.cognitiveAcceleration = cognitiveAcceleration;
+    }
 }
