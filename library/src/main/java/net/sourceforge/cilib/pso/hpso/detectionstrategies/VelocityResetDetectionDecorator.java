@@ -8,7 +8,6 @@ package net.sourceforge.cilib.pso.hpso.detectionstrategies;
 
 import net.sourceforge.cilib.entity.EntityType;
 import net.sourceforge.cilib.pso.particle.Particle;
-import net.sourceforge.cilib.type.types.container.Vector;
 
 public class VelocityResetDetectionDecorator implements BehaviorChangeTriggerDetectionStrategy {
     
@@ -28,8 +27,7 @@ public class VelocityResetDetectionDecorator implements BehaviorChangeTriggerDet
 
     public boolean detect(Particle entity) {
         if (detectionStrategy.detect(entity)) {
-            Vector velocity = (Vector) entity.getVelocity();
-            entity.getProperties().put(EntityType.Particle.VELOCITY, velocity.multiply(0));
+            entity.getVelocityInitialisationStrategy().initialise(EntityType.Particle.VELOCITY, entity);
             return true;
         }
         

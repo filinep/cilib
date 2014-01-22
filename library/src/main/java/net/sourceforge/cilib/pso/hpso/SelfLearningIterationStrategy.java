@@ -149,8 +149,9 @@ public class SelfLearningIterationStrategy extends AbstractIterationStrategy<PSO
                 particle.setParticleBehavior(behavior);
 
                 i = behaviorPool.indexOf(behavior);
-                props.incrementSelected(i);
             }
+            
+            props.incrementSelected(i);
 
             Fitness prevFitness = particle.getFitness();
 

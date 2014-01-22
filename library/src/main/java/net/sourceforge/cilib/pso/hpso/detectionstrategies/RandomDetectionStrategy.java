@@ -15,7 +15,7 @@ public class RandomDetectionStrategy implements BehaviorChangeTriggerDetectionSt
     private ControlParameter probability;
 
     public RandomDetectionStrategy() {
-        probability = ConstantControlParameter.of(75.0);
+        probability = ConstantControlParameter.of(0.75);
     }
 
     /**
