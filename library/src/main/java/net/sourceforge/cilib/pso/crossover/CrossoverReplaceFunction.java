@@ -7,10 +7,13 @@
 package net.sourceforge.cilib.pso.crossover;
 
 import fj.F;
+
 import java.util.Arrays;
 import java.util.List;
+
 import net.sourceforge.cilib.controlparameter.ConstantControlParameter;
 import net.sourceforge.cilib.controlparameter.ControlParameter;
+import net.sourceforge.cilib.entity.EntityType;
 import net.sourceforge.cilib.entity.operators.crossover.CrossoverStrategy;
 import net.sourceforge.cilib.math.random.UniformDistribution;
 import net.sourceforge.cilib.pso.crossover.parentupdate.AlwaysReplaceParentReplacementStrategy;
@@ -81,6 +84,8 @@ public class CrossoverReplaceFunction extends F<Particle, Particle> {
             Particle bestOffspring = new ElitistSelector<Particle>().on(offspring).select();
             Particle newParticle = parentReplacementStrategy.f(Arrays.asList(p), Arrays.asList(bestOffspring)).get(0);
 
+            newParticle.getProperties().put(EntityType.PREVIOUS_FITNESS, p.getProperties().get(EntityType.PREVIOUS_FITNESS));
+            
             return newParticle;
         } else {
             return p;

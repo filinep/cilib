@@ -4,7 +4,7 @@
  *  / /__/ / / / /_/ /   http://cilib.net
  *  \___/_/_/_/_.___/
  */
-package net.sourceforge.cilib.pso.hpso;
+package net.sourceforge.cilib.pso.xhpso;
 
 import static fj.data.List.iterableList;
 import static fj.function.Doubles.sum;
@@ -26,6 +26,7 @@ import net.sourceforge.cilib.math.random.ProbabilityDistributionFunction;
 import net.sourceforge.cilib.math.random.UniformDistribution;
 import net.sourceforge.cilib.problem.solution.Fitness;
 import net.sourceforge.cilib.pso.PSO;
+import net.sourceforge.cilib.pso.hpso.HeterogeneousIterationStrategy;
 import net.sourceforge.cilib.pso.particle.Particle;
 import net.sourceforge.cilib.pso.particle.ParticleBehavior;
 import net.sourceforge.cilib.pso.particle.StandardParticle;

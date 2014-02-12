@@ -1,0 +1,807 @@
+<?xml version="1.0"?>
+<!DOCTYPE simulator [
+<!ATTLIST algorithm id ID #IMPLIED>
+<!ATTLIST problem id ID #IMPLIED>
+<!ATTLIST measurements id ID #IMPLIED>
+]>
+<simulator>
+    <algorithms>
+        <!-- Dynamic HPSO -->
+        <algorithm id="x_dhpso" class="pso.PSO">
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="1000"/>
+
+            <initialisationStrategy class="algorithm.initialisation.HeterogeneousPopulationInitialisationStrategy">
+                <entityNumber value="30"/>
+                <entityType class="pso.particle.StandardParticle"/>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+            </initialisationStrategy>
+
+            <iterationStrategy class="pso.xhpso.HPSOIterationStrategy">
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <!--for dhpso make windowSize the same as total iterations-->
+                <windowSize class="controlparameter.ConstantControlParameter" parameter="1000"/>
+
+                <selectionRecipe class="util.selection.recipes.RandomSelector"/>
+
+                <!--this is the crossover probability-->
+                <detectionStrategy class="pso.hpso.detectionstrategies.RandomDetectionStrategy">
+                    <probability class="controlparameter.ConstantControlParameter" parameter="0.1"/>
+                </detectionStrategy>
+            </iterationStrategy>
+        </algorithm>
+
+        <!-- Frequency-based HPSO Moving Window -->
+        <algorithm id="x_fk-hpso-10" class="pso.PSO">
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="1000"/>
+
+            <initialisationStrategy class="algorithm.initialisation.HeterogeneousPopulationInitialisationStrategy">
+                <entityNumber value="30"/>
+                <entityType class="pso.particle.StandardParticle"/>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+            </initialisationStrategy>
+
+            <iterationStrategy class="pso.xhpso.HPSOIterationStrategy">
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <!--for how many iterations to keep success scores-->
+                <windowSize class="controlparameter.ConstantControlParameter" parameter="10"/>
+
+                <!--this is the crossover probability-->
+                <detectionStrategy class="pso.hpso.detectionstrategies.RandomDetectionStrategy">
+                    <probability class="controlparameter.ConstantControlParameter" parameter="0.1"/>
+                </detectionStrategy>
+
+                <selectionRecipe class="util.selection.recipes.TournamentSelector">
+                    <tournamentSize class="controlparameter.ConstantControlParameter" parameter="0.5"/>
+                </selectionRecipe>
+            </iterationStrategy>
+        </algorithm>
+
+        <!-- Pheromone based HPSO Constant Strategy -->
+        <algorithm id="x_pher-const" class="pso.PSO">
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="1000"/>
+
+            <initialisationStrategy class="algorithm.initialisation.HeterogeneousPopulationInitialisationStrategy">
+                <entityNumber value="30"/>
+                <entityType class="pso.particle.StandardParticle"/>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+            </initialisationStrategy>
+
+            <iterationStrategy class="pso.xhpso.PheromoneIterationStrategy">
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <pheromoneUpdateStrategy class="pso.hpso.pheromoneupdate.ConstantPheromoneUpdateStrategy">
+                    <better class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                    <same class="controlparameter.ConstantControlParameter" parameter="0.5"/>
+                    <worse class="controlparameter.ConstantControlParameter" parameter="0.0"/>
+                </pheromoneUpdateStrategy>
+
+                <detectionStrategy class="pso.hpso.detectionstrategies.RandomDetectionStrategy">
+                    <probability class="controlparameter.ConstantControlParameter" parameter="0.1"/>
+                </detectionStrategy>
+            </iterationStrategy>
+        </algorithm>
+
+        <!-- Pheromone based HPSO Linear Strategy -->
+        <algorithm id="x_pher-lin" class="pso.PSO">
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="1000"/>
+
+            <initialisationStrategy class="algorithm.initialisation.HeterogeneousPopulationInitialisationStrategy">
+                <entityNumber value="30"/>
+                <entityType class="pso.particle.StandardParticle"/>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+            </initialisationStrategy>
+
+            <iterationStrategy class="pso.xhpso.PheromoneIterationStrategy">
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.GBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.PBestGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.OnePointCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <addBehavior class="pso.particle.CrossoverParticleBehavior">
+                    <crossover class="pso.crossover.CrossoverReplaceFunction">
+                        <crossoverStrategy class="pso.crossover.ParticleCrossoverStrategy">
+                            <crossoverStrategy class="entity.operators.crossover.UniformCrossoverStrategy"/>
+                            <pbestProvider class="pso.crossover.pbestupdate.CurrentPositionOffspringPBestProvider" />
+                            <velocityProvider class="pso.crossover.velocityprovider.ZeroOffspringVelocityProvider"/>
+                        </crossoverStrategy>
+                        <parentProvider class="pso.guideprovider.ArithmeticGuideProvider"/>
+                        <!--always keep probability at 1, it is changed in the detection strategy-->
+                        <crossoverProbability class="controlparameter.ConstantControlParameter" parameter="1.0"/>
+                        <parentReplacementStrategy class="pso.crossover.parentupdate.ElitistParentReplacementStrategy"/>>
+                    </crossover>
+                </addBehavior>
+
+                <pheromoneUpdateStrategy class="pso.hpso.pheromoneupdate.LinearPheromoneUpdateStrategy">
+                    <gradient class="controlparameter.ConstantControlParameter" parameter="0.1"/>
+                </pheromoneUpdateStrategy>
+
+                <detectionStrategy class="pso.hpso.detectionstrategies.RandomDetectionStrategy">
+                    <probability class="controlparameter.ConstantControlParameter" parameter="0.1"/>
+                </detectionStrategy>
+            </iterationStrategy>
+        </algorithm>
+    </algorithms>
+
+    <measurements id="measurements" class="simulator.MeasurementSuite" resolution="5">
+        <addMeasurement class="measurement.single.Fitness"/>
+        <addMeasurement class="measurement.single.FitnessEvaluations"/>
+        <addMeasurement class="measurement.multiple.AdaptiveHPSOBehaviorProfileMeasurement"/>
+    </measurements>
+
+    <problems>
+        <problem id="Rastrigin" class="problem.FunctionOptimisationProblem">
+            <domain value="R(-5.12:5.12)^30"/>
+            <function class="functions.continuous.unconstrained.Rastrigin"/>
+        </problem>
+
+        <simulation samples="5">
+            <algorithm idref="x_dhpso"/>
+            <problem idref="Rastrigin"/>
+            <measurements idref="measurements"/>
+             <output format="TXT" file="data/dhpso_Rastrigin_30_Dimensions.txt"/>
+        </simulation>
+        <simulation samples="5">
+            <algorithm idref="x_fk-hpso-10"/>
+            <problem idref="Rastrigin"/>
+            <measurements idref="measurements"/>
+            <output format="TXT" file="data/fk-hpso-10_Rastrigin_30_Dimensions.txt"/>
+        </simulation>
+        <simulation samples="5">
+            <algorithm idref="x_pher-const"/>
+            <problem idref="Rastrigin"/>
+            <measurements idref="measurements"/>
+            <output format="TXT" file="data/pher-const_Rastrigin_30_Dimensions.txt"/>
+        </simulation>
+        <simulation samples="5">
+            <algorithm idref="x_pher-lin"/>
+            <problem idref="Rastrigin"/>
+            <measurements idref="measurements"/>
+           <output format="TXT" file="data/pher-lin_Rastrigin_30_Dimensions.txt"/>
+        </simulation>
+    </problems>
+</simulator>
