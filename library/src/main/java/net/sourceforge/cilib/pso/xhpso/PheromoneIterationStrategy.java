@@ -110,7 +110,7 @@ public class PheromoneIterationStrategy implements IterationStrategy<PSO>, Heter
         for(Entity e : algorithm.getTopology()) {
             Particle p = (Particle)e;
             p.updateVelocity();
-            p.updateVelocity();
+            p.updatePosition();
         }
         
         for(Entity e : algorithm.getTopology()) {
@@ -122,21 +122,21 @@ public class PheromoneIterationStrategy implements IterationStrategy<PSO>, Heter
         }
         
         algorithm.setTopology(algorithm.getTopology().map(new F<Particle, Particle>() {
-			@Override
+		    @Override
 			public Particle f(Particle p) {
-				if (detectionStrategy.detect(p)) {
-	            	CrossoverParticleBehavior behavior = (CrossoverParticleBehavior) behaviorSelectionRecipe.on(behaviorPool).select();
-	                behavior.incrementSelectedCounter();
-	                Particle np = behavior.getCrossover().f(p);
-	                if (p != np) {
+			if (detectionStrategy.detect(p)) {
+			    CrossoverParticleBehavior behavior = (CrossoverParticleBehavior) behaviorSelectionRecipe.on(behaviorPool).select();
+			    behavior.incrementSelectedCounter();
+			    Particle np = behavior.getCrossover().f(p);
+			    if (p != np) {
 	                	behavior.incrementSuccessCounter();
-	                }
-	                np.setParticleBehavior(behavior);
-	                return np;
-	            }
-				return p;
+			    }
+			    np.setParticleBehavior(behavior);
+			    return np;
 			}
-        }));
+			return p;
+		    }
+		}));
         
         for (Particle current :  algorithm.getTopology()) {
             for (Particle other : algorithm.getNeighbourhood().f(algorithm.getTopology(), current)) {

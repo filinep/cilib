@@ -775,8 +775,8 @@
 
     <problems>
         <problem id="Rastrigin" class="problem.FunctionOptimisationProblem">
-            <domain value="R(-5.12:5.12)^30"/>
-            <function class="functions.continuous.unconstrained.Rastrigin"/>
+            <domain value="R(-100:100)^30"/>
+            <function class="functions.continuous.unconstrained.AbsoluteValue"/>
         </problem>
 
         <simulation samples="5">
