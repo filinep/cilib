@@ -11,19 +11,19 @@ import net.sourceforge.cilib.type.types.container.Vector;
 
 public class DomainProportionalControlParameter implements ControlParameter {
 
-    private double proportion;
+    private ControlParameter proportion;
 
     public DomainProportionalControlParameter() {
-        this.proportion = 0.1;
+        this.proportion = ConstantControlParameter.of(0.1);
     }
 
     public DomainProportionalControlParameter(DomainProportionalControlParameter copy) {
-        this.proportion = copy.proportion;
+        this.proportion = copy.proportion.getClone();
     }
 
     @Override
     public double getParameter() {
-        return proportion * ((Vector) AbstractAlgorithm.get().getOptimisationProblem()
+        return proportion.getParameter() * ((Vector) AbstractAlgorithm.get().getOptimisationProblem()
                 .getDomain().getBuiltRepresentation()).boundsOf(0).getRange();
     }
 
@@ -37,11 +37,11 @@ public class DomainProportionalControlParameter implements ControlParameter {
         return new DomainProportionalControlParameter(this);
     }
 
-    public double getProportion() {
+    public ControlParameter getProportion() {
         return proportion;
     }
 
-    public void setProportion(double proportion) {
+    public void setProportion(ControlParameter proportion) {
         this.proportion = proportion;
     }
 }

@@ -20,7 +20,7 @@ public class NicheCountSubswarms implements Measurement<Int> {
 
     @Override
     public Int getValue(Algorithm algorithm) {
-	NichingAlgorithm mpba = (NichingAlgorithm) algorithm;
+        NichingAlgorithm mpba = (NichingAlgorithm) algorithm;
         return Int.valueOf(mpba.getPopulations().size());
     }
 }

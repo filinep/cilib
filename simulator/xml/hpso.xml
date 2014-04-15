@@ -283,7 +283,9 @@
                             <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="0.0"/>
                             <inertiaWeight class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.9" finalValue="0.4"/>
                         </delegate>
-                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                        <vMax class="controlparameter.DomainProportionalControlParameter">
+                          <proportion class="controlparameter.ConstantControlParameter" parameter="0.5"/>
+                        </vMax>
                     </velocityProvider>
                     <positionProvider class="pso.positionprovider.StandardPositionProvider"/>
                 </addBehavior>
@@ -295,7 +297,9 @@
                             <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="2.0"/>
                             <inertiaWeight class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.9" finalValue="0.4"/>
                         </delegate>
-                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                        <vMax class="controlparameter.DomainProportionalControlParameter">
+                          <proportion class="controlparameter.ConstantControlParameter" parameter="0.5"/>
+                        </vMax>
                     </velocityProvider>
                     <positionProvider class="pso.positionprovider.StandardPositionProvider"/>
                 </addBehavior>
@@ -308,14 +312,18 @@
                             <inertiaWeight class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.9" finalValue="0.4"/>
                             <globalGuideProvider class="pso.guideprovider.RandomGuideProvider"/>
                         </delegate>
-                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                        <vMax class="controlparameter.DomainProportionalControlParameter">
+                          <proportion class="controlparameter.ConstantControlParameter" parameter="0.5"/>
+                        </vMax>
                     </velocityProvider>
                 </addBehavior>
 
                 <addBehavior class="pso.behaviour.StandardParticleBehaviour">
                     <velocityProvider class="pso.velocityprovider.ClampingVelocityProvider">
                         <delegate class="pso.velocityprovider.RandomNearbyVelocityProvider"/>
-                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                        <vMax class="controlparameter.DomainProportionalControlParameter">
+                          <proportion class="controlparameter.ConstantControlParameter" parameter="0.5"/>
+                        </vMax>
                     </velocityProvider>
                     <positionProvider class="pso.positionprovider.StandardPositionProvider"/>
                 </addBehavior>
@@ -331,7 +339,9 @@
                             <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="0.0"/>
                             <inertiaWeight class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.9" finalValue="0.4"/>
                         </delegate>
-                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                        <vMax class="controlparameter.DomainProportionalControlParameter">
+                          <proportion class="controlparameter.ConstantControlParameter" parameter="0.5"/>
+                        </vMax>
                     </velocityProvider>
                     <positionProvider class="pso.positionprovider.StandardPositionProvider"/>
                 </addBehavior>
@@ -343,7 +353,9 @@
                             <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="2.0"/>
                             <inertiaWeight class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.9" finalValue="0.4"/>
                         </delegate>
-                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                        <vMax class="controlparameter.DomainProportionalControlParameter">
+                          <proportion class="controlparameter.ConstantControlParameter" parameter="0.5"/>
+                        </vMax>
                     </velocityProvider>
                     <positionProvider class="pso.positionprovider.StandardPositionProvider"/>
                 </addBehavior>
@@ -356,14 +368,18 @@
                             <inertiaWeight class="controlparameter.LinearlyVaryingControlParameter" initialValue="0.9" finalValue="0.4"/>
                             <globalGuideProvider class="pso.guideprovider.RandomGuideProvider"/>
                         </delegate>
-                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                        <vMax class="controlparameter.DomainProportionalControlParameter">
+                          <proportion class="controlparameter.ConstantControlParameter" parameter="0.5"/>
+                        </vMax>
                     </velocityProvider>
                 </addBehavior>
 
                 <addBehavior class="pso.behaviour.StandardParticleBehaviour">
                     <velocityProvider class="pso.velocityprovider.ClampingVelocityProvider">
                         <delegate class="pso.velocityprovider.RandomNearbyVelocityProvider"/>
-                        <vMax class="controlparameter.DomainProportionalControlParameter" proportion="0.5"/>
+                        <vMax class="controlparameter.DomainProportionalControlParameter">
+                          <proportion class="controlparameter.ConstantControlParameter" parameter="0.5"/>
+                        </vMax>
                     </velocityProvider>
                     <positionProvider class="pso.positionprovider.StandardPositionProvider"/>
                 </addBehavior>

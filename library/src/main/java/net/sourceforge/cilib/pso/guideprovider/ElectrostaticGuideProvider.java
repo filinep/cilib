@@ -67,6 +67,8 @@ public class ElectrostaticGuideProvider implements GuideProvider {
             }
         }
 
+        particle.setNeighbourhoodBest(ferMaximizer);
+
         return ferMaximizer.getBestPosition();
     }
 

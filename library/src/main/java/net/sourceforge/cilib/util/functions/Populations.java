@@ -6,15 +6,29 @@
  */
 package net.sourceforge.cilib.util.functions;
 
+import net.sourceforge.cilib.algorithm.population.MultiPopulationBasedAlgorithm;
 import net.sourceforge.cilib.algorithm.population.SinglePopulationBasedAlgorithm;
 import net.sourceforge.cilib.entity.behaviour.Behaviour;
+
+import net.sourceforge.cilib.entity.topologies.Neighbourhood;
 import net.sourceforge.cilib.entity.Entity;
 import net.sourceforge.cilib.pso.particle.Particle;
+
 import fj.F;
 import fj.F2;
 import fj.data.List;
 
 public final class Populations {
+
+    public static <MP extends MultiPopulationBasedAlgorithm> F<MP, List<List<? extends Entity>>> neighbourhoods() {
+        return new F<MP, List<List<? extends Entity>>>() {
+            @Override
+            public List<List<? extends Entity>> f(MP a) {
+                return List.iterableList(a.getPopulations()).map(Algorithms.getTopology());
+            }
+        };
+    }
+
     /**
      * Returns an empty population of the given population type;
      */

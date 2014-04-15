@@ -68,6 +68,8 @@ public class FERGuideProvider implements GuideProvider {
             }
         }
 
+        particle.setNeighbourhoodBest(ferMaximizer);
+
         return ferMaximizer.getBestPosition();
     }
 
