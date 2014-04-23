@@ -375,7 +375,7 @@ public class NichingAlgorithm extends MultiPopulationBasedAlgorithm implements H
     }
 
     @Override
-    public void setTopology(fj.data.List<Particle> topology) {
+    public void setTopology(fj.data.List<? extends Particle> topology) {
     	this.mainSwarm.setTopology(topology);
     }
 
