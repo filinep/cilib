@@ -108,6 +108,11 @@
 
     <measurements id="fitness" class="simulator.MeasurementSuite" resolution="1">
         <addMeasurement class="measurement.single.NicheCountSubswarms"/>
+        <addMeasurement class="measurement.multiple.NicheCount">
+          <filter class="measurement.multiple.filter.MultiPopulationFilter">
+            <multiPopulationDefinition class="measurement.multiple.filter.NichingMultiPopulationDefinition"/>
+          </filter>
+        </addMeasurement>
         <addMeasurement class="measurement.single.SwarmSize"/>
         <addMeasurement class="measurement.multiple.CompositeMeasurement">
             <addMeasurement class="measurement.single.SwarmSize"/>

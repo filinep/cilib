@@ -6,6 +6,7 @@
  */
 package net.sourceforge.cilib.measurement.multiple.filter;
 
+import net.sourceforge.cilib.algorithm.Algorithm;
 import net.sourceforge.cilib.entity.Entity;
 import net.sourceforge.cilib.type.types.container.Vector;
 import net.sourceforge.cilib.util.Vectors;
@@ -20,7 +21,7 @@ import fj.data.List;
  * to determine if they are on the same optima.
  * 
  */
-public abstract class MultiPopulationFilter<E extends Entity> {
+public class MultiPopulationFilter<E extends Entity> {
 
 	MultiPopulationDefinition multiPopulationDefinition;
 
@@ -29,13 +30,12 @@ public abstract class MultiPopulationFilter<E extends Entity> {
 	}
 
 	public MultiPopulationFilter(MultiPopulationFilter<E> copy) {
-
 		this.multiPopulationDefinition = copy.multiPopulationDefinition;
 	}
 
-	public void filter() {
+	public List<E> filter(Algorithm a) {
 
-		List<List<E>> pops = multiPopulationDefinition.getPopulations();
+		List<List<E>> pops = multiPopulationDefinition.getPopulations(a);
 		final List<E> bests = getBestEntities(pops);
 
 		// predicate which returns true if current sub-population best
@@ -67,7 +67,7 @@ public abstract class MultiPopulationFilter<E extends Entity> {
 			}
 		};
 
-		bests.filter(filterPredicate);
+		return bests.removeAll(filterPredicate);
 	}
 
 	private List<E> getBestEntities(List<List<E>> pops) {
@@ -76,8 +76,7 @@ public abstract class MultiPopulationFilter<E extends Entity> {
 		final F2<E, E, E> cycleEntities = new F2<E, E, E>() {
 			@Override
 			public E f(E best, E cur) {
-				return (best != null) ? (best.compareTo(cur) > 0) ? best : cur
-						: cur;
+				return (best != null) ? (best.compareTo(cur) > 0) ? best : cur : cur;
 			}
 		};
 

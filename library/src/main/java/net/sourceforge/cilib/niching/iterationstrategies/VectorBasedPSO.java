@@ -24,19 +24,14 @@ public class VectorBasedPSO extends AbstractIterationStrategy<NichingAlgorithm> 
 
     @Override
     public void performIteration(NichingAlgorithm alg) {
-        System.out.print(alg.getMainSwarm().getTopology().length() + " ");
         NichingSwarms newSwarms = createNiches(alg.getNicheDetector(), 
                 alg.getNicheCreator(),
                 alg.getMainSwarmCreationMerger())
             .andThen(alg.getSubSwarmIterator())
             .f(NichingSwarms.of(alg.getMainSwarm(), alg.getPopulations()));
-        System.out.print(new net.sourceforge.cilib.measurement.single.ParticlePositionUpdates().getValue(alg) + " ");
-        System.out.println(alg.getMainSwarm().getTopology().length());
 
-        //System.out.print('2');
         alg.setPopulations(Lists.newArrayList(newSwarms._2().toCollection()));
         alg.setMainSwarm(newSwarms._1());
-        //System.out.println('3');
     }
 
 }
