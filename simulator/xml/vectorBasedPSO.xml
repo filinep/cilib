@@ -21,7 +21,7 @@
                     </velocityProvider>
                 </swarmBehavior>
                 <swarmType class="pso.PSO">
-                    <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="500"/>
+                    <addStoppingCondition class="stoppingcondition.OptimiserStalled"/>
                 </swarmType>
             </nicheCreator>
 
@@ -37,9 +37,9 @@
         </algorithm>
 
         <algorithm id="parallelVBPSO" class="niching.NichingAlgorithm">
-            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="10">
+            <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition" target="100000">
                 <predicate class="stoppingcondition.Maximum"/>
-                <measurement class="measurement.generic.Iterations"/>
+                <measurement class="measurement.single.ParticlePositionUpdates"/>
             </addStoppingCondition>
 
             <nicheCreator class="niching.creation.VectorBasedNicheCreationStrategy">
@@ -126,6 +126,11 @@
     </problems>
 
     <measurements id="solution" class="simulator.MeasurementSuite" resolution="1">
+        <addMeasurement class="measurement.multiple.NicheCount">
+            <filter class="measurement.multiple.filter.MultiPopulationFilter">
+                <multiPopulationDefinition class="measurement.multiple.filter.NichingMultiPopulationDefinition"/>
+            </filter>
+        </addMeasurement>
         <addMeasurement class="measurement.single.FitnessEvaluations"/>
         <addMeasurement class="measurement.multiple.CompositeMeasurement">
             <addMeasurement class="measurement.single.SwarmSize"/>

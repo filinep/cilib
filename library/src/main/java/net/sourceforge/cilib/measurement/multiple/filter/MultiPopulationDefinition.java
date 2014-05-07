@@ -6,6 +6,7 @@
  */
 package net.sourceforge.cilib.measurement.multiple.filter;
 
+import net.sourceforge.cilib.algorithm.Algorithm;
 import net.sourceforge.cilib.entity.Entity;
 import fj.data.List;
 
@@ -18,5 +19,5 @@ import fj.data.List;
  */
 public interface MultiPopulationDefinition<E extends Entity> {
 
-	List<List<E>> getPopulations();
+	List<List<E>> getPopulations(Algorithm a);
 }
