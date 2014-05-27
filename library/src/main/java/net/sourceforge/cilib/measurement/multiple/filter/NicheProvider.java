@@ -17,7 +17,7 @@ import fj.data.List;
  * Used for niching, clustering, etc...
  * 
  */
-public interface MultiPopulationDefinition<E extends Entity> {
+public interface NicheProvider<E extends Entity> {
 
 	List<List<E>> getPopulations(Algorithm a);
 }

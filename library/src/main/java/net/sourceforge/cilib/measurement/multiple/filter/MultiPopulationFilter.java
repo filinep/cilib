@@ -23,7 +23,7 @@ import fj.data.List;
  */
 public class MultiPopulationFilter<E extends Entity> {
 
-	MultiPopulationDefinition multiPopulationDefinition;
+	private NicheProvider multiPopulationDefinition;
 
 	public MultiPopulationFilter() {
 		multiPopulationDefinition = null;
@@ -92,12 +92,12 @@ public class MultiPopulationFilter<E extends Entity> {
 		return pops.map(cyclePops);
 	}
 
-	public MultiPopulationDefinition getMultiPopulationDefinition() {
+	public NicheProvider getNicheProvider() {
 		return multiPopulationDefinition;
 	}
 
-	public void setMultiPopulationDefinition(
-			MultiPopulationDefinition multiPopulationDefinition) {
+	public void setNicheProvider(
+			NicheProvider multiPopulationDefinition) {
 		this.multiPopulationDefinition = multiPopulationDefinition;
 	}
 
