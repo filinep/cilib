@@ -14,14 +14,7 @@ import net.sourceforge.cilib.util.functions.Algorithms;
 import fj.data.List;
 import fj.F;
 
-/*
- * Interface for providing a definition of the underlying 
- * sub-population devide within an overall population.
- * 
- * Used for niching, clustering, etc...
- * 
- */
-public class NichingMultiPopulationDefinition implements MultiPopulationDefinition<Entity> {
+public class SubswarmNicheProvider implements NicheProvider<Entity> {
 
     public List<List<Entity>> getPopulations(Algorithm a) {
         MultiPopulationBasedAlgorithm mpba = (MultiPopulationBasedAlgorithm) a;
