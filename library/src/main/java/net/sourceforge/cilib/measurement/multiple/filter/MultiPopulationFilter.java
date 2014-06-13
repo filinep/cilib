@@ -44,10 +44,10 @@ public class MultiPopulationFilter<E extends Entity> {
 		F<E, Boolean> filterPredicate = new F<E, Boolean>() {
 			@Override
 			public Boolean f(E current) {
-				E other, temp = (E) current.getClone();
+				E temp = (E) current.getClone();
 				Vector pos = (Vector) current.getPosition();
 				for (int i = 0; i < bests.length(); ++i) {
-					other = bests.index(i);
+					E other = bests.index(i);
 					// only checks midpoints when other > current
 					// which means current can potentially be eliminated
 					// other will be considered on its turn

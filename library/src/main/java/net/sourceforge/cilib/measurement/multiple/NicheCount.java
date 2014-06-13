@@ -27,8 +27,8 @@ public class NicheCount implements Measurement<Int> {
         return Int.valueOf(filter.filter(algorithm).length());
     }
 
-    public MultiPopulationFilter getFilter() {
-        return this.filter;
+    public MultiPopulationFilter getFilter() { 
+       return this.filter;
     }
 
     public void setFilter(MultiPopulationFilter filter) {

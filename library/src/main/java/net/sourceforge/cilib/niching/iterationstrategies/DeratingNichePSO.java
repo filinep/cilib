@@ -52,18 +52,30 @@ public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm
         DeratingOptimisationProblem problem = (DeratingOptimisationProblem) alg.getOptimisationProblem();
 
         List<SinglePopulationBasedAlgorithm> subswarms = List.iterableList(alg.getPopulations());
-	NichingSwarms swarms = phase1(alg)
+        NichingSwarms swarms = phase1(alg)
             .f(NichingSwarms.of(alg.getMainSwarm(), Collections.<SinglePopulationBasedAlgorithm>emptyList()));
         swarms = onSubswarms(clearDeratingSolutions(problem)).f(swarms);
         swarms = phase2(alg).f(swarms);
         swarms = joinAndMerge(alg, subswarms, mergingVersion).f(swarms);
 
+        int cc = 0;
+        for (SinglePopulationBasedAlgorithm s : alg.getPopulations()) {
+            cc += s.getTopology().length();
+        }
+        System.out.println(cc + " " + alg.getIterations());
+
         problem.clearSolutions();
-	problem.addSolutions(swarms._2().map(Solutions.getPosition().o(Algorithms.<SinglePopulationBasedAlgorithm>getBestSolution())).toCollection());
+        problem.addSolutions(swarms._2().map(Solutions.getPosition().o(Algorithms.<SinglePopulationBasedAlgorithm>getBestSolution())).toCollection());
         alg.setPopulations(Lists.newLinkedList(swarms._2().toCollection()));
         alg.getMainSwarm().setOptimisationProblem(problem);
+
+        cc = 0;
+        for (SinglePopulationBasedAlgorithm s : alg.getPopulations()) {
+            cc += s.getTopology().length();
+        }
+        System.out.println(cc + " " + alg.getIterations());
         // don't need to set the main swarm because it gets reinitialised
-	alg.getMainSwarm().performInitialisation();
+        alg.getMainSwarm().performInitialisation();
     }
 
     /**
@@ -76,7 +88,7 @@ public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm
             public SinglePopulationBasedAlgorithm f(SinglePopulationBasedAlgorithm a) {
                 problem.clearSolutions();
                 a.setOptimisationProblem(problem);
-		a.setTopology(a.getTopology().map(new F<Entity,Entity>() {
+                a.setTopology(a.getTopology().map(new F<Entity,Entity>() {
                     @Override
                     public Entity f(Entity a) {
                         Particle dp = (Particle) a.getClone();
@@ -97,13 +109,15 @@ public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm
         return new NichingFunction() {
             @Override
             public NichingSwarms f(NichingSwarms a) {
-		if (mergingVersion) {
-                    return merge(alg.getMergeDetector(), alg.getMainSwarmMerger(), alg.getSubSwarmMerger())
-                        .f(NichingSwarms.of(a.getMainSwarm(), a.getSubswarms().append(joiningList)));
-                }
-                
-                return NichingSwarms.of(a.getMainSwarm(), a.getSubswarms().append(joiningList));
+                final List<SinglePopulationBasedAlgorithm> l = merge(alg.getMergeDetector(), alg.getMainSwarmMerger(), alg.getSubSwarmMerger())
+                    .f(a)._2();
 
+                if (mergingVersion) {
+                    return merge(alg.getMergeDetector(), alg.getMainSwarmMerger(), alg.getSubSwarmMerger())
+                        .f(NichingSwarms.of(a.getMainSwarm(), a.getSubswarms().append(l)));
+                }
+
+                return NichingSwarms.of(a.getMainSwarm(), a.getSubswarms().append(l));
             }
         };
     }
