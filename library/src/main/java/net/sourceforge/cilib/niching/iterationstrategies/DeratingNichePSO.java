@@ -58,22 +58,11 @@ public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm
         swarms = phase2(alg).f(swarms);
         swarms = joinAndMerge(alg, subswarms, mergingVersion).f(swarms);
 
-        int cc = 0;
-        for (SinglePopulationBasedAlgorithm s : alg.getPopulations()) {
-            cc += s.getTopology().length();
-        }
-        System.out.println(cc + " " + alg.getIterations());
-
         problem.clearSolutions();
         problem.addSolutions(swarms._2().map(Solutions.getPosition().o(Algorithms.<SinglePopulationBasedAlgorithm>getBestSolution())).toCollection());
         alg.setPopulations(Lists.newLinkedList(swarms._2().toCollection()));
         alg.getMainSwarm().setOptimisationProblem(problem);
 
-        cc = 0;
-        for (SinglePopulationBasedAlgorithm s : alg.getPopulations()) {
-            cc += s.getTopology().length();
-        }
-        System.out.println(cc + " " + alg.getIterations());
         // don't need to set the main swarm because it gets reinitialised
         alg.getMainSwarm().performInitialisation();
     }
@@ -109,15 +98,12 @@ public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm
         return new NichingFunction() {
             @Override
             public NichingSwarms f(NichingSwarms a) {
-                final List<SinglePopulationBasedAlgorithm> l = merge(alg.getMergeDetector(), alg.getMainSwarmMerger(), alg.getSubSwarmMerger())
-                    .f(a)._2();
-
                 if (mergingVersion) {
                     return merge(alg.getMergeDetector(), alg.getMainSwarmMerger(), alg.getSubSwarmMerger())
-                        .f(NichingSwarms.of(a.getMainSwarm(), a.getSubswarms().append(l)));
+                        .f(NichingSwarms.of(a.getMainSwarm(), joiningList.append(a.getSubswarms()).reverse()));
                 }
 
-                return NichingSwarms.of(a.getMainSwarm(), a.getSubswarms().append(l));
+                return NichingSwarms.of(a.getMainSwarm(), joiningList.append(a.getSubswarms()).reverse());
             }
         };
     }
