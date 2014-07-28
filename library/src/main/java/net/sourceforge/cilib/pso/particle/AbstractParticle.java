@@ -119,7 +119,7 @@ public abstract class AbstractParticle extends AbstractEntity implements Particl
     public void updatePosition(StructuredType newPosition) {
         put(Property.PREVIOUS_SOLUTION, getPosition());
         put(Property.CANDIDATE_SOLUTION, newPosition);
-        
+
         int posUpdates = get(Property.POSITION_UPDATE_COUNTER).intValue();
         put(Property.POSITION_UPDATE_COUNTER, Int.valueOf(posUpdates + 1));
     }

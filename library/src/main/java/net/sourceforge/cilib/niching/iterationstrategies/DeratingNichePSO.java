@@ -15,6 +15,7 @@ import net.sourceforge.cilib.algorithm.population.AbstractIterationStrategy;
 import net.sourceforge.cilib.algorithm.population.SinglePopulationBasedAlgorithm;
 import net.sourceforge.cilib.entity.Entity;
 import net.sourceforge.cilib.entity.Property;
+import net.sourceforge.cilib.measurement.single.ParticlePositionUpdates;
 import net.sourceforge.cilib.niching.NichingAlgorithm;
 import static net.sourceforge.cilib.niching.NichingFunctions.*;
 import net.sourceforge.cilib.niching.NichingFunctions.NichingFunction;
@@ -23,6 +24,7 @@ import static net.sourceforge.cilib.niching.NichingSwarms.*;
 import net.sourceforge.cilib.problem.DeratingOptimisationProblem;
 import net.sourceforge.cilib.problem.solution.OptimisationSolution;
 import net.sourceforge.cilib.pso.particle.Particle;
+import net.sourceforge.cilib.type.types.Int;
 import net.sourceforge.cilib.util.functions.Algorithms;
 import net.sourceforge.cilib.util.functions.Entities;
 import net.sourceforge.cilib.util.functions.Solutions;
@@ -64,7 +66,10 @@ public class DeratingNichePSO extends AbstractIterationStrategy<NichingAlgorithm
         alg.getMainSwarm().setOptimisationProblem(problem);
 
         // don't need to set the main swarm because it gets reinitialised
+        Int updates = new ParticlePositionUpdates().getValue(swarms._1());
         alg.getMainSwarm().performInitialisation();
+
+        alg.getMainSwarm().getTopology().head().put(Property.POSITION_UPDATE_COUNTER, updates);
     }
 
     /**
