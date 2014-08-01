@@ -48,15 +48,15 @@ public class Griewank extends ContinuousFunction implements Gradient{
     
     public Double df(Vector input, int i){
     double result=0.0;
-	
-	double value1=(1.0/2000.0)*input.doubleValueOf(i-1);
-	double value2=(Math.sin(input.doubleValueOf(i-1)/Math.sqrt(i))*(1.0/Math.sqrt(i)));
+
+    double value1=(1.0/2000.0)*input.doubleValueOf(i-1);
+    double value2=(Math.sin(input.doubleValueOf(i-1)/Math.sqrt(i))*(1.0/Math.sqrt(i)));
                        
-	double value3=1;
-	for (int j=1;j<input.size();j++) {
-           value3*=(Math.cos(input.doubleValueOf(j-1)/Math.sqrt(j))*(1.0/Math.sqrt(j)));
-        }
-	double currentInputcos=(Math.cos(input.doubleValueOf(i-1)/Math.sqrt(i))*(1.0/Math.sqrt(i)));
+    double value3=1;
+    for (int j=0;j<input.size();j++){
+        value3*=(Math.cos(input.doubleValueOf(j)/Math.sqrt(j+1)));
+    }
+    double currentInputcos=(Math.cos(input.doubleValueOf(i-1)/Math.sqrt(i)));
         value3=(value3/currentInputcos);
    
         result=value1+(value2*value3);

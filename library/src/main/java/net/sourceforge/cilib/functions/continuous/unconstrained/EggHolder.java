@@ -65,8 +65,8 @@ public class EggHolder extends ContinuousFunction implements Gradient {
     
     
     if (i==1){
-        double x = input.doubleValueOf(0);
-        double y = input.doubleValueOf(1);
+        double x = input.doubleValueOf(i);
+        double y = input.doubleValueOf(i-1);
         
         double exp1=(x*(y-x+47.0)*Math.cos(Math.sqrt(Math.abs(y-x+47.0))))/(2.0*Math.pow(Math.abs(y-x+47.0),0.5)*Math.abs(y-x+47.0));		
         double exp2=((-47.0-y)*(47.0+x/2.0+y)*Math.cos(Math.sqrt(Math.abs(47.0+x/2.0+y))))/(4.0*Math.pow(Math.abs(y+x/2+47.0),0.5)*(Math.abs(y+x/2+47.0)));
@@ -87,20 +87,18 @@ public class EggHolder extends ContinuousFunction implements Gradient {
     }
     
     else {
-        
-        double w = input.doubleValueOf(i-2);
-        double x = input.doubleValueOf(i-1);
-        double y = input.doubleValueOf(i);
-        
-        double ex1=((47.0+x/2.0+y)*(-47.0-y)*Math.cos(Math.sqrt(Math.abs(47.0+x/2.0+y))))/(4.0*Math.pow(Math.abs(y+x/2+47.0),3/2));              
-        double ex2=Math.sin(Math.sqrt(Math.abs(y-x+47)));
-        double ex3=((x)*(y-x+47.0)*Math.cos(Math.sqrt(Math.abs(y-x+47.0))))/(2.0*Math.pow(Math.abs(y-x+47.0),3/2));
-        double ex4=Math.sin(Math.sqrt(Math.abs(x-w/2+47.0)));
-        double ex5=((47.0+w/2.0+x)*(-47.0-x)*Math.cos(Math.sqrt(Math.abs(47.0+w/2.0+x))))/(2.0*Math.pow(Math.abs(x+w/2+47.0),3/2));
-        double ex6=(w*(x-w+47.0)*Math.cos(Math.sqrt(Math.abs(x-w+47.0))))/(2.0*Math.pow(Math.abs(x-w+47.0),3/2));	
-             
-        result=ex1-ex2+ex3-ex4+ex5-ex6;
-        
+        double x = input.doubleValueOf(i-2);
+        double y = input.doubleValueOf(i-1);
+        double z = input.doubleValueOf(i);
+
+        double ex1=(-(47.0+z)*(47.0+y/2.0+z)*(Math.cos(Math.sqrt((Math.abs(47.0+y/2.0+z))))))/(4.0*Math.pow((Math.abs(z+y/2+47.0)),1.5));
+        double ex2=Math.sin(Math.sqrt((Math.abs(z-y+47))));
+        double ex3=((y)*(z-y+47.0)*Math.cos(Math.sqrt((Math.abs(z-y+47.0)))))/(2.0*Math.pow((Math.abs(z-y+47.0)),1.5));
+        double ex4=Math.sin(Math.sqrt(Math.abs(y+x/2+47.0)));
+        double ex5=((47.0+y)*(47.0+x/2.0+y)*Math.cos(Math.sqrt(Math.abs(47.0+x/2.0+y))))/(2.0*Math.pow((Math.abs(y+x/2+47.0)),1.5));
+        double ex6=((x)*(y-x+47.0)*Math.cos(Math.sqrt(Math.abs(y-x+47.0))))/(2.0*Math.pow((Math.abs(y-x+47.0)),1.5));
+
+        result=ex1-ex2+ex3-ex4-ex5-ex6;
     }
     
           return result;
