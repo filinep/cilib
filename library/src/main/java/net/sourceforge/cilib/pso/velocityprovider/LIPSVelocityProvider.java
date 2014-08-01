@@ -71,7 +71,7 @@ public class LIPSVelocityProvider implements VelocityProvider {
         this.inertiaWeight = inertiaWeight;
     }
 
-    public void setnSize(ControlParameter nSize) {
+    public void setNSize(ControlParameter nSize) {
         this.nSize = nSize;
     }
 }
