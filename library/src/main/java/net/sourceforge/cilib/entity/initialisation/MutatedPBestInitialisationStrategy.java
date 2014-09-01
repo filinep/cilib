@@ -64,4 +64,8 @@ public class MutatedPBestInitialisationStrategy implements InitialisationStrateg
         }        
         
     }
+
+    public void setDistribution(ProbabilityDistributionFunction pd) {
+        this.distribution = pd;
+    }
 }
