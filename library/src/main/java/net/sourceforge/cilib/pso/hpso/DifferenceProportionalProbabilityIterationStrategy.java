@@ -105,7 +105,7 @@ public class DifferenceProportionalProbabilityIterationStrategy implements Itera
 
         iterationStrategy.performIteration(algorithm);
     }
-    
+
     @Override
     public List<Double> getSelectionValues() {
         return new ArrayList<>();

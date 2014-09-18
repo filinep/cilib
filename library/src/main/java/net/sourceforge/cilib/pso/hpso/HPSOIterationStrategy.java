@@ -195,6 +195,11 @@ public class HPSOIterationStrategy implements IterationStrategy<PSO>, Heterogene
             sum += v;
             scores.add(v);
         }
+
+        if (sum == 0) {
+            return scores;
+        }
+
         return new ArrayList(fj.data.List.<Double>iterableList(scores).map(fj.function.Doubles.multiply.f(1.0 / sum)).toCollection());
     }
 
