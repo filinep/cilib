@@ -6,6 +6,7 @@
  */
 package net.sourceforge.cilib.measurement.multiple;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,9 +38,9 @@ public class HPSOVelocity implements Measurement<Vector> {
         List<ParticleBehavior> initialBehaviorPool = initStrategy.getBehaviorPool();
         List<ParticleBehavior> behaviorPool = strategy.getBehaviorPool();
 
-        List<List<Double>> profile = Arrays.asList();
+        List<List<Double>> profile = new ArrayList();
         for (int i = 0; i < behaviorPool.size(); i++) {
-            profile.add(Arrays.<Double>asList());
+            profile.add(new ArrayList());
         }
 
         for (Particle p : topology) {
@@ -53,7 +54,11 @@ public class HPSOVelocity implements Measurement<Vector> {
 
         Vector.Builder builder = Vector.newBuilder();
         for (List<Double> l : profile) {
-            builder.add(Stats.mean(l));
+            if (l.isEmpty()) {
+                builder.add(0.0);
+            } else {
+                builder.add(Stats.mean(l));
+            }
         }
 
         return builder.build();
