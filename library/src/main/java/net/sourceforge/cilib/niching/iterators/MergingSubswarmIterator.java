@@ -59,28 +59,31 @@ public class MergingSubswarmIterator extends SubswarmIterator {
                 SinglePopulationBasedAlgorithm newB = b.getClone();
                 newB.setTopology(List.nil());
 
-		Particle gbest = Topologies.getBestEntity((List<Particle>) b.getTopology(), new SocialBestFitnessComparator<>());
+                Particle gbest = Topologies.getBestEntity((List<Particle>) b.getTopology(), new SocialBestFitnessComparator<>());
                 List<Entity> local = b.getTopology().removeAll(Equal.anyEqual().eq(gbest));
                 for (Entity e : local) {
                     double d2 = distanceMeasure.distance((Vector) a.getBestSolution().getPosition(), e.getPosition());
 
                     if (d2 < granularity.getParameter()) {
-                        newA.setTopology(newA.getTopology().snoc(e));
-
                         if (e instanceof Particle) {
                             e.setBehaviour(((Entity) a.getTopology().head()).getBehaviour());
                         }
 
+                        //newA.setTopology(newA.getTopology().snoc(e));
+                        newA.setTopology(newA.getTopology().cons(e));
                     } else {
-                    	newB.setTopology(newB.getTopology().snoc(e));
+                        //newB.setTopology(newB.getTopology().snoc(e));
+                        newB.setTopology(newB.getTopology().cons(e));
                     }
+                }
 
-		    if (newB.getTopology().isEmpty()) {
-			newA.setTopology(newA.getTopology().snoc(gbest));
-			gbest.setBehaviour(((Particle) a.getTopology().head()).getBehaviour());
-		    } else {
-			newB.setTopology(newB.getTopology().snoc(gbest));
-		    }
+                if (newB.getTopology().isEmpty()) {
+                    //newA.setTopology(newA.getTopology().snoc(gbest));
+                    newA.setTopology(newA.getTopology().cons(gbest));
+                    gbest.setBehaviour(((Particle) a.getTopology().head()).getBehaviour());
+                } else {
+                    //newB.setTopology(newB.getTopology().snoc(gbest));
+                    newB.setTopology(newB.getTopology().cons(gbest));
                 }
 
                 // we clone to set the nBests
