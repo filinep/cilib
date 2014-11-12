@@ -88,7 +88,7 @@ public class VectorBasedNicheCreationStrategy extends NicheCreationStrategy {
             Particle newP = gBest.getClone();
 
             // new position within the niche
-	    Vector solution = ((Vector) gBest.getPosition())
+            Vector solution = ((Vector) gBest.getPosition())
                 .plus(Vector.newBuilder().repeat(gBest.getDimension(), Real.valueOf(1.0)).build().multiply(new P1<Number>() {
                     @Override
                     public Number _1() {
@@ -115,7 +115,7 @@ public class VectorBasedNicheCreationStrategy extends NicheCreationStrategy {
             Particle p = (Particle) e;
 
             if (!newTopology.exists(equalParticle.f(p))) {
-            	newMainSwarm.setTopology(newMainSwarm.getTopology().snoc(e.getClone()));
+                newMainSwarm.setTopology(newMainSwarm.getTopology().cons(e.getClone()));
             }
         }
 
