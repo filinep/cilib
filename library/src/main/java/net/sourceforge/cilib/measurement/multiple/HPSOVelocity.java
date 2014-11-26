@@ -46,7 +46,8 @@ public class HPSOVelocity implements Measurement<Vector> {
         for (Particle p : topology) {
             for (int i = 0; i < profile.size(); i++) {
                 if (p.getParticleBehavior() == behaviorPool.get(i) || p.getParticleBehavior() == initialBehaviorPool.get(i)) {
-                    profile.get(i).add(((Vector) p.getVelocity()).norm());
+                    profile.get(i).add(((Vector) p.getCandidateSolution()).subtract((Vector) 
+                    p.getProperties().get(net.sourceforge.cilib.entity.EntityType.PREVIOUS_SOLUTION)).norm());
                     break;
                 }
             }
