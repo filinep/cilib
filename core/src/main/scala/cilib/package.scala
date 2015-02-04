@@ -24,11 +24,16 @@ package object cilib {
   def open[A](point: A): Bound[A] =
     Open(point)
 
-
   // Find a better home for this
   implicit object DoubleMonoid extends Monoid[Double] {
     def zero = 0.0
     def append(a: Double, b: => Double) = a + b
   }
+
+  implicit def monocleLensToScalazLens[A,B](ml: monocle.Lens[A,B]) =
+    Lens.lensu[A,B]((a, b) => ml.set(b)(a) , ml.get)
+
+  implicit def scalazLensToMonocleLens[A,B](sl: Lens[A,B]) =
+    monocle.Lens[A,B](sl.get _)(a => b => sl.set(b,a))
 
 }

@@ -5,9 +5,13 @@ import _root_.scala.Predef.{any2stringadd => _, _}
 import scalaz._
 import Scalaz._
 
+import monocle.syntax._
+
 import spire.math._
 
 final case class Entity[S,F[_],A](state: S, pos: Position[F,A])
+  def apply[B](lens: monocle.Lens[S,B]) = state applyLens lens
+}
 
 object Entity {
   // Step to evaluate the particle

@@ -1,18 +1,18 @@
 package cilib
 
-import _root_.scala.Predef.{any2stringadd => _}
+import Position._
+import Lenses._
 
 import scalaz._
+import scalaz.syntax.traverse._
+import scalaz.std.list._
 
 import monocle.syntax._
-import Position._
 
 import spire.algebra._
 import spire.implicits._
-import spire.syntax.module._
 
 object PSO {
-  import Lenses._
 
   // Constrain this better - Not numeric. Operation for vector addition
   def stdPosition[S,F[_],A](
@@ -85,10 +85,10 @@ object PSO {
       (means zip sigmas) traverse (x => Dist.gaussian(x._1, x._2))
     }
 
-  def quantum[S,F[_]:Traverse](
-    collection: List[Particle[S,F,Double]],
-    x: Particle[S,F,Double],
-    center: Position[F,Double],
+  def quantum[S, F[_]: Traverse](
+    collection: List[Particle[S, F, Double]],
+    x: Particle[S, F, Double],
+    center: Position[F, Double],
     r: Double
   )(implicit M: Module[F[Double],Double]): Step[F,Double,Position[F,Double]] =
     Step.pointR(
@@ -130,7 +130,6 @@ object PSO {
   def createParticle[S,F[_]](f: Position[F,Double] => Particle[S,F,Double])(pos: Position[F,Double]): Particle[S,F,Double] =
     f(pos)
 }
-
 
 /*
 next pso work:

@@ -75,6 +75,18 @@ object StepS {
       fa flatMap f
   }
 
+  // implicit def stepSMonadState[F[_],A,S] =
+  //   StateT.stateTMonadState[S,Step[F,A,?]]
+
+  // def get[F[_],A,S] =
+  //   StateT.stateTMonadState[S, Step[F,A,?]].get
+
+  // def put[F[_],A,S](s: S) =
+  //   StateT.stateTMonadState[S, Step[F,A,?]].put(s)
+
+  // def apply[F[_],A,S,B](f: S => Step[F,A,(S, B)]) =
+  //   StateT[Step[F,A,?],S,B](f)
+
   def point[F[_],A,S,B](b: B): StepS[F,A,S,B] =
     StepS(StateT.stateT[Step[F,A,?],S,B](b))
 
