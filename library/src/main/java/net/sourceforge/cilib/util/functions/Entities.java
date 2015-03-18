@@ -6,17 +6,20 @@
  */
 package net.sourceforge.cilib.util.functions;
 
+import net.sourceforge.cilib.entity.Entity;
+import net.sourceforge.cilib.entity.MemoryBasedEntity;
+import net.sourceforge.cilib.entity.SocialEntity;
+import net.sourceforge.cilib.entity.behaviour.Behaviour;
+import net.sourceforge.cilib.problem.Problem;
+import net.sourceforge.cilib.problem.solution.Fitness;
+import net.sourceforge.cilib.pso.particle.Particle;
+import net.sourceforge.cilib.type.types.container.StructuredType;
+import net.sourceforge.cilib.util.Cloneable;
+
 import com.google.common.collect.Lists;
 
 import fj.F;
 import fj.F2;
-import net.sourceforge.cilib.entity.Entity;
-import net.sourceforge.cilib.entity.MemoryBasedEntity;
-import net.sourceforge.cilib.entity.SocialEntity;
-import net.sourceforge.cilib.problem.Problem;
-import net.sourceforge.cilib.problem.solution.Fitness;
-import net.sourceforge.cilib.type.types.container.StructuredType;
-import net.sourceforge.cilib.util.Cloneable;
 
 public final class Entities {
     private Entities() {}
@@ -120,6 +123,16 @@ public final class Entities {
             @Override
             public Fitness f(E a) {
                 return a.getSocialFitness();
+            }
+        };
+    }
+
+    public static <B extends Behaviour, P extends Entity> F2<B, P, P> setBehaviour() {
+        return new F2<B, P, P>() {
+            @Override
+            public P f(B a, P b) {
+                b.setBehaviour(a);
+                return b;
             }
         };
     }

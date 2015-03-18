@@ -52,4 +52,8 @@ public class EnhancedSpeciation extends AbstractIterationStrategy<PSO> {
             }
         }));
     }
+
+    public void setDelegate(IterationStrategy<PSO> delegate) {
+        this.delegate = delegate;
+    }
 }

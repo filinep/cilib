@@ -40,12 +40,12 @@ public class SpeciationIterationStrategy extends AbstractIterationStrategy<PSO> 
         pso.setNeighbourhood(new SpeciationNeighbourhood<Particle>(distance, radius, n));
 
         final F<Particle, Particle> first = new F<Particle, Particle>() {
-			@Override
-			public Particle f(Particle current) {
-				current.getBehaviour().performIteration(current);
-	            return current;
-			}
-        };
+                @Override
+                public Particle f(Particle current) {
+                    current.getBehaviour().performIteration(current);
+                    return current;
+                }
+            };
         
         final F2<List<Particle>, List<Particle>, List<Particle>> second = new F2<List<Particle>, List<Particle>, List<Particle>>() {
             @Override

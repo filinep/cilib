@@ -6,55 +6,80 @@
 ]>
 <simulator>
 
-    <algorithm id="ANPSO" class="pso.MultiPopPSO">
-        <initialisationStrategy class="algorithm.initialisation.ClonedPopulationInitialisationStrategy">
-                <entityType idref="conicalPSO"/>
-                <setEntityNumberControlParameter parameter="100" class="controlparameter.ConstantControlParameter"/>
-            </initialisationStrategy>
+  <algorithm id="ANPSO" class="pso.MultiPopPSO">
+    <addStoppingCondition class="stoppingcondition.MeasuredStoppingCondition">
+      <predicate class="stoppingcondition.Maximum"/>
+      <target value="100000"/>
+      <measurement class="measurement.single.ParticlePositionUpdates"/>
+    </addStoppingCondition>
 
-            <iterationStrategy class="niching.iterationstrategies.EnhancedSpeciation">
-                <setDelegate class="niching.AdaptiveNichingIterationStrategy">
-                    <nicheIterMin parameter="2" class="controlparameter.ConstantControlParameter"/>
-                    <nicheIterLength parameter="2" class="controlparameter.ConstantControlParameter"/>
-                    <pMax parameter="10" class="controlparameter.ConstantControlParameter"/>
-                </setDelegate>
-            </iterationStrategy>
+    <initialisationStrategy class="algorithm.initialisation.ClonedPopulationInitialisationStrategy">
+      <entityType class="pso.particle.StandardParticle">
+        <behaviour class="pso.behaviour.StandardParticleBehaviour">
+          <velocityProvider class="pso.velocityprovider.ConstrictionVelocityProvider">
+            <constrictionCoefficient class="controlparameter.ConstantControlParameter" parameter="0.729843788"/>
+            <cognitiveAcceleration class="controlparameter.ConstantControlParameter" parameter="1.496"/>
+            <socialAcceleration class="controlparameter.ConstantControlParameter" parameter="1.496"/>
+          </velocityProvider>
+          <boundaryConstraint class="problem.boundaryconstraint.ClampingBoundaryConstraint"/>
+        </behaviour>
+      </entityType>
+      <entityNumber value="100"/>
+    </initialisationStrategy>
 
-            <neighbourhood class="entity.topologies.NichingLabeledNeighbourhood" >
-                <unNichedTopology parameter="2" class="controlparameter.ConstantControlParameter"/>
-            </neighbourhood>
-        </algorithm>
+    <iterationStrategy class="niching.iterationstrategies.EnhancedSpeciation">
+      <setDelegate class="niching.iterationstrategies.AdaptiveNichingIterationStrategy">
+        <nicheIterMin class="controlparameter.ConstantControlParameter" parameter="2"/>
+        <nicheIterLength class="controlparameter.ConstantControlParameter" parameter="2"/>
+        <pMax class="controlparameter.ConstantControlParameter" parameter="10"/>
+      </setDelegate>
+    </iterationStrategy>
 
-    <measurements id="measurements" class="simulator.MeasurementSuite" resolution="1">
-        <addMeasurement class="measurement.single.diversity.Diversity"/>
-        <addMeasurement class="measurement.single.ErrorMeasurement"/>
-        <addMeasurement class="measurement.single.CollectiveMeanOfMeasurement">
-            <measurement class="measurement.single.dynamic.Error"/>
-        </addMeasurement>
-    </measurements>
+    <neighbourhood class="entity.topologies.NichingLabeledNeighbourhood" >
+      <unNichedTopology class="controlparameter.ConstantControlParameter" parameter="2"/>
+    </neighbourhood>
+  </algorithm>
+
+  <measurements id="fitness" class="simulator.MeasurementSuite" resolution="5000">
+    <addMeasurement class="measurement.multiple.NicheCount">
+      <filter class="measurement.multiple.filter.MultiPopulationFilter">
+        <nicheProvider class="measurement.multiple.filter.NBestNicheProvider"/>
+      </filter>
+    </addMeasurement>
+    <addMeasurement class="measurement.multiple.AverageGradientLength">
+      <filter class="measurement.multiple.filter.MultiPopulationFilter">
+        <nicheProvider class="measurement.multiple.filter.NBestNicheProvider"/>
+      </filter>
+    </addMeasurement>
+  </measurements>
 
     <problems>
-        <problem id="MovingPeaks" class="problem.DynamicOptimisationProblem">
-            <domain value="R(0.0:100.0)^5"/>
-            <function class="functions.continuous.dynamic.GeneralisedMovingPeaks">
-		<peaks value = "1"/>
-		<frequency value = "100"/>
-		<lambda value = "0.75"/>
-		<shiftSeverity value = "5.0"/>
-		<widthSeverity value = "0.01"/>
-		<heightSeverity value = "7.0"/>
-		<minWidth value = "1.0"/>
-		<maxWidth value = "12.0"/>
-		<minHeight value = "30.0"/>
-		<maxHeight value = "70.0"/>
-	    </function>
-        </problem>
-
-        <simulation samples="30">
-            <algorithm idref="chargedPSO"/>
-            <problem idref="MovingPeaks"/>
-            <measurements idref="measurements"/>
-	     <output format="TXT" file="data/chargedPSO_MovingPeaks_5_Dimensions.txt"/>
-        </simulation>
+      <problem id="f1" class="problem.FunctionOptimisationProblem" domain="R(0.0:1.0)">
+        <objective class="problem.objective.Maximise"/>
+        <function class="functions.continuous.unconstrained.EqualMaxima"/>
+      </problem>
+      <problem id="f2" class="problem.FunctionOptimisationProblem" domain="R(0.0:1.0)">
+        <objective class="problem.objective.Maximise"/>
+        <function class="functions.continuous.unconstrained.EvenDecreasingMaxima"/>
+      </problem>
+      <problem id="f3" class="problem.FunctionOptimisationProblem" domain="R(0.0:1.0)">
+        <objective class="problem.objective.Maximise"/>
+        <function class="functions.continuous.unconstrained.UnevenEqualMaxima"/>
+      </problem>
+      <problem id="f4" class="problem.FunctionOptimisationProblem" domain="R(0.0:1.0)">
+        <objective class="problem.objective.Maximise"/>
+        <function class="functions.continuous.unconstrained.UnevenDecreasingMaxima"/>
+      </problem>
+      <problem id="f5" class="problem.FunctionOptimisationProblem" domain="R(-5.0:5.0)^2">
+        <objective class="problem.objective.Maximise"/>
+        <function class="functions.continuous.unconstrained.Himmelblau"/>
+      </problem>
     </problems>
+
+    <simulation samples="30">
+      <algorithm idref="ANPSO"/>
+      <problem idref="f1"/>
+      <measurements idref="fitness"/>
+      <output format="TXT" file="data/anpso_f1.txt"/>
+    </simulation>
 </simulator>
