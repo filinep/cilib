@@ -1,6 +1,7 @@
 import scalaz._
 
 package object cilib {
+
   type Particle[S,F[_],A] = Entity[S,F,A]
 
   // Should expand into a typeclass? Getter?
