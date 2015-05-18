@@ -16,7 +16,7 @@ final class StepRVarOps[A](val self: RVar[A]) extends AnyVal {
 }
 
 final class StepOps[F[_],A,B](val self: Step[F,A,B]) extends AnyVal {
-  def liftStepS[S]: StateT[Step[F,A,?], S, B] = StepS.pointK(self)
+  def liftStepS[S]: StepS[F,A,S, B] = StepS.pointK(self)
 }
 
 trait ToStepOps {
