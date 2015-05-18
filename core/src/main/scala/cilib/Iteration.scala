@@ -3,6 +3,7 @@ package cilib
 import scalaz._
 import scalaz.syntax.traverse._
 import scalaz.std.list._
+import scalaz.std.stream._
 
 /**
  * An `Iteration` is an atomic action that applies a given "algorithm" for each
@@ -23,7 +24,7 @@ object Iteration {
   type Iteration[M[_],A] = Kleisli[M,A,A]
 
   // iterations have the shape: [a] -> a -> Step [a]
-  def sync_[M[_]: Applicative,A](f: List[A] => A => M[A]): Iteration[M,List[A]] =
+  def sync_[M[_]: Applicative,A](f: List[A] => A => M[A]): Kleisli[M,List[A],List[A]] =//Iteration[M,List[A]] =
     Kleisli.kleisli[M,List[A],List[A]]((l: List[A]) => l traverseU f(l))
 
   def sync[F[_],A,B](f: List[B] => B => Step[F,A,B]) =
@@ -48,5 +49,10 @@ object Iteration {
     implicit val S = StateT.stateTMonadState[S, Step[F,A,?]]
     async_[StepS[F,A,S,?], B](f)
   }
+
+  def repeat[M[_]: Monad,A](n: Int, iter: Iteration[M,List[A]]) =
+    (l: List[A]) => Range.inclusive(1, n).toStream.map(_ => iter).foldLeftM(l) {
+      (a, c) => c(a)
+    }
 
 }

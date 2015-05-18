@@ -11,12 +11,12 @@ case class Entity[S,F[_],A](state: S, pos: Position[F,A])
 
 object Entity {
 
-  // Step to evaluate the particle
-  def eval[S,F[_]:Foldable,A](f: Position[F,A] => Position[F,A])(entity: Entity[S,F,A]): Step[F,A,Entity[S,F,A]] =
-    Step(o => e => {
-      val x = Position.evalF(f(entity.pos)).run(o)(e)
+  // Step to evaluate the particle // what about cooperative?
+  def evalF[S,F[_]:Foldable,A](g: F[A] => F[A])(entity: Entity[S,F,A]) =
+    Step { (e: (Opt, Eval[F,A])) => {
+      val x = Position.evalF(g)(entity.pos).run(e)
       x.map(p => Lenses._position.set(p)(entity))
-    })
+    }}
 }
 
 sealed abstract class Position[F[_],A] { // Transformer of some sort, over the type F?
@@ -67,6 +67,17 @@ final case class Point[F[_],A] private[cilib] (x: F[A]) extends Position[F,A]
 final case class Solution[F[_],A] private[cilib] (x: F[A], f: Fit, v: List[Constraint[A,Double]]) extends Position[F,A]
 
 object Position {
+
+  def evalF[F[_]:Foldable,A](g: F[A] => F[A])(pos: Position[F,A]) =
+    Step { (e: (Opt, Eval[F,A])) =>
+      RVar.point(pos match {
+        case Point(x) =>
+          val (fit, vio) = e._2.eval(g(x))
+          Solution(x, fit, vio)
+        case x @ Solution(_, _, _) =>
+          x
+      })
+    }
 
   implicit def positionInstances[F[_]](implicit F0: Monad[F], F1: Zip[F]): Bind[Position[F,?]] /*with Traverse[Position[F,?]]*/ with Zip[Position[F,?]] =
     new Bind[Position[F,?]] /*with Traverse[Position[F,?]]*/ with Zip[Position[F,?]] {

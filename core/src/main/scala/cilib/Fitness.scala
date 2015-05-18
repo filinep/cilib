@@ -6,6 +6,7 @@ import Ordering._
 
 import scalaz.std.anyVal._
 import scalaz.syntax.equal._
+import scalaz.syntax.foldable._
 
 sealed trait Fit
 final case class Penalty(v: Double, p: Double) extends Fit
@@ -21,6 +22,9 @@ object Fitness {
 
   def compare[A](x: A, y: A)(implicit F: Fitness[A]): Reader[Opt, A] =
     Reader(o => if (o.order(F.fitness(x), F.fitness(y)) === GT) x else y)
+
+  def best[F[_]: Foldable, A: Fitness](a: A)(x: F[A]): Reader[Opt, A] =
+    x.foldLeftM[Reader[Opt, ?], A](a)(compare(_, _))
 
 }
 
