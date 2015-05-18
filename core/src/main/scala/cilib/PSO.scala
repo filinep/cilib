@@ -1,6 +1,6 @@
 package cilib
 
-import _root_.scala.Predef.{any2stringadd => _}
+import _root_.scala.Predef.{any2stringadd => _, _}
 
 import scalaz._
 
@@ -130,7 +130,6 @@ object PSO {
   def createParticle[S,F[_]](f: Position[F,Double] => Particle[S,F,Double])(pos: Position[F,Double]): Particle[S,F,Double] =
     f(pos)
 }
-
 
 /*
 next pso work:
