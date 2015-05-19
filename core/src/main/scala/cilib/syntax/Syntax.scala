@@ -7,6 +7,8 @@ trait Syntaxes {
 
   object zip extends ToExtraZipOps
 
+  object iteration extends ToIterationOps
+
   object all extends ToOps
 
 }
@@ -14,3 +16,4 @@ trait Syntaxes {
 trait ToOps
     extends ToStepOps
     with ToExtraZipOps
+    with ToIterationOps

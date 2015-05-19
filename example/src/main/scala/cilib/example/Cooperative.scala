@@ -8,17 +8,16 @@ object CooperativeExample {
   import PSO._
 
   import syntax.step._
+  import syntax.iteration._
 
   import scalaz._
   import scalaz.std.list._
 
   import scalaz.syntax.traverse._
+  import scalaz.syntax.applicative._
 
   import spire.algebra._
   import spire.implicits._
-
-  def spherical[F[_]:Foldable:SolutionRep,A](implicit N: Numeric[A]) =
-    new Unconstrained[F,A]((a: F[A]) => Valid(a.foldMap(x => N.toDouble(N.times(x, x)))))
 
   def gbest[S,F[_]:Traverse](
     w: Double,
@@ -55,7 +54,7 @@ object CooperativeExample {
 
   val swarms = collections.map { x =>
     algs.zip(x).zip((0 until 5).toList.map(i => List(2*i, 2*i+1))).map { y =>
-      ((z: Collection[Mem[List, Double],List,Double]) => z.traverse[StepS[List,Double,Position[List,Double],?], Entity[Mem[List, Double], List, Double]] { a =>
+      ((z: List[Entity[Mem[List, Double],List,Double]]) => z.traverse[StepS[List,Double,Position[List,Double],?], Entity[Mem[List, Double], List, Double]] { a =>
         y._1._1(y._2)(z)(a)
       }, y._1._2, y._2)
     }
@@ -63,11 +62,15 @@ object CooperativeExample {
 
   val a = StepS.pointR[List,Double,Position[List,Double],List[Subswarm[Mem[List,Double],List,Double]]](swarms)
 
-  def coopAlgK(implicit A: Applicative[Kleisli[StepS[List,Double,Position[List, Double], ?], List[Subswarm[Mem[List,Double], List,Double]], ?]]) =
-    Iteration.syncS(cooperative[Mem[List,Double], List, Double])
+  def coopAlgK =//(implicit A: Applicative[Kleisli[StepS[List,Double,Position[List, Double], ?], List[Subswarm[Mem[List,Double], List,Double]], ?]]) =
+    //A.replicateM(1000,
+      Iteration.syncS(cooperative[Mem[List,Double], List, Double](ContextUpdate.selective(Contribution.memoryBest)))
+  //)
 
-  def coop = a.flatMap(x => coopAlgK.run(x))
+  val aaa = ToApplicativeOps/*[Kleisli[StepS[List,Double,Position[List,Double],?], List[Subswarm[Mem[List,Double], List,Double]],?],  List[Subswarm[Mem[List,Double], List,Double]]]*/(coopAlgK)
 
-  val run = coop.run(Position(List.fill(10)(100.0))).run((Min, spherical)).run(RNG.fromTime)
+  //def coop = a.flatMap(x => coopAlgK.run(x))
+
+  //val run = coop.run(Position(List.fill(10)(100.0))).run((Min, Problems.spherical)).run(RNG.fromTime)
 
 }
