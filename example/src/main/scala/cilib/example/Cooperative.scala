@@ -19,6 +19,27 @@ object CooperativeExample {
   import spire.algebra._
   import spire.implicits._
 
+  def gbest1[S,F[_]:Traverse](
+    w: Double,
+    c1: Double,
+    c2: Double,
+    cognitive: Guide[S,F,Double],
+    social: Guide[S,F,Double]
+  )(
+    evalParticle: Particle[S,F,Double] => Step[F,Double,Particle[S,F,Double]]
+  )(
+    implicit M: Memory[S,F,Double], V: Velocity[S,F,Double], MO: Module[F[Double],Double]
+  ): List[Particle[S,F,Double]] => Particle[S,F,Double] => Step[F,Double,Particle[S,F,Double]] =
+    collection => x => for {
+      cog     <- cognitive(collection, x)
+      soc     <- social(collection, x)
+      v       <- stdVelocity(x, soc, cog, w, c1, c2)
+      p       <- stdPosition(x, v)
+      p2      <- evalParticle(p)
+      p3      <- updateVelocity(p2, v)
+      updated <- updatePBest(p3)
+    } yield updated
+
   def gbest[S,F[_]:Traverse](
     w: Double,
     c1: Double,

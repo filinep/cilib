@@ -12,12 +12,12 @@ object Cooperative {
 
   import monocle._
 
-  type Alg[S,F[_],A] = List[Entity[S,F,A]] => Entity[S,F,A] => Step[F,A,Entity[S,F,A]]
-  type Algorithm[S,F[_],A] = List[Entity[S,F,A]] => StepS[F,A,Position[F,A],List[Entity[S,F,A]]]
-  type Subswarm[S,F[_],A] = (Algorithm[S,F,A], List[Entity[S,F,A]], List[Int])
+  type Algorithm[S,F[_],A] = List[Entity[S,F,A]] => Entity[S,F,A] => Step[F,A,Entity[S,F,A]]
+  type AlgorithmS[S,F[_],A] = List[Entity[S,F,A]] => StepS[F,A,Position[F,A],List[Entity[S,F,A]]]
+  type Subswarm[S,F[_],A] = (AlgorithmS[S,F,A], List[Entity[S,F,A]], List[Int])
 
   object Split {
-    
+
   }
 
   object Contribution {
@@ -72,6 +72,17 @@ object Cooperative {
       evalled <- Entity.evalF(coopEncodePos(_: F[A], context.pos, indices))(entity).liftStepS
     } yield evalled
   }
+
+  def algToCoopAlg[S,F[_]: Traverse,A](
+    algorithm: (Entity[S,F,A] => Step[F,A,Entity[S,F,A]]) => Algorithm[S,F,A]
+  ): List[Int] => List[Entity[S,F,A]] => Entity[S,F,A] => StepS[F,A,Position[F,A],Entity[S,F,A]] =
+    indices => xs => x => StepS(
+      s => {
+        val eval = Cooperative.evalParticle(_: Entity[S,F,A], indices).eval(s)
+        val coopAlg = algorithm((p: Particle[S,F,A]) => eval(p))
+        coopAlg(xs)(x).map((s,_)) // TODO: Dodgy!! only works cos cooperative's eval doesn't change state
+      }
+    )
 
   def cooperative[S,F[_]: Traverse,A: spire.math.Numeric](
     contextUpdate: Subswarm[S,F,A] => StepS[F,A,Position[F,A],Position[F,A]]
