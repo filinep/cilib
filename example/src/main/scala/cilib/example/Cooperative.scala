@@ -8,7 +8,6 @@ object CooperativeExample {
   import PSO._
 
   import syntax.step._
-  import syntax.iteration._
 
   import scalaz._
   import scalaz.std.list._
@@ -62,9 +61,6 @@ object CooperativeExample {
   type Subswarm_ = Subswarm[Mem[List,Double],List,Double]
   type Entity_ = Entity[Mem[List, Double], List, Double]
 
-  implicit val S = StateT.stateTMonadState[Position[List,Double], Step[List,Double,?]]
-  implicit val R = Kleisli.kleisliMonadReader[StepS_, List[Subswarm_]]
-
   val cognitive = Guide.pbest[Mem[List,Double],List,Double]
   val social = Guide.gbest[Mem[List,Double],List]
 
@@ -72,9 +68,9 @@ object CooperativeExample {
     0.729, 1.496, 1.496, cognitive, social, x)
   )
 
-  val collections = (0 until 5).toList.map(_ =>
+  val collections = (0 until 5).toList.traverse(_ =>
     Position.createCollection(PSO.createParticle(x => Entity(Mem(x,x.map(_ => 0.0)), x)))(Interval(closed(-100.0),closed(100.0))^2, 5)
-  ).sequence
+  )
 
   val swarms = collections.map { x =>
     algs.zip(x).zip((0 until 5).toList.map(i => List(2*i, 2*i+1))).map { y =>
@@ -92,6 +88,6 @@ object CooperativeExample {
 
   def coop = swarms.flatMap(x => coopAlgK(x))
 
-  val run = coop.run(Position(List.fill(10)(100.0))).run((Min, Problems.spherical)).run(RNG.fromTime)
+  val run = coop.run(Position(List.fill(10)(100.0))).run(Min)(Problems.spherical).run(RNG.fromTime)
 
 }
