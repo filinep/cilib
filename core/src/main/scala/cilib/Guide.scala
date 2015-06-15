@@ -8,7 +8,7 @@ object Guide {
   def pbest[S,F[_],A](implicit M: Memory[S,F,A]): Guide[S,F,A] =
     (_, x) => Step.point(M._memory.get(x.state))
 
-  def nbest[S,F[_]](selection: Selection[Particle[S,F,Double]])(implicit M: Memory[S,F,Double]): Guide[S,F,Double] = {
+  def nbest[S,F[_],A](selection: Selection[Particle[S,F,A]])(implicit M: Memory[S,F,A]): Guide[S,F,A] = {
     (collection, x) => Step(o => e => RVar.point {
       selection(collection, x).
         map(e => M._memory.get(e.state)).
@@ -16,7 +16,7 @@ object Guide {
     })
   }
 
-  def gbest[S,F[_]](implicit M: Memory[S,F,Double]): Guide[S,F,Double] =
+  def gbest[S,F[_],A](implicit M: Memory[S,F,A]): Guide[S,F,A] =
     nbest((c, _) => c)
 
   def lbest[S,F[_]](n: Int)(implicit M: Memory[S,F,Double]) =

@@ -62,7 +62,7 @@ object CooperativeExample {
   type Entity_ = Entity[Mem[List, Double], List, Double]
 
   val cognitive = Guide.pbest[Mem[List,Double],List,Double]
-  val social = Guide.gbest[Mem[List,Double],List]
+  val social = Guide.gbest[Mem[List,Double],List,Double]
 
   val algs = (0 until 10).toList.map(i => (x: List[Int]) => gbest(
     0.729, 1.496, 1.496, cognitive, social, x)

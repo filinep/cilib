@@ -76,7 +76,7 @@ object Defaults {
     collection => x => {
       val S = StateT.stateTMonadState[GCParams, Step[F,Double,?]]
       val hoist = StateT.StateMonadTrans[GCParams]
-      val g = Guide.gbest[S,F]
+      val g = Guide.gbest[S,F,Double]
       for {
         gbest   <- hoist.liftMU(g(collection, x))
         cog     <- hoist.liftMU(cognitive(collection, x))
