@@ -39,10 +39,9 @@ object Cooperative {
     def selective[S,F[_]:Traverse:SolutionRep,A](
       contribution: List[Entity[S,F,A]] => Step[F,A,Position[F,A]]
     ): Subswarm[S,F,A] => StepS[F,A,Position[F,A],Position[F,A]] = {
-      val S = StateT.stateTMonadState[Position[F,A], Step[F,A,?]]
+      val select = nBest(contribution)
       swarm => for {
-        context     <- S.get
-        select      = nBest(contribution)
+        context     <- StepS.get//[F,A,Position[F,A]]
         newContext  <- select(swarm)
         bestContext <- StepS.liftK(Fitness.compare(context, newContext))
       } yield bestContext
@@ -51,9 +50,8 @@ object Cooperative {
     def nBest[S,F[_]:Traverse:SolutionRep,A](
       contribution: List[Entity[S,F,A]] => Step[F,A,Position[F,A]]
     ): Subswarm[S,F,A] => StepS[F,A,Position[F,A],Position[F,A]] = {
-      val S = StateT.stateTMonadState[Position[F,A], Step[F,A,?]]
       swarm => for {
-        context     <- S.get
+        context     <- StepS.get
         contributor <- contribution(swarm._2).liftStepS
         newContext  <- Position.evalF[F,A](x => x)(Position(coopEncodePos(contributor.pos, context.pos, swarm._3))).liftStepS
       } yield newContext
@@ -65,20 +63,18 @@ object Cooperative {
     F.map(to.zipWithIndex) { x => if (indices.exists(x._2 == _)) from.indexOr(x._1, indices.indexOf(x._2)) else x._1}
   }
 
-  def evalParticle[S,F[_]:Traverse,A](entity: Particle[S,F,A], indices: List[Int]): StepS[F,A,Position[F,A],Particle[S,F,A]] = {
-    val S = StateT.stateTMonadState[Position[F,A], Step[F,A,?]]
+  def evalParticle[S,F[_]:Traverse,A](entity: Particle[S,F,A], indices: List[Int]): StepS[F,A,Position[F,A],Particle[S,F,A]] =
     for {
-      context <- S.get
-      evalled <- Entity.evalF(coopEncodePos(_: F[A], context.pos, indices))(entity).liftStepS
+      context <- StepS.get
+      evalled <- Entity.eval(coopEncodePos(_: F[A], context.pos, indices))(entity).liftStepS
     } yield evalled
-  }
 
   def algToCoopAlg[S,F[_]: Traverse,A](
     algorithm: (Entity[S,F,A] => Step[F,A,Entity[S,F,A]]) => Algorithm[S,F,A]
   ): List[Int] => List[Entity[S,F,A]] => Entity[S,F,A] => StepS[F,A,Position[F,A],Entity[S,F,A]] =
     indices => xs => x => StepS(
       s => {
-        val eval = Cooperative.evalParticle(_: Entity[S,F,A], indices).eval(s)
+        val eval = Cooperative.evalParticle(_: Entity[S,F,A], indices).run.eval(s)
         val coopAlg = algorithm((p: Particle[S,F,A]) => eval(p))
         coopAlg(xs)(x).map((s,_)) // TODO: Dodgy!! only works cos cooperative's eval doesn't change state
       }
@@ -86,16 +82,14 @@ object Cooperative {
 
   def cooperative[S,F[_]: Traverse,A: spire.math.Numeric](
     contextUpdate: Subswarm[S,F,A] => StepS[F,A,Position[F,A],Position[F,A]]
-  )(implicit M: Memory[S,F,A]): List[Subswarm[S,F,A]] => Subswarm[S,F,A] => StepS[F,A,Position[F,A],Subswarm[S,F,A]] = {
-    implicit val S = StateT.stateTMonadState[Position[F,A], Step[F,A,?]]
+  )(implicit M: Memory[S,F,A]): List[Subswarm[S,F,A]] => Subswarm[S,F,A] => StepS[F,A,Position[F,A],Subswarm[S,F,A]] =
     swarms => swarm => {
       val (algorithm, collection, indices) = swarm
       for {
         newCollection <- algorithm(collection).map((algorithm, _, indices))
         newContext    <- contextUpdate(newCollection)
-        _             <- S.put(newContext)
+        _             <- StepS.put(newContext)
       } yield newCollection
     }
-  }
 
 }

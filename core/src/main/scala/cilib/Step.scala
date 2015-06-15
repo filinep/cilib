@@ -1,7 +1,8 @@
 package cilib
 
-import scalaz._
+import scalaz.{StateT,Reader,Monad,Unapply}
 import scalaz.syntax.state._
+import scalaz.syntax.monad._
 
 /**
   A `Step` is a type that models a single step / operation within a CI Algorithm.
@@ -75,6 +76,15 @@ object StepS {
       fa flatMap f
   }
 
+  def get[F[_],A,S]: StepS[F,A,S,S] =
+    StepS(StateT.stateTMonadState[S,Step[F,A,?]].get)
+
+  def put[F[_],A,S](s: S): StepS[F,A,S,Unit] =
+    StepS(StateT.stateTMonadState[S,Step[F,A,?]].put(s))
+
+  def apply[F[_],A,S,B](f: S => Step[F,A,(S, B)]): StepS[F,A,S,B] =
+    StepS(StateT[Step[F,A,?],S,B](f))
+
   def point[F[_],A,S,B](b: B): StepS[F,A,S,B] =
     StepS(StateT.stateT[Step[F,A,?],S,B](b))
 
@@ -83,13 +93,15 @@ object StepS {
       (s: S) => Step.pointR(a).map((s, _))
     ))
 
-/*  def pointS[F[_],A,S,B](a: Step[F,A,B]): StepS[F,A,S,B] =
-    StateT.StateMonadTrans[S].liftMU(a)
-
   def liftK[F[_],A,S,B](a: Reader[Opt,B]): StepS[F,A,S,B] =
-    pointK(Step.liftK(a))
+    StepS(StateT[Step[F,A,?],S,B]((s: S) => Step.liftK(a).map((s, _))))
 
-  def liftS[F[_],A,S,B](a: State[S, B]): StepS[F,A,S,B] =
-    a.lift[Step[F,A,?]]
- */
+  // def pointS[F[_],A,S,B](a: Step[F,A,B]): StepS[F,A,S,B] =
+  //   StateT.StateMonadTrans[S].liftMU(a)
+
+  // def liftK[F[_],A,S,B](a: Reader[Opt,B]): StepS[F,A,S,B] =
+  //   pointS(Step.liftK(a))
+
+  // def liftS[F[_],A,S,B](a: State[S, B]): StepS[F,A,S,B] =
+  //   a.lift[Step[F,A,?]]
 }
