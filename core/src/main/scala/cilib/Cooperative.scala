@@ -2,10 +2,12 @@ package cilib
 
 object Cooperative {
 
+  import Iteration._
+
   import syntax.step._
   import syntax.zip._
 
-  import scalaz.{Lens => _, _}
+  import scalaz.{Kleisli,Traverse,Functor,Lens => _}
   import scalaz.std.list._
 
   import scalaz.syntax.traverse._
@@ -13,10 +15,29 @@ object Cooperative {
   import monocle._
 
   type Algorithm[S,F[_],A] = List[Entity[S,F,A]] => Entity[S,F,A] => Step[F,A,Entity[S,F,A]]
-  type AlgorithmS[S,F[_],A] = List[Entity[S,F,A]] => StepS[F,A,Position[F,A],List[Entity[S,F,A]]]
-  type Subswarm[S,F[_],A] = (AlgorithmS[S,F,A], List[Entity[S,F,A]], List[Int])
+  // type AlgorithmS[S,F[_],A] = List[Entity[S,F,A]] => StepS[F,A,Position[F,A],List[Entity[S,F,A]]]
+  type AlgorithmS[S,F[_],A] = Iteration[StepS[F,A,Position[F,A],?], List[Entity[S,F,A]]]
+  type Subswarm[S,F[_],A] = (List[Int] => AlgorithmS[S,F,A], List[Entity[S,F,A]], List[Int])
 
-  object Split {
+  object DimensionSplit {
+
+    def _split[A](n: Int, d: List[Interval[A]], dims: RVar[List[Int]]): RVar[List[(List[Int], List[Interval[A]])]] = {
+      val size = d.length / n
+      val extras = d.length - n * size
+
+      dims.map { ds =>
+        val (l, r) = ds.splitAt((n - extras) * size)
+        (l.sliding(size, size) ++ r.sliding(size + 1, size + 1)).toList.map(
+          x => (x, x.map(d(_)))
+        )
+      }
+    }
+
+    def random[A](n: Int, d: List[Interval[A]]) =
+      _split(n, d, RVar.shuffle((0 until d.length).toList))
+
+    def sequential[A](n: Int, d: List[Interval[A]]) =
+      _split(n, d, RVar.point((0 until d.length).toList))
 
   }
 
@@ -41,7 +62,7 @@ object Cooperative {
     ): Subswarm[S,F,A] => StepS[F,A,Position[F,A],Position[F,A]] = {
       val select = nBest(contribution)
       swarm => for {
-        context     <- StepS.get//[F,A,Position[F,A]]
+        context     <- StepS.get
         newContext  <- select(swarm)
         bestContext <- StepS.liftK(Fitness.compare(context, newContext))
       } yield bestContext
@@ -75,10 +96,20 @@ object Cooperative {
     indices => xs => x => StepS(
       s => {
         val eval = Cooperative.evalParticle(_: Entity[S,F,A], indices).run.eval(s)
-        val coopAlg = algorithm((p: Particle[S,F,A]) => eval(p))
+        val coopAlg = algorithm((p: Entity[S,F,A]) => eval(p))
         coopAlg(xs)(x).map((s,_)) // TODO: Dodgy!! only works cos cooperative's eval doesn't change state
       }
     )
+
+  def coopSync[S,F[_],A](
+    algorithm: List[Int] => List[Entity[S,F,A]] => Entity[S,F,A] => StepS[F,A,Position[F,A],Entity[S,F,A]]
+  ): List[Int] => Iteration[StepS[F,A,Position[F,A],?], List[Entity[S,F,A]]] =
+    indices => Iteration.syncS(algorithm(indices))
+
+  def coopAsync[S,F[_],A](
+    algorithm: List[Int] => List[Entity[S,F,A]] => Entity[S,F,A] => StepS[F,A,Position[F,A],Entity[S,F,A]]
+  ): List[Int] => Iteration[StepS[F,A,Position[F,A],?], List[Entity[S,F,A]]] =
+    indices => Iteration.asyncS(algorithm(indices))
 
   def cooperative[S,F[_]: Traverse,A: spire.math.Numeric](
     contextUpdate: Subswarm[S,F,A] => StepS[F,A,Position[F,A],Position[F,A]]
@@ -86,10 +117,32 @@ object Cooperative {
     swarms => swarm => {
       val (algorithm, collection, indices) = swarm
       for {
-        newCollection <- algorithm(collection).map((algorithm, _, indices))
+        newCollection <- algorithm(indices).run(collection).map((algorithm, _, indices))
         newContext    <- contextUpdate(newCollection)
         _             <- StepS.put(newContext)
       } yield newCollection
     }
+
+  
+
+  def cooperativeLS[S,F[_],A](
+    algorithm: Iteration[StepS[F,A,Position[F,A],?], List[Subswarm[S,F,A]]]
+  ): Iteration[StepS[F,A,Position[F,A],?], List[Subswarm[S,F,A]]] = {
+    val K = Kleisli.kleisliMonadReader[StepS[F,A,Position[F,A],?], List[Subswarm[S,F,A]]]
+    val hoist = Kleisli.kleisliMonadTrans[List[Subswarm[S,F,A]]]
+
+    for {
+      //swarms   <- K.ask
+      context1 <- hoist.liftMU(StepS.get[F,A,Position[F,A]])
+      updated  <- algorithm
+      context2 <- hoist.liftMU(StepS.get[F,A,Position[F,A]])
+      improved <- hoist.liftMU(
+        StepS.liftK[F,A,Position[F,A],Boolean](
+          Fitness.compare(context1, context2).map(_ eq context2)
+        )
+      )
+      newSwarms = if (improved) updated else updated
+    } yield newSwarms
+  }
 
 }

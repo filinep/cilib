@@ -123,21 +123,8 @@ object Position {
   def apply[F[_]:SolutionRep,A](xs: F[A]): Position[F, A] =
     Point(xs)
 
-<<<<<<< HEAD
   def createPosition[A](domain: NonEmptyList[Interval[Double]])(implicit F: SolutionRep[List]) =
     domain.traverseU(x => Dist.uniform(x.lower.value, x.upper.value)) map (x => Position(x.list))
-=======
-  def evalF[F[_]:Foldable,A](g: F[A] => F[A])(pos: Position[F,A]): Step[F,A,Position[F,A]] =
-    Step { _ => e =>
-      RVar.point(pos match {
-        case Point(x) =>
-          val (fit, vio) = e.eval(g(x))
-          Solution(x, fit, vio)
-        case x @ Solution(_, _, _) =>
-          x
-      })
-    }
->>>>>>> Rebase fixes
 
   def createPositions(domain: NonEmptyList[Interval[Double]], n: Int)(implicit ev: SolutionRep[List]) =
     createPosition(domain) replicateM n
