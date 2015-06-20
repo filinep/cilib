@@ -110,7 +110,7 @@
         <addMeasurement class="measurement.single.NicheCountSubswarms"/>
         <addMeasurement class="measurement.multiple.NicheCount">
           <filter class="measurement.multiple.filter.MultiPopulationFilter">
-            <multiPopulationDefinition class="measurement.multiple.filter.NichingMultiPopulationDefinition"/>
+            <nicheProvider class="measurement.multiple.filter.SubswarmNicheProvider"/>
           </filter>
         </addMeasurement>
         <addMeasurement class="measurement.single.SwarmSize"/>
@@ -120,35 +120,43 @@
         </addMeasurement>
     </measurements>
 
+    <measurements id="custom" class="simulator.MeasurementSuite" resolution="1">
+        <addMeasurement class="measurement.single.FitnessEvaluations"/>
+        <addMeasurement class="measurement.single.ParticlePositionUpdates"/>
+        <addMeasurement class="measurement.multiple.CustomNiches">
+          <nicheProvider class="measurement.multiple.filter.MainSwarmNicheProvider"/>
+        </addMeasurement>
+    </measurements>
+
     <simulations>
         <simulation samples="1">
             <algorithm idref="nichePSO"/>
             <problem idref="f1"/>
-            <measurements idref="fitness" />
+            <measurements idref="custom" />
             <output format="TXT" file="data/nichePSO-f1.txt"/>
         </simulation>
         <simulation samples="1">
             <algorithm idref="nichePSO"/>
             <problem idref="f2"/>
-            <measurements idref="fitness" />
+            <measurements idref="custom" />
             <output format="TXT" file="data/nichePSO-f2.txt"/>
         </simulation>
         <simulation samples="1">
             <algorithm idref="nichePSO"/>
             <problem idref="f3"/>
-            <measurements idref="fitness" />
+            <measurements idref="custom" />
             <output format="TXT" file="data/nichePSO-f3.txt"/>
         </simulation>
         <simulation samples="1">
             <algorithm idref="nichePSO"/>
             <problem idref="f4"/>
-            <measurements idref="fitness" />
+            <measurements idref="custom" />
             <output format="TXT" file="data/nichePSO-f4.txt"/>
         </simulation>
         <simulation samples="1">
             <algorithm idref="nichePSO"/>
             <problem idref="f5"/>
-            <measurements idref="fitness" />
+            <measurements idref="custom" />
             <output format="TXT" file="data/nichePSO-f5.txt"/>
         </simulation>
 

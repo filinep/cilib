@@ -19,15 +19,15 @@ import net.sourceforge.cilib.type.types.Real;
 import net.sourceforge.cilib.type.types.container.TypeList;
 import net.sourceforge.cilib.type.types.container.Vector;
 
-public class CustomNiches implements Measurement<TypeList> {
+public class CustomNiches1 implements Measurement<TypeList> {
 
     private NicheProvider filter;
 
-    public CustomNiches() {
+    public CustomNiches1() {
         filter = null;
     }
 
-    public CustomNiches getClone() {
+    public CustomNiches1 getClone() {
         return this;
     }
 
@@ -40,22 +40,10 @@ public class CustomNiches implements Measurement<TypeList> {
                 TypeList t3 = new TypeList();
                 Particle p = (Particle) e;
 
-                t3.add(Real.valueOf(p.getBestFitness().getValue()));
+                t3.add(p.getPosition());
+                t3.add(Real.valueOf(p.getFitness().getValue()));
+                t3.add(p.getNeighbourhoodBest().getBestPosition());
                 t3.add(p.getBestPosition());
-
-                try {
-                    FunctionOptimisationProblem function = (FunctionOptimisationProblem) algorithm.getOptimisationProblem();
-                    Gradient derivative = (Gradient) function.getFunction();
-                    t3.add(derivative.getGradientVector((Vector) p.getBestPosition()));
-                } catch (Exception ex) {
-                    try {
-                        DeratingOptimisationProblem function = (DeratingOptimisationProblem) algorithm.getOptimisationProblem();
-                        Gradient derivative = (Gradient) function.getFunction();
-                        t3.add(derivative.getGradientVector((Vector) p.getBestPosition()));
-                    } catch (Exception ex1) {
-                        
-                    }
-                }
 
                 t2.add(t3);
             }
