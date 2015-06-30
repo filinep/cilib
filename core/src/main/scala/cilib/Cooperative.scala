@@ -123,7 +123,18 @@ object Cooperative {
       } yield newCollection
     }
 
-  
+  def subEntity[S,F[_],A](
+    algorithm: List[Int] => List[Entity[S,F,A]] => Entity[S,F,A] => StepS[F,A,Position[F,A],Entity[S,F,A]],
+    encoder: List[Int] => Entity[S,F,A] => Entity[S,F,A],
+    decoder: List[Int] => Entity[S,F,A] => Entity[S,F,A]
+  ): List[Int] => List[Entity[S,F,A]] => Entity[S,F,A] => StepS[F,A,Position[F,A],Entity[S,F,A]] =
+  indices => collection => entity => {
+    algorithm(indices)(collection.map(encoder(indices)(_)))(encoder(indices)(entity)).map(decoder(indices)(_))
+  }
+
+  def subPosition[F[_],A](indices: List[Int], pos: Position[F,A]): Position[F,A] = {
+    pos
+  }
 
   def cooperativeLS[S,F[_],A](
     algorithm: Iteration[StepS[F,A,Position[F,A],?], List[Subswarm[S,F,A]]]
