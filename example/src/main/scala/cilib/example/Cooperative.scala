@@ -50,13 +50,7 @@ object CooperativeExample {
 
   def subCollection = Position.createCollection(
     PSO.createParticle(x => Entity(Mem(x,x.map(_ => 0.0)), x))
-  )(5) _
-
-  // val swarms = DimensionSplit.random[Mem[List,Double],List,Double](
-  //   (1 to 10).toList.map(_ => subAlgorithm),
-  //   subCollection,
-  //   Interval(open(-100.0),open(100.0))^10
-  // ).liftStepS[List,Double,Position[List,Double]]
+  ) (_: NonEmptyList[Interval[Double]], 5)
 
   val indices =
     DimensionSplit.random(10, Interval(open(-100.0),open(100.0))^10)

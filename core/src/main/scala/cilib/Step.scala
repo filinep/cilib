@@ -1,6 +1,6 @@
 package cilib
 
-import scalaz.{StateT,Reader,Monad,Unapply}
+import scalaz._
 import scalaz.syntax.state._
 import scalaz.syntax.monad._
 
@@ -37,6 +37,9 @@ object Step {
 
   def withOpt[F[_],A,B](f: Opt => RVar[B]): Step[F,A,B] =
     Step(o => _ => f(o))
+
+  def withEval[F[_],A,B](f: Eval[F,A] => RVar[B]): Step[F,A,B] =
+    Step(_ => e => f(e))
 
   def evalF[F[_]:Foldable,A](pos: Position[F,A]): Step[F,A,Position[F,A]] =
     Step { _ => e =>

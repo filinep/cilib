@@ -7,7 +7,7 @@ object Cooperative {
   import syntax.step._
   import syntax.zip._
 
-  import scalaz.{Kleisli,Traverse,Functor,Lens => _}
+  import scalaz.{NonEmptyList,Kleisli,Traverse,Functor,Lens => _}
   import scalaz.std.list._
 
   import scalaz.syntax.traverse._
@@ -21,22 +21,24 @@ object Cooperative {
 
   object DimensionSplit {
 
-    def _split[A](n: Int, d: List[Interval[A]], dims: RVar[List[Int]]): RVar[List[(List[Int], List[Interval[A]])]] = {
+    def _split[A](n: Int, d: NonEmptyList[Interval[A]], dims: RVar[List[Int]]): RVar[List[(List[Int], NonEmptyList[Interval[A]])]] = {
       val size = d.length / n
       val extras = d.length - n * size
 
       dims.map { ds =>
         val (l, r) = ds.splitAt((n - extras) * size)
-        (l.sliding(size, size) ++ r.sliding(size + 1, size + 1)).toList.map(
-          x => (x, x.map(d(_)))
-        )
+        (l.sliding(size, size) ++ r.sliding(size + 1, size + 1)).toList.map {
+          x =>
+          val dList = d.toList
+          (x, x.map(dList(_)))
+        }
       }
     }
 
-    def random[A](n: Int, d: List[Interval[A]]) =
+    def random[A](n: Int, d: NonEmptyList[Interval[A]]) =
       _split(n, d, RVar.shuffle((0 until d.length).toList))
 
-    def sequential[A](n: Int, d: List[Interval[A]]) =
+    def sequential[A](n: Int, d: NonEmptyList[Interval[A]]) =
       _split(n, d, RVar.point((0 until d.length).toList))
 
   }
@@ -74,7 +76,7 @@ object Cooperative {
       swarm => for {
         context     <- StepS.get
         contributor <- contribution(swarm._2).liftStepS
-        newContext  <- Position.evalF[F,A](x => x)(Position(coopEncodePos(contributor.pos, context.pos, swarm._3))).liftStepS
+        newContext  <- Step.evalF[F,A](Position(coopEncodePos(contributor.pos, context.pos, swarm._3))).liftStepS
       } yield newContext
     }
 
@@ -87,7 +89,7 @@ object Cooperative {
   def evalParticle[S,F[_]:Traverse,A](entity: Particle[S,F,A], indices: List[Int]): StepS[F,A,Position[F,A],Particle[S,F,A]] =
     for {
       context <- StepS.get
-      evalled <- Entity.eval(coopEncodePos(_: F[A], context.pos, indices))(entity).liftStepS
+      evalled <- Entity.evalF(coopEncodePos(_: F[A], context.pos, indices))(entity).liftStepS
     } yield evalled
 
   def algToCoopAlg[S,F[_]: Traverse,A](
