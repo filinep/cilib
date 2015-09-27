@@ -19,7 +19,7 @@ object GBestPSO extends SafeApp {
   val gbestPSO = gbest(0.729844, 1.496180, 1.496180, cognitive, social)
 
   // RVar
-  val swarm = Position.createCollection(PSO.createParticle(x => Entity(Mem(x, x.zeroed), x)))(20)(Interval(closed(-5.12),closed(5.12))^30)
+  val swarm = Position.createCollection(PSO.createParticle(x => Entity(Mem(x, x.zeroed), x)))(Interval(closed(-5.12),closed(5.12))^30, 20)
 
   val a = Step.pointR[List,Double,List[Particle[Mem[List,Double],List,Double]]](swarm)
 

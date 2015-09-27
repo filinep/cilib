@@ -30,7 +30,11 @@ object Cooperative {
         (l.sliding(size, size) ++ r.sliding(size + 1, size + 1)).toList.map {
           x =>
           val dList = d.toList
-          (x, x.map(dList(_)))
+          val n = x.map(dList(_))
+          (x, n match {
+            case h :: t => NonEmptyList.nel(h, t)
+            case _      => sys.error("Empty stuff")
+          })
         }
       }
     }
@@ -157,5 +161,46 @@ object Cooperative {
       newSwarms = if (improved) updated else updated
     } yield newSwarms
   }
+
+
+
+  case class Pop(X: Array[Array[Double]], Y: Array[Array[Double]])
+
+  def encode[S](f: (Array[Double], Array[Double]) => Entity[S,List,Double], indices: List[List[Int]]): StepS[List,Double,Pop,List[List[Entity[S,List,Double]]]] =
+    for {
+      state <- StepS.get
+    } yield {
+      indices.map { is =>
+        state.X.zip(state.Y).toList.map { vals =>
+          val X = vals._1
+          val Y = vals._2
+          val x = is.map(i => X(i))
+          val y = is.map(i => Y(i))
+          f(x.toArray, y.toArray)
+        }
+      }
+    }
+
+  def decode[S](f: Entity[S,List,Double] => (Array[Double], Array[Double]), indices: List[List[Int]]): List[List[Entity[S,List,Double]]] => StepS[List,Double,Pop,Unit] = {
+    collections => for {
+      state <- StepS.get
+      _     <- StepS.put {
+        collections.zip(indices).map { vals =>
+          val ents = vals._1
+          val ind = vals._2
+          
+        }
+        state
+      }
+    } yield ()
+  }
+
+  def coop(s: List[Int]): StepS[List,Double,Pop,Unit] = {
+    for {
+      state <- StepS.get
+
+    } yield ()
+  }
+
 
 }
