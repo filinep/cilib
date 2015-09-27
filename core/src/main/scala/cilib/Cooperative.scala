@@ -181,16 +181,26 @@ object Cooperative {
       }
     }
 
-  def decode[S](f: Entity[S,List,Double] => (Array[Double], Array[Double]), indices: List[List[Int]]): List[List[Entity[S,List,Double]]] => StepS[List,Double,Pop,Unit] = {
+  def decode[S](
+    f: Entity[S,List,Double] => (Array[Double], Array[Double]),
+    indices: List[List[Int]]
+  )(
+    implicit M: Memory[S,List,Double]
+  ): List[List[Entity[S,List,Double]]] => StepS[List,Double,Pop,Unit] = {
     collections => for {
       state <- StepS.get
       _     <- StepS.put {
-        collections.zip(indices).map { vals =>
+        val xs = collections.zip(indices).toArray.flatMap { vals =>
           val ents = vals._1
           val ind = vals._2
-          
-        }
-        state
+          ents.map(e => ind.toArray.map { x =>
+            (x, e.pos.pos(x), M._memory.get(e.state).pos(x))
+          }
+            .sortBy(_._1)
+            .map(x => (x._2, x._3))
+            .unzip)
+        }.unzip
+        Pop(xs._1, xs._2)
       }
     } yield ()
   }
