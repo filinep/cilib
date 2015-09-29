@@ -13,6 +13,7 @@ import net.sourceforge.cilib.functions.Gradient;
 import net.sourceforge.cilib.measurement.Measurement;
 import net.sourceforge.cilib.measurement.multiple.filter.NicheProvider;
 import net.sourceforge.cilib.pso.particle.Particle;
+import net.sourceforge.cilib.problem.Problem;
 import net.sourceforge.cilib.problem.FunctionOptimisationProblem;
 import net.sourceforge.cilib.problem.DeratingOptimisationProblem;
 import net.sourceforge.cilib.type.types.Real;
@@ -39,6 +40,15 @@ public class CustomNiches1 implements Measurement<TypeList> {
             for (Entity e : l) {
                 TypeList t3 = new TypeList();
                 Particle p = (Particle) e;
+
+                try {
+                    final Problem d = algorithm.getOptimisationProblem();
+                    final FunctionOptimisationProblem fop = (FunctionOptimisationProblem)d;
+                    final Gradient df = (Gradient)fop.getFunction();
+                    t3.add(Real.valueOf(df.getGradientVectorLength((Vector)p.getPosition())));
+                } catch (Exception ex) {
+                    t3.add(Real.valueOf(Double.NaN));
+                }
 
                 t3.add(p.getPosition());
                 t3.add(Real.valueOf(p.getFitness().getValue()));

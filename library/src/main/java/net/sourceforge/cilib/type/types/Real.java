@@ -139,7 +139,7 @@ public class Real implements Numeric {
      */
     @Override
     public String toString() {
-        return String.valueOf(this.value);
+        return String.format("%.8f", this.value);
     }
 
     /**
