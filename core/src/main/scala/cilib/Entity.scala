@@ -9,7 +9,7 @@ import monocle.syntax._
 
 import spire.math._
 
-final case class Entity[S,F[_],A](state: S, pos: Position[F,A])
+final case class Entity[S,F[_],A](state: S, pos: Position[F,A]) {
   def apply[B](lens: monocle.Lens[S,B]) = state applyLens lens
 }
 

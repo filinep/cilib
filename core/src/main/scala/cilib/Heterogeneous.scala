@@ -9,6 +9,8 @@ import monocle.syntax._
 
 import spire.implicits._
 
+import syntax.step._
+
 object Heterogeneous {
 
   sealed abstract class PoolItem[A] {
@@ -108,7 +110,7 @@ object Heterogeneous {
   // Create population with behaviours
   def assignRandom[A, B, F[_], C]: List[A] => StepS[F,C,Pool[B],List[User[A, B]]] =
     xs => for {
-      pool       <- StepS.get
+      pool       <- StepS.get[F,C,Pool[B]]
       collection <- StepS.pointR(xs.traverse {
         x => RVar.shuffle(pool).map {
           _.headOption.map(User(x,_))
@@ -127,7 +129,7 @@ object Heterogeneous {
   // Select from behaviour pool
   def poolSelectRandom[A, B, F[_], C]: List[User[A, B]] => User[A, B] => StepS[F,C,Pool[B],User[A, B]] =
     xs => x => for {
-      pool <- StepS.get
+      pool <- StepS.get[F,C,Pool[B]]
       user <- StepS.pointR(RVar.shuffle(pool).map {
         _.headOption.map(User(x.user, _)).getOrElse(sys.error("Empty behaviour pool."))
       })
@@ -135,7 +137,7 @@ object Heterogeneous {
 
   def poolSelectTournament[A, B, F[_], C](k: Int): List[User[A, B]] => User[A, B] => StepS[F,C,Pool[B],User[A, B]] =
     xs => x => for {
-      pool <- StepS.get
+      pool <- StepS.get[F,C,Pool[B]]
       user <- StepS.pointR(RVar.shuffle(pool).map(_.take(k)).map {
         bs => {
           val tournament = bs.take(k)
@@ -155,7 +157,7 @@ object Heterogeneous {
   // Update pool
   def incrementOne[S, F[_], A, B]: HEntityB[S, F, A, B] => HEntityB[S, F, A, B] => StepS[F,A,Pool[Behaviour[S,F,A,B]],Pool[Behaviour[S,F,A,B]]] =
     oldP => newP => for {
-      pool <- StepS.get
+      pool <- StepS.get[F,A,Pool[Behaviour[S,F,A,B]]]
       newP <- StepS.liftK {
         Fitness.compare(oldP.user.pos, newP.user.pos).map { best =>
           if (best eq newP.user.pos)
@@ -176,7 +178,7 @@ object Heterogeneous {
     updater: HEntityB[S, F, A, B] => HEntityB[S, F, A, B] => StepS[F, A, Pool[Behaviour[S, F, A, B]], Pool[Behaviour[S, F, A, B]]]
   ): List[HEntityB[S, F, A, B]] => HEntityB[S, F, A, B] => StepS[F, A, (Pool[Behaviour[S, F, A, B]], B), HEntityB[S, F, A, B]] =
     collection => x => {
-      val S = StateT.stateTMonadState[(Pool[Behaviour[S,F,A,B]], B), Step[F, A, ?]]
+      val S = StepS.stepSMonadState[F, A, (Pool[Behaviour[S,F,A,B]], B)]
       val pool = Lens.lensu[(Pool[Behaviour[S,F,A,B]], B), Pool[Behaviour[S,F,A,B]]]((a,b) => (b, a._2), _._1)
       val params = Lens.lensu[(Pool[Behaviour[S,F,A,B]], B), B]((a,b) => (a._1, b), _._2)
 

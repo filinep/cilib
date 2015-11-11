@@ -12,7 +12,7 @@ object algorithm {
       xs => x => self(xs)(x).flatMap(g)
 
     def liftStepS[S]: List[B] => B => StepS[F,A,S,C] =
-      xs => x => StepS.pointK(self(xs)(x))
+      xs => x => StepS.pointS(self(xs)(x))
   }
 
   implicit class ToAlgorithmSOps[A,B,C,F[_],S](val self: List[B] => B => StateT[Step[F,A,?], S, C]) extends AnyVal {
