@@ -58,30 +58,30 @@ object Step {
 }
 
 // Should the internal StateT not be hidden?
-final case class StepS[F[_],A,S,B] private (run: StateT[Step[F,A,?],S,B]) {
-  def map[C](f: B => C): StepS[F,A,S,C] =
-    StepS(run map f)
+// final case class StepS[F[_],A,S,B] private (run: StateT[Step[F,A,?],S,B]) {
+//   def map[C](f: B => C): StepS[F,A,S,C] =
+//     StepS(run map f)
 
-  def flatMap[C](f: B => StepS[F,A,S,C]): StepS[F,A,S,C] =
-    StepS(run.flatMap(f(_).run))
-}
+//   def flatMap[C](f: B => StepS[F,A,S,C]): StepS[F,A,S,C] =
+//     StepS(run.flatMap(f(_).run))
+// }
 
 object StepS {
 
   implicit def stepSMonadState[F[_],A,S] = new MonadState[StepS[F,A,?,?], S] {
     def point[B](a: => B) =
-      StepS(StateT.stateTMonadState[S, Step[F,A,?]].point(a))
+      StateT.stateTMonadState[S, Step[F,A,?]].point(a)
 
     def bind[B,C](fa: StepS[F,A,S,B])(f: B => StepS[F,A,S,C]): StepS[F,A,S,C] =
       fa flatMap f
 
     def get =
-      StepS(StateT.stateTMonadState[S, Step[F,A,?]].get)
+      StateT.stateTMonadState[S, Step[F,A,?]].get
 
     def init = get
 
     def put(s: S) =
-      StepS(StateT.stateTMonadState[S, Step[F,A,?]].put(s))
+      StateT.stateTMonadState[S, Step[F,A,?]].put(s)
   }
 
   def get[F[_],A,S] =
@@ -91,20 +91,20 @@ object StepS {
     stepSMonadState[F,A,S].put(s)
 
   def apply[F[_],A,S,B](f: S => Step[F,A,(S, B)]): StepS[F,A,S,B] =
-    StepS(StateT[Step[F,A,?],S,B](f))
+    StateT[Step[F,A,?],S,B](f)
 
   def point[F[_],A,S,B](b: B): StepS[F,A,S,B] =
     stepSMonadState[F,A,S].point(b)
 
   def pointR[F[_],A,S,B](a: RVar[B]): StepS[F,A,S,B] =
-    StepS((s: S) => Step.pointR(a).map((s, _)))
+    StateT[Step[F,A,?],S,B]((s: S) => Step.pointR(a).map((s, _)))
 
   def pointS[F[_],A,S,B](a: Step[F,A,B]): StepS[F,A,S,B] =
-    StepS((s: S) => a.map((s,_)))
+    StateT[Step[F,A,?],S,B]((s: S) => a.map((s,_)))
 
   def liftK[F[_],A,S,B](a: Reader[Opt,B]): StepS[F,A,S,B] =
     pointS(Step.liftK(a))
 
   def liftS[F[_],A,S,B](a: State[S, B]): StepS[F,A,S,B] =
-    StepS(a.lift[Step[F,A,?]])
+    a.lift[Step[F,A,?]]
 }

@@ -2,7 +2,7 @@ package cilib
 package example
 
 import Heterogeneous._
-import PSO.GCParams
+import PSO.{defaultGCParams,GCParams}
 
 import syntax.algorithm._
 import syntax.step._
@@ -14,6 +14,7 @@ import scalaz.effect._
 import scalaz.effect.IO.putStrLn
 
 import scalaz.syntax.foldable._
+//import scalaz.syntax.traverse._
 
 import spire.implicits._
 
@@ -49,6 +50,17 @@ object HPSO extends SafeApp {
     def gc1 = Lens.lensu[Params, GCParams]((a,b) => a.copy(gc1=b), _.gc1)
     def gc2 = Lens.lensu[Params, GCParams]((a,b) => a.copy(gc2=b), _.gc2)
   }
+
+  // def andThen[A](
+  //   alg: List[Particle[PState,List,Double]] => Particle[PState,List,Double] => Step[List,Double,Result[Particle[PState,List,Double]]]
+  // ): List[Particle[PState,List,Double]] => Particle[PState,List,Double] => Step[List,Double,Result[Particle[PState,List,Double]]] =
+  //   xs => x => {
+  //     alg(xs)(x).flatMap { _ match {
+  //       case Zero()       => Step.point((Zero()))
+  //       case cilib.One(a) => updateStagnation[PState,List,Double](a).map(cilib.One(_))
+  //       case Many(l)      => l.traverseU(updateStagnation[PState,List,Double]).map(Many(_))
+  //     }}
+  //   }
 
   // used to create pools with changing parameters
   def createBehaviours(n: Double, i: Int): List[Behaviour[PState,List,Double,Params]] = List(
@@ -108,14 +120,14 @@ object HPSO extends SafeApp {
           createBehaviours(1000, c._1): _*
         )
         _             <- SP.put(newPool).zoom(poolLens)
-      } yield Pool.updateUserBehaviours(oldPool, newPool)(newPopulation)
+      } yield Pool.updateUserBehaviours(oldPool, newPool)(newPopulation.toList)
     }
   }
 
   val finalResult = population
     .flatMap(algorithm)
-    .run((Pool.mkPoolListScore(Pool.mkZeroPool(createBehaviours(1000, 0): _*)), Params(GCParams(), GCParams())))
-    .run((Min, Problems.spherical))
+    .run((Pool.mkPoolListScore(Pool.mkZeroPool(createBehaviours(1000, 0): _*)), Params(defaultGCParams, defaultGCParams)))
+    .run(Min)(Problems.spherical)
     .run(RNG.fromTime)
 
 

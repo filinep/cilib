@@ -17,6 +17,8 @@ package object cilib {
     else Maybe.empty
 
 
+  type StepS[F[_],A,S,B] = StateT[Step[F,A,?],S,B]
+
   // Use Spire for this!
   def closed[A](point: A): Bound[A] =
     Closed(point)

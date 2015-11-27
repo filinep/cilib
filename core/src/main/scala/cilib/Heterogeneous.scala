@@ -176,7 +176,7 @@ object Heterogeneous {
     schedule: HEntityB[S, F, A, B] => Boolean,
     selector: List[HEntityB[S, F, A, B]] => HEntityB[S, F, A, B] => StepS[F, A, Pool[Behaviour[S, F, A, B]], HEntityB[S, F, A, B]],
     updater: HEntityB[S, F, A, B] => HEntityB[S, F, A, B] => StepS[F, A, Pool[Behaviour[S, F, A, B]], Pool[Behaviour[S, F, A, B]]]
-  ): List[HEntityB[S, F, A, B]] => HEntityB[S, F, A, B] => StepS[F, A, (Pool[Behaviour[S, F, A, B]], B), HEntityB[S, F, A, B]] =
+  ): List[HEntityB[S, F, A, B]] => HEntityB[S, F, A, B] => StepS[F, A, (Pool[Behaviour[S, F, A, B]], B), Result[HEntityB[S, F, A, B]]] =
     collection => x => {
       val S = StepS.stepSMonadState[F, A, (Pool[Behaviour[S,F,A,B]], B)]
       val pool = Lens.lensu[(Pool[Behaviour[S,F,A,B]], B), Pool[Behaviour[S,F,A,B]]]((a,b) => (b, a._2), _._1)
@@ -187,11 +187,11 @@ object Heterogeneous {
         p2   <- useBehaviour(collection)(p1).zoom(params)
         newP <- updater(x)(p2).zoom(pool)
         _    <- StateT.stateTMonadState[Pool[Behaviour[S,F,A,B]], Step[F, A, ?]].put(newP).zoom(pool)
-      } yield p2
+      } yield One(p2)
     }
 
   def dHPSO[S: PBestStagnation, F[_], A, B](stagThreshold: Int):
-      List[HEntityB[S, F, A, B]] => HEntityB[S, F, A, B] => StepS[F, A, (Pool[Behaviour[S, F, A, B]], B), HEntityB[S, F, A, B]]
+      List[HEntityB[S, F, A, B]] => HEntityB[S, F, A, B] => StepS[F, A, (Pool[Behaviour[S, F, A, B]], B), Result[HEntityB[S, F, A, B]]]
   = genericHPSO(
       pbestStagnated(stagThreshold),
       xs => x => poolSelectRandom(xs)(x).map(resetStagnation),
@@ -199,7 +199,7 @@ object Heterogeneous {
     )
 
   def fkPSO[S: PBestStagnation, F[_], A, B](stagThreshold: Int, tournSize: Int):
-      List[HEntityB[S, F, A, B]] => HEntityB[S, F, A, B] => StepS[F, A, (Pool[Behaviour[S, F, A, B]], B), HEntityB[S, F, A, B]]
+      List[HEntityB[S, F, A, B]] => HEntityB[S, F, A, B] => StepS[F, A, (Pool[Behaviour[S, F, A, B]], B), Result[HEntityB[S, F, A, B]]]
   = genericHPSO(
     pbestStagnated(stagThreshold),
     xs => x => poolSelectTournament(tournSize)(xs)(x).map(resetStagnation),

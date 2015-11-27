@@ -18,9 +18,9 @@ object step {
     def liftStepS[S]: StateT[Step[F,A,?], S, B] = StepS.pointK(self)
  }*/
 
-  final implicit class StepSOps[F[_],A,S,B](val self: StepS[F,A,S,B]) extends AnyVal {
-    def zoom[S0, S3](l: LensFamily[S0, S3, S, S]): StepS[F,A,S,B] =
-      self.run.zoom(l: LensFamily[S0, S3, S, S])
-  }
+  // final implicit class StepSOps[F[_],A,S,B](val self: StepS[F,A,S,B]) extends AnyVal {
+  //   def zoom[S0, S3](l: LensFamily[S0, S3, S, S]): StepS[F,A,S,B] =
+  //     self.run.zoom(l: LensFamily[S0, S3, S, S])
+  // }
 }
 
